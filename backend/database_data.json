@@ -1,0 +1,339 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$J9groM9ieLSC90wDB6yyj8$5d19WFwIf6pvFCmgi0pVZoSAG4FPU0wtaa4QHS80c4M=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@alqattara.ae",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-11-08T09:22:05.015Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "alqattara.product",
+  "pk": 1,
+  "fields": {
+    "code": "PRD-5GAL",
+    "name": "5 Gallon Drinking Water",
+    "category": "Water 5 Gallon",
+    "unit": "Bottle",
+    "cost_price": "3.50",
+    "selling_price": "7.50",
+    "stock_quantity": 4677,
+    "min_stock": 200,
+    "is_active": true,
+    "created_at": "2026-11-08T09:22:05.776Z"
+  }
+},
+{
+  "model": "alqattara.product",
+  "pk": 2,
+  "fields": {
+    "code": "PRD-500ML",
+    "name": "500ml PET Bottles (Pack of 24)",
+    "category": "Bottled Water (PET)",
+    "unit": "Carton",
+    "cost_price": "10.00",
+    "selling_price": "16.00",
+    "stock_quantity": 520,
+    "min_stock": 50,
+    "is_active": true,
+    "created_at": "2026-11-08T09:22:05.780Z"
+  }
+},
+{
+  "model": "alqattara.product",
+  "pk": 3,
+  "fields": {
+    "code": "PRD-EMPTY-BTL",
+    "name": "Empty 5 Gallon Polycarbonate Bottle",
+    "category": "Accessories & Coolers",
+    "unit": "Piece",
+    "cost_price": "12.00",
+    "selling_price": "25.00",
+    "stock_quantity": 310,
+    "min_stock": 30,
+    "is_active": true,
+    "created_at": "2026-11-08T09:22:05.781Z"
+  }
+},
+{
+  "model": "alqattara.product",
+  "pk": 4,
+  "fields": {
+    "code": "PRD-COOLER",
+    "name": "Hot & Cold Water Dispenser Cooler",
+    "category": "Dispensers",
+    "unit": "Unit",
+    "cost_price": "220.00",
+    "selling_price": "380.00",
+    "stock_quantity": 45,
+    "min_stock": 10,
+    "is_active": true,
+    "created_at": "2026-11-08T09:22:05.783Z"
+  }
+},
+{
+  "model": "alqattara.storeinventory",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "batch_no": "BATCH-2026-001",
+    "quantity_in": 5000,
+    "quantity_out": 323,
+    "balance": 4677,
+    "location": "Al Ain Main Plant Warehouse",
+    "remarks": null,
+    "updated_at": "2026-11-08T09:22:05.787Z"
+  }
+},
+{
+  "model": "alqattara.order",
+  "pk": 1,
+  "fields": {
+    "order_no": "ORD-2026-1001",
+    "customer": 1,
+    "salesman": 1,
+    "order_date": "2026-11-08",
+    "delivery_date": "2026-11-08",
+    "status": "Delivered",
+    "total_amount": "1125.00",
+    "payment_method": "Credit",
+    "payment_status": "Unpaid",
+    "route": "Route AA-01",
+    "city": "AL AIN",
+    "notes": null,
+    "created_at": "2026-11-08T09:22:05.811Z"
+  }
+},
+{
+  "model": "alqattara.orderitem",
+  "pk": 1,
+  "fields": {
+    "order": 1,
+    "product": 1,
+    "quantity": 150,
+    "unit_price": "7.50",
+    "total_price": "1125.00"
+  }
+},
+{
+  "model": "alqattara.invoice",
+  "pk": 1,
+  "fields": {
+    "invoice_no": "INV-2026-0045",
+    "order": 1,
+    "customer": 1,
+    "invoice_date": "2026-11-08",
+    "due_date": "2026-12-08",
+    "subtotal": "1125.00",
+    "tax_amount": "56.25",
+    "total_amount": "1181.25",
+    "paid_amount": "0.00",
+    "status": "Sent",
+    "created_at": "2026-11-08T09:22:05.825Z"
+  }
+},
+{
+  "model": "alqattara.cashiertransaction",
+  "pk": 1,
+  "fields": {
+    "transaction_no": "TXN-2026-0891",
+    "customer": 1,
+    "salesman": 1,
+    "amount": "18613.24",
+    "payment_type": "Collection",
+    "payment_method": "Cash",
+    "reference_note": "Daily driver route collection settlement",
+    "created_at": "2026-11-08T09:22:05.834Z"
+  }
+},
+{
+  "model": "alqattara.wallet",
+  "pk": 1,
+  "fields": {
+    "customer": 1,
+    "balance": "1250.00",
+    "reward_points": 450,
+    "is_active": true,
+    "updated_at": "2026-11-08T09:22:05.802Z"
+  }
+},
+{
+  "model": "alqattara.zone",
+  "pk": 1,
+  "fields": {
+    "code": "ZN-AA-01",
+    "name": "Al Ain Central",
+    "city": "AL AIN",
+    "is_active": true
+  }
+},
+{
+  "model": "alqattara.zone",
+  "pk": 2,
+  "fields": {
+    "code": "ZN-AD-01",
+    "name": "Abu Dhabi Corniche",
+    "city": "ABU DHABI",
+    "is_active": true
+  }
+},
+{
+  "model": "alqattara.zone",
+  "pk": 3,
+  "fields": {
+    "code": "ZN-DXB-01",
+    "name": "Dubai Downtown",
+    "city": "DUBAI",
+    "is_active": true
+  }
+},
+{
+  "model": "alqattara.route",
+  "pk": 1,
+  "fields": {
+    "code": "RT-AA-01",
+    "name": "Route AA-01 Al Jimi",
+    "zone": 1,
+    "driver_salesman": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "alqattara.route",
+  "pk": 2,
+  "fields": {
+    "code": "RT-AD-02",
+    "name": "Route AD-02 Al Khalidiyah",
+    "zone": 2,
+    "driver_salesman": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "salesman.salesman",
+  "pk": 1,
+  "fields": {
+    "salesman_code": "SM-101",
+    "name": "Mohammed Rashid",
+    "mobile": "+971 50 123 4567",
+    "email": "rashid@alqattara.ae",
+    "city": "AL AIN",
+    "assigned_route": "Route AA-01",
+    "commission_rate": "5.00",
+    "is_active": true,
+    "created_at": "2026-11-08T09:22:05.749Z"
+  }
+},
+{
+  "model": "salesman.salesman",
+  "pk": 2,
+  "fields": {
+    "salesman_code": "SM-102",
+    "name": "Ahmed Al Mansoori",
+    "mobile": "+971 55 987 6543",
+    "email": "ahmed@alqattara.ae",
+    "city": "ABU DHABI",
+    "assigned_route": "Route AD-02",
+    "commission_rate": "5.00",
+    "is_active": true,
+    "created_at": "2026-11-08T09:22:05.753Z"
+  }
+},
+{
+  "model": "salesman.truck",
+  "pk": 1,
+  "fields": {
+    "plate_no": "DXB-78901",
+    "truck_name": "Isuzu NPR 4-Ton",
+    "model": "2024",
+    "capacity_5gal": 350,
+    "driver_salesman": 1,
+    "route": "Route AA-01",
+    "status": "Active",
+    "last_service_date": null
+  }
+},
+{
+  "model": "salesman.truck",
+  "pk": 2,
+  "fields": {
+    "plate_no": "AA-45210",
+    "truck_name": "Mitsubishi Canter",
+    "model": "2023",
+    "capacity_5gal": 300,
+    "driver_salesman": 2,
+    "route": "Route AD-02",
+    "status": "Active",
+    "last_service_date": null
+  }
+},
+{
+  "model": "customers.customer",
+  "pk": 1,
+  "fields": {
+    "customer_code": "CUST-AA-001",
+    "name": "Al Ain Palace Hotel",
+    "customer_type": "Corporate",
+    "phone": "+971 3 763 1000",
+    "email": "procurement@alainpalace.ae",
+    "city": "AL AIN",
+    "zone": "Al Ain Central",
+    "route": "Route AA-01",
+    "address": "Al Jimi, Sector 4, Building 12",
+    "credit_limit": "25000.00",
+    "current_balance": "5180.96",
+    "status": "Active",
+    "created_at": "2026-11-08T09:22:05.793Z",
+    "updated_at": "2026-11-08T09:22:05.793Z"
+  }
+},
+{
+  "model": "customers.customer",
+  "pk": 2,
+  "fields": {
+    "customer_code": "CUST-AD-002",
+    "name": "Emirates Steel Staff Quarters",
+    "customer_type": "Corporate",
+    "phone": "+971 2 550 4400",
+    "email": "supplies@emiratessteel.ae",
+    "city": "ABU DHABI",
+    "zone": "Abu Dhabi Corniche",
+    "route": "Route AD-02",
+    "address": "Musaffah ICAD 1",
+    "credit_limit": "50000.00",
+    "current_balance": "18450.00",
+    "status": "Active",
+    "created_at": "2026-11-08T09:22:05.796Z",
+    "updated_at": "2026-11-08T11:33:08.912Z"
+  }
+},
+{
+  "model": "customers.customer",
+  "pk": 5,
+  "fields": {
+    "customer_code": "SAMPLE-001",
+    "name": "Sample CUSTOMER NAME",
+    "customer_type": "Corporate",
+    "phone": "+971 50 123 4567",
+    "email": "import@alqattara.ae",
+    "city": "AL AIN",
+    "zone": "Al Ain Central",
+    "route": "Route AA-01",
+    "address": null,
+    "credit_limit": "5000.00",
+    "current_balance": "0.00",
+    "status": "Deleted",
+    "created_at": "2026-11-08T11:32:23.479Z",
+    "updated_at": "2026-11-08T14:00:40.049Z"
+  }
+}
+]
