@@ -1,677 +1,410 @@
 "use client";
+import React, { useState, useMemo } from "react";
+import { Plus, Download, X, Search } from "lucide-react";
 
-import { useState } from "react";
-import Header from "@/components/Header";
-import DataTable from "@/components/DataTable";
-import { useToast } from "@/components/Toast";
-import {
-  Route as RouteIcon,
-  Plus,
-  Truck,
-  UserCheck,
-  MapPin,
-  CheckCircle,
-  AlertCircle,
-  Edit2,
-  UserPlus,
-  Trash2,
-  X,
-  AlertTriangle,
-  Undo2,
-  CheckCircle2,
-} from "lucide-react";
+const INITIAL_ROUTES = [
+  { id: "6335", name: "ROUTE 6335 - AL QATTARA", zone: "Z-01 AL QATTARA SECTOR A", city: "AL_AIN", truck: "T6335", salesman: "32 - ABDULLAHNOOR", status: "ACTIVE" },
+  { id: "6338", name: "ROUTE 6338 - AL JIMI", zone: "Z-01 AL QATTARA SECTOR A", city: "AL_AIN", truck: "T6338", salesman: "56 - ANAS", status: "ACTIVE" },
+  { id: "6347", name: "ROUTE 6347 - AL JIMI NORTH", zone: "Z-02 AL JIMI CENTRAL", city: "AL_AIN", truck: "T6347", salesman: "47 - HASHIM", status: "ACTIVE" },
+  { id: "6339", name: "ROUTE 6339 - ZAKHER", zone: "Z-02 AL JIMI CENTRAL", city: "AL_AIN", truck: "T6339", salesman: "23 - ARSLAN", status: "ACTIVE" },
+  { id: "6341", name: "ROUTE 6341 - FALAJ HAZZAA", zone: "Z-03 ZAKHER SOUTH", city: "AL_AIN", truck: "T6341", salesman: "113 - NISAR", status: "ACTIVE" },
+  { id: "6357", name: "ROUTE 6357 - AL MUWAIJI", zone: "Z-03 ZAKHER SOUTH", city: "AL_AIN", truck: "T6357", salesman: "109 - ALTHAF", status: "ACTIVE" },
+  { id: "8066", name: "ROUTE 8066 - AL TOWAYYA", zone: "Z-04 FALAJ HAZZAA", city: "AL_AIN", truck: "T8066", salesman: "33 - AAMIR SUBAIR", status: "ACTIVE" },
+  { id: "6350", name: "ROUTE 6350 - AL MARKHANIYA", zone: "Z-04 FALAJ HAZZAA", city: "AL_AIN", truck: "T6350", salesman: "53 - ALI ABDELAL", status: "ACTIVE" },
+  { id: "6354", name: "ROUTE 6354 - SANAIYA", zone: "Z-05 AL MUWAIJI WEST", city: "AL_AIN", truck: "T6354", salesman: "100 - AMJATH", status: "ACTIVE" },
+  { id: "6343", name: "ROUTE 6343 - AL HILI", zone: "Z-05 AL MUWAIJI WEST", city: "AL_AIN", truck: "T6343", salesman: "77 - ANFAS", status: "ACTIVE" },
+];
 
 export default function RoutesPage() {
-  const { addToast } = useToast();
+  const [routes, setRoutes] = useState(INITIAL_ROUTES);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [entriesPerPage, setEntriesPerPage] = useState(10);
+  const [zoneFilter, setZoneFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [appliedFilters, setAppliedFilters] = useState({ zone: "ALL", status: "ALL" });
 
-  const [routes, setRoutes] = useState([
-    {
-      id: 1,
-      code: "RT-AA-01",
-      name: "Route AA-01 Al Jimi Central",
-      zone_name: "Al Ain Central & Town",
-      city: "AL AIN",
-      salesman_name: "Mohammed Rashid",
-      vehicle: "DXB-78901 (Isuzu 4-Ton)",
-      daily_capacity: 350,
-      delivered_today: 280,
-      status: "Active",
-    },
-    {
-      id: 2,
-      code: "RT-AA-02",
-      name: "Route AA-02 Zakher Residential",
-      zone_name: "Al Jimi & Zakher Residential",
-      city: "AL AIN",
-      salesman_name: "Khalid Al Ameri",
-      vehicle: "AA-34190 (Mitsubishi Canter)",
-      daily_capacity: 320,
-      delivered_today: 195,
-      status: "Active",
-    },
-    {
-      id: 3,
-      code: "RT-AA-03",
-      name: "Route AA-03 Hili Commercial",
-      zone_name: "Al Hili & Foah North",
-      city: "AL AIN",
-      salesman_name: "Tariq Mahmood",
-      vehicle: "AA-99214 (Hino 300)",
-      daily_capacity: 300,
-      delivered_today: 240,
-      status: "Active",
-    },
-    {
-      id: 4,
-      code: "RT-AD-01",
-      name: "Route AD-01 Corniche Hotels",
-      zone_name: "Abu Dhabi Corniche & Downtown",
-      city: "ABU DHABI",
-      salesman_name: "Ahmed Al Mansoori",
-      vehicle: "AA-45210 (Mitsubishi Canter)",
-      daily_capacity: 400,
-      delivered_today: 380,
-      status: "Active",
-    },
-    {
-      id: 5,
-      code: "RT-AD-02",
-      name: "Route AD-02 Musaffah Commercial",
-      zone_name: "Musaffah Industrial & ICAD",
-      city: "ABU DHABI",
-      salesman_name: "Bilal Farooq",
-      vehicle: "AD-88301 (Isuzu 5-Ton)",
-      daily_capacity: 450,
-      delivered_today: 410,
-      status: "Active",
-    },
-    {
-      id: 6,
-      code: "RT-DXB-01",
-      name: "Route DXB-01 Business Bay Corporate",
-      zone_name: "Dubai Downtown & Business Bay",
-      city: "DUBAI",
-      salesman_name: "Pending Assignment",
-      vehicle: "DXB-11204 (Hino 500)",
-      daily_capacity: 450,
-      delivered_today: 0,
-      status: "Unassigned",
-    },
-  ]);
-
-  const [activeTab, setActiveTab] = useState("all");
-  const [selectedIds, setSelectedIds] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  // Modal State (Figma 3:1792 - new routes)
+  const [modalOpen, setModalOpen] = useState(false);
   const [editingRoute, setEditingRoute] = useState(null);
-  const [deleteTarget, setDeleteTarget] = useState(null);
-  const [crudPopup, setCrudPopup] = useState(null);
-
-  const [formData, setFormData] = useState({
-    code: "RT-AA-04",
+  const [form, setForm] = useState({
+    id: "",
     name: "",
-    zone_name: "Al Ain Central & Town",
-    city: "AL AIN",
-    salesman_name: "Mohammed Rashid",
-    vehicle: "DXB-78901 (Isuzu 4-Ton)",
-    daily_capacity: "350",
+    zone: "Z-01 AL QATTARA SECTOR A",
+    city: "AL_AIN",
+    truck: "",
+    salesman: "",
+    status: "ACTIVE",
   });
 
-  const activeRoutesCount = routes.filter((r) => r.status === "Active").length;
-  const unassignedCount = routes.filter((r) => r.status === "Unassigned").length;
-  const totalDeliveredToday = routes.reduce((acc, r) => acc + r.delivered_today, 0);
+  const filteredRoutes = useMemo(() => {
+    return routes.filter((r) => {
+      const matchZone = appliedFilters.zone === "ALL" || r.zone === appliedFilters.zone;
+      const matchStatus = appliedFilters.status === "ALL" || r.status === appliedFilters.status;
+      const q = searchQuery.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        r.id.toLowerCase().includes(q) ||
+        r.name.toLowerCase().includes(q) ||
+        r.zone.toLowerCase().includes(q) ||
+        r.truck.toLowerCase().includes(q) ||
+        r.salesman.toLowerCase().includes(q);
+      return matchZone && matchStatus && matchSearch;
+    });
+  }, [routes, appliedFilters, searchQuery]);
 
-  const filterTabs = [
-    { id: "all", label: "All Routes", count: routes.filter((r) => r.status !== "Deleted").length },
-    { id: "AL AIN", label: "Al Ain", count: routes.filter((r) => r.city === "AL AIN" && r.status !== "Deleted").length },
-    { id: "ABU DHABI", label: "Abu Dhabi", count: routes.filter((r) => r.city === "ABU DHABI" && r.status !== "Deleted").length },
-    { id: "DUBAI", label: "Dubai", count: routes.filter((r) => r.city === "DUBAI" && r.status !== "Deleted").length },
-    { id: "Unassigned", label: "Unassigned", count: unassignedCount },
-    { id: "Deleted", label: "Deleted", count: routes.filter((r) => r.status === "Deleted").length },
-  ];
-
-  const filteredRoutes = routes.filter((r) => {
-    if (activeTab === "Deleted") return r.status === "Deleted";
-    if (r.status === "Deleted") return false;
-    if (activeTab === "all") return true;
-    if (activeTab === "Unassigned") return r.status === "Unassigned";
-    return r.city === activeTab;
-  });
-
-  const handleOpenAdd = () => {
+  const openNewModal = () => {
     setEditingRoute(null);
-    setFormData({
-      code: `RT-AA-0${routes.length + 1}`,
+    setForm({
+      id: "",
       name: "",
-      zone_name: "Al Ain Central & Town",
-      city: "AL AIN",
-      salesman_name: "Mohammed Rashid",
-      vehicle: "DXB-78901 (Isuzu 4-Ton)",
-      daily_capacity: "350",
+      zone: "Z-01 AL QATTARA SECTOR A",
+      city: "AL_AIN",
+      truck: "T6335",
+      salesman: "32 - ABDULLAHNOOR",
+      status: "ACTIVE",
     });
-    setShowModal(true);
+    setModalOpen(true);
   };
 
-  const handleOpenEdit = (route) => {
-    setEditingRoute(route);
-    setFormData({
-      code: route.code,
-      name: route.name,
-      zone_name: route.zone_name,
-      city: route.city,
-      salesman_name: route.salesman_name,
-      vehicle: route.vehicle,
-      daily_capacity: route.daily_capacity.toString(),
-    });
-    setShowModal(true);
+  const openEditModal = (row) => {
+    setEditingRoute(row);
+    setForm({ ...row });
+    setModalOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSave = (e) => {
     e.preventDefault();
+    if (!form.id.trim() || !form.name.trim()) return;
     if (editingRoute) {
-      setRoutes((prev) =>
-        prev.map((r) =>
-          r.id === editingRoute.id
-            ? {
-                ...r,
-                ...formData,
-                daily_capacity: parseInt(formData.daily_capacity) || 0,
-                status: formData.salesman_name.includes("Pending") ? "Unassigned" : "Active",
-              }
-            : r
-        )
-      );
-      setCrudPopup({
-        type: "update",
-        title: "Route Updated",
-        message: `Route ${formData.code} (${formData.name}) details updated and synchronized.`,
-      });
-      addToast(`Updated route ${formData.code} details`, "success");
+      setRoutes((prev) => prev.map((r) => (r.id === editingRoute.id ? { ...form } : r)));
     } else {
-      const newEntry = {
-        id: Date.now(),
-        ...formData,
-        daily_capacity: parseInt(formData.daily_capacity) || 0,
-        delivered_today: 0,
-        status: formData.salesman_name.includes("Pending") ? "Unassigned" : "Active",
-      };
-      setRoutes((prev) => [newEntry, ...prev]);
-      setCrudPopup({
-        type: "create",
-        title: "Route Created",
-        message: `New delivery route ${formData.code} (${formData.name}) created successfully.`,
-      });
-      addToast(`Added new route ${formData.code}`, "success");
+      setRoutes((prev) => [{ ...form }, ...prev]);
     }
-    setShowModal(false);
+    setModalOpen(false);
   };
 
-  // Delete route trigger
-  const handleDelete = (route) => {
-    setDeleteTarget(route);
+  const handleDelete = (id) => {
+    setRoutes((prev) => prev.filter((r) => r.id !== id));
   };
 
-  // Confirm delete (Soft deletes to "Deleted" with red border styling)
-  const confirmDeleteRoute = () => {
-    if (!deleteTarget) return;
-    const route = deleteTarget;
-    setRoutes((prev) =>
-      prev.map((r) => (r.id === route.id ? { ...r, status: "Deleted" } : r))
-    );
-    setDeleteTarget(null);
-    setCrudPopup({
-      type: "delete",
-      title: "Route Moved to Deleted",
-      message: `Route ${route.code} (${route.name}) marked as Deleted. It is styled with a prominent red border and can be restored at any time.`,
-    });
-    addToast(`Deleted route ${route.code}`, "info");
+  const handleExportCSV = () => {
+    const headers = ["ROUTE ID", "ROUTE NAME", "ZONE", "CITY", "TRUCK ID", "SALESMAN", "STATUS"];
+    const rows = filteredRoutes.map((r) => [r.id, r.name, r.zone, r.city, r.truck, r.salesman, r.status]);
+    const csv = [headers, ...rows].map((row) => row.map((v) => `"${v}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "routes-list.csv";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
-  // Restore route back to Active
-  const handleRestoreRoute = (route) => {
-    setRoutes((prev) =>
-      prev.map((r) => (r.id === route.id ? { ...r, status: "Active" } : r))
-    );
-    setCrudPopup({
-      type: "restore",
-      title: "Route Restored",
-      message: `Route ${route.code} (${route.name}) has been restored to Active status!`,
-    });
-    addToast(`Route ${route.code} restored`, "success");
-  };
+  return (
+    <div className="space-y-5">
+      {/* Top Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="text-[13px] text-slate-400 font-medium">
+          Home <span className="mx-1.5 text-slate-300">/</span>{" "}
+          <span className="text-slate-700 font-semibold">Routes</span>
+        </div>
+        <button
+          onClick={openNewModal}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#FF5A5F] hover:bg-[#e84c51] text-white text-[13px] font-semibold shadow-sm transition cursor-pointer"
+        >
+          <Plus size={15} /> New Route
+        </button>
+      </div>
 
-  const columns = [
-    {
-      key: "code",
-      label: "Route Code",
-      sortable: true,
-      render: (val) => (
-        <span className="font-mono font-bold text-blue-600 text-xs px-2 py-0.5 rounded-xs bg-blue-50 border border-blue-200">
-          {val}
-        </span>
-      ),
-    },
-    {
-      key: "name",
-      label: "Route / Zone",
-      sortable: true,
-      render: (val, row) => (
-        <div>
-          <div className="font-bold text-slate-900 text-xs">{val}</div>
-          <div className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
-            <MapPin className="w-3 h-3 text-slate-400" />
-            <span>{row.zone_name}</span>
-            <span>•</span>
-            <span className="font-medium text-slate-600">{row.city}</span>
+      {/* Filter Routes Card */}
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs p-5">
+        <h3 className="text-[14px] font-bold text-slate-800 mb-3.5">Filter Routes</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+              Zone
+            </label>
+            <select
+              value={zoneFilter}
+              onChange={(e) => setZoneFilter(e.target.value)}
+              className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[12.5px] text-slate-700 bg-white focus:outline-none focus:border-[#5948DB]"
+            >
+              <option value="ALL">All Zones</option>
+              <option value="Z-01 AL QATTARA SECTOR A">Z-01 AL QATTARA SECTOR A</option>
+              <option value="Z-02 AL JIMI CENTRAL">Z-02 AL JIMI CENTRAL</option>
+              <option value="Z-03 ZAKHER SOUTH">Z-03 ZAKHER SOUTH</option>
+              <option value="Z-04 FALAJ HAZZAA">Z-04 FALAJ HAZZAA</option>
+              <option value="Z-05 AL MUWAIJI WEST">Z-05 AL MUWAIJI WEST</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+              Status
+            </label>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[12.5px] text-slate-700 bg-white focus:outline-none focus:border-[#5948DB]"
+            >
+              <option value="ALL">All Status</option>
+              <option value="ACTIVE">ACTIVE</option>
+              <option value="INACTIVE">INACTIVE</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setAppliedFilters({ zone: zoneFilter, status: statusFilter })}
+              className="h-9 px-5 rounded-lg bg-[#5948DB] hover:bg-[#4938c7] text-white text-[12.5px] font-semibold transition cursor-pointer"
+            >
+              Apply Filter
+            </button>
+            <button
+              onClick={() => {
+                setZoneFilter("ALL");
+                setStatusFilter("ALL");
+                setAppliedFilters({ zone: "ALL", status: "ALL" });
+                setSearchQuery("");
+              }}
+              className="h-9 px-4 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-[12.5px] font-semibold transition cursor-pointer"
+            >
+              Reset
+            </button>
           </div>
         </div>
-      ),
-    },
-    {
-      key: "salesman_name",
-      label: "Assigned Salesman",
-      sortable: true,
-      render: (val) => (
-        <div className="flex items-center gap-2">
-          <div className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold ${
-            val.includes("Pending")
-              ? "bg-amber-100 text-amber-800 border border-amber-200"
-              : "bg-blue-50 text-blue-700 border border-blue-200"
-          }`}>
-            {val.charAt(0)}
+      </div>
+
+      {/* Routes Table Card (Figma 3:1791) */}
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="bg-linear-to-r from-[#0F172A] via-[#1E3A5F] to-[#3B6998] px-5 py-3.5 flex items-center justify-between">
+          <h3 className="text-[15px] font-bold text-white tracking-wide">Routes</h3>
+          <button
+            onClick={handleExportCSV}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white text-[12px] font-semibold transition cursor-pointer"
+          >
+            <Download size={14} /> Export
+          </button>
+        </div>
+
+        <div className="px-5 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 text-[12.5px] text-slate-600">
+          <div className="flex items-center gap-2">
+            <span>Show</span>
+            <select
+              value={entriesPerPage}
+              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+              className="h-8 px-2 rounded-md border border-slate-200 text-[12.5px] bg-white focus:outline-none focus:border-[#5948DB]"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
+            <span>entries</span>
           </div>
-          <span className={`text-xs font-medium ${val.includes("Pending") ? "text-amber-700 font-bold" : "text-slate-800"}`}>
-            {val}
-          </span>
-        </div>
-      ),
-    },
-    {
-      key: "vehicle",
-      label: "Assigned Vehicle",
-      sortable: true,
-      render: (val) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-700 font-mono">
-          <Truck className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          <span>{val}</span>
-        </div>
-      ),
-    },
-    {
-      key: "delivered_today",
-      label: "Today's Progress",
-      sortable: true,
-      align: "right",
-      render: (val, row) => {
-        const pct = Math.min(100, Math.round((val / row.daily_capacity) * 100));
-        return (
-          <div className="text-right">
-            <div className="font-mono font-bold text-xs text-slate-900">
-              {val} / {row.daily_capacity} <span className="text-[10px] font-normal text-slate-400">Bottles</span>
-            </div>
-            <div className="w-24 ml-auto bg-slate-100 rounded-full h-1.5 mt-1 overflow-hidden border border-slate-200">
-              <div
-                className={`h-full rounded-full ${
-                  pct >= 80 ? "bg-emerald-500" : pct >= 50 ? "bg-blue-500" : "bg-amber-500"
-                }`}
-                style={{ width: `${pct}%` }}
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500">Search:</span>
+            <div className="relative">
+              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search routes..."
+                className="h-8 pl-8 pr-3 w-52 rounded-md border border-slate-200 text-[12.5px] focus:outline-none focus:border-[#5948DB]"
               />
             </div>
           </div>
-        );
-      },
-    },
-    {
-      key: "status",
-      label: "Status",
-      sortable: true,
-      align: "center",
-      render: (val) => {
-        const isActive = val === "Active";
-        return (
-          <span
-            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-              isActive
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                : "bg-amber-50 text-amber-700 border-amber-200"
-            }`}
-          >
-            {isActive ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
-            {val}
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-[#5948DB] text-white text-[11px] font-bold uppercase tracking-wider">
+                <th className="py-3 px-4">ROUTE ID</th>
+                <th className="py-3 px-4">ROUTE NAME</th>
+                <th className="py-3 px-4">ZONE</th>
+                <th className="py-3 px-4">CITY</th>
+                <th className="py-3 px-4">TRUCK ID</th>
+                <th className="py-3 px-4">SALESMAN</th>
+                <th className="py-3 px-4">STATUS</th>
+                <th className="py-3 px-4 text-center">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-[12.5px] text-slate-700">
+              {filteredRoutes.slice(0, entriesPerPage).map((row, idx) => (
+                <tr key={row.id} className={idx % 2 === 0 ? "bg-white hover:bg-slate-50/70" : "bg-slate-50/40 hover:bg-slate-50/90"}>
+                  <td className="py-3 px-4 font-bold text-[#5948DB]">{row.id}</td>
+                  <td className="py-3 px-4 font-semibold text-slate-800">{row.name}</td>
+                  <td className="py-3 px-4">{row.zone}</td>
+                  <td className="py-3 px-4">{row.city}</td>
+                  <td className="py-3 px-4 font-semibold text-slate-700">{row.truck}</td>
+                  <td className="py-3 px-4">{row.salesman}</td>
+                  <td className="py-3 px-4">
+                    <span
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10.5px] font-bold ${
+                        row.status === "ACTIVE"
+                          ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                          : "bg-rose-50 text-rose-600 border border-rose-200"
+                      }`}
+                    >
+                      {row.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center justify-center gap-1.5">
+                      <button
+                        onClick={() => openEditModal(row)}
+                        className="px-2.5 py-1 rounded bg-[#10B981] hover:bg-[#059669] text-white text-[11px] font-semibold transition cursor-pointer"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(row.id)}
+                        className="px-2.5 py-1 rounded bg-[#FF5A5F] hover:bg-[#e0484d] text-white text-[11px] font-semibold transition cursor-pointer"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filteredRoutes.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="py-8 text-center text-slate-400 text-[13px]">
+                    No matching routes found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="px-5 py-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[12px] text-slate-500">
+          <span>
+            Showing 1 to {Math.min(entriesPerPage, filteredRoutes.length)} of {filteredRoutes.length} entries
           </span>
-        );
-      },
-    },
-    {
-      key: "actions",
-      label: "Actions",
-      align: "right",
-      render: (_, row) => (
-        <div className="flex items-center justify-end gap-1.5">
-          <button
-            onClick={() => handleOpenEdit(row)}
-            className="p-1 rounded-md text-slate-600 hover:text-blue-600 hover:bg-slate-100 border border-slate-200 transition-colors"
-            title="Edit Route Assignment"
-          >
-            <Edit2 className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => handleDelete(row)}
-            className="p-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 transition-colors"
-            title="Delete Route"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      ),
-    },
-  ];
-
-  return (
-    <div className="flex-1 flex flex-col">
-      <Header title="Delivery Routes & Dispatch Allocation" subtitle="Daily Logistics" />
-
-      <main className="p-6 space-y-5 flex-1 overflow-y-auto">
-        {/* KPI Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Total Configured Routes
-              </span>
-              <div className="w-8 h-8 rounded-md bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
-                <RouteIcon className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-slate-900">
-              {routes.length} Routes
-            </div>
-            <div className="mt-1 text-[11px] text-blue-600 font-medium">
-              Across Al Ain, Abu Dhabi & Dubai
-            </div>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Active En Route
-              </span>
-              <div className="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-                <Truck className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-slate-900">
-              {activeRoutesCount} Trucks
-            </div>
-            <div className="mt-1 text-[11px] text-emerald-600 font-medium">
-              Live GPS dispatching active
-            </div>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Bottles Delivered Today
-              </span>
-              <div className="w-8 h-8 rounded-md bg-cyan-50 border border-cyan-100 flex items-center justify-center text-cyan-600">
-                <CheckCircle className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-slate-900">
-              {totalDeliveredToday.toLocaleString()} <span className="text-xs text-slate-400 font-normal">Bottles</span>
-            </div>
-            <div className="mt-1 text-[11px] text-cyan-700 font-medium">
-              78% daily target reached
-            </div>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Unassigned Routes
-              </span>
-              <div className="w-8 h-8 rounded-md bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
-                <AlertCircle className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-amber-600">
-              {unassignedCount} Routes
-            </div>
-            <div className="mt-1 text-[11px] text-amber-600 font-medium">
-              Needs driver assignment
-            </div>
+          <div className="flex items-center gap-1">
+            <button className="px-2.5 py-1 rounded border border-slate-200 text-slate-500 hover:bg-slate-50">Previous</button>
+            <button className="px-2.5 py-1 rounded bg-[#5948DB] text-white font-semibold">1</button>
+            <button className="px-2.5 py-1 rounded border border-slate-200 text-slate-500 hover:bg-slate-50">Next</button>
           </div>
         </div>
+      </div>
 
-        {/* DataTable with Column Lines */}
-        <DataTable
-          columns={columns}
-          data={filteredRoutes}
-          filterTabs={filterTabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          searchPlaceholder="Search route code, driver, vehicle, or zone..."
-          searchKeys={["code", "name", "zone_name", "salesman_name", "vehicle"]}
-          onRestore={handleRestoreRoute}
-          selectable={true}
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          actions={
-            <button
-              onClick={handleOpenAdd}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold shadow-2xs transition-all active:scale-[0.98]"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>New Route</span>
-            </button>
-          }
-        />
-      </main>
-
-      {/* Modal Dialog */}
-      {showModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white border border-slate-200 rounded-md w-full max-w-md max-h-[90vh] overflow-y-auto p-4 sm:p-5 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-md bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
-                  <RouteIcon className="w-4 h-4" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-bold text-slate-900">
-                    {editingRoute ? "Edit Route Assignment" : "Create New Route"}
-                  </h2>
-                  <p className="text-[11px] text-slate-400">Assign vehicle, territory, and delivery quota</p>
-                </div>
-              </div>
+      {/* Modal: New Route / Edit Route (Figma 3:1792) */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-[1px] p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200">
+            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
+              <h3 className="text-[15px] font-bold">
+                {editingRoute ? `Edit Route - ${editingRoute.id}` : "Add New Route"}
+              </h3>
               <button
-                onClick={() => setShowModal(false)}
-                className="text-slate-400 hover:text-slate-700 p-1 rounded-md"
+                onClick={() => setModalOpen(false)}
+                className="w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X size={15} />
               </button>
             </div>
-
-            <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleSave} className="p-5 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-slate-700 font-semibold block mb-1">Route Code</label>
+                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
+                    Route ID *
+                  </label>
                   <input
                     type="text"
                     required
-                    value={formData.code}
-                    onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono font-bold"
+                    placeholder="e.g. 6335"
+                    value={form.id}
+                    onChange={(e) => setForm({ ...form, id: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
                   />
                 </div>
                 <div>
-                  <label className="text-slate-700 font-semibold block mb-1">Territory / Emirate</label>
+                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
+                    Route Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. ROUTE 6335 - AL QATTARA"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
+                    Zone *
+                  </label>
                   <select
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
+                    value={form.zone}
+                    onChange={(e) => setForm({ ...form, zone: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#5948DB]"
                   >
-                    <option value="AL AIN">AL AIN</option>
-                    <option value="ABU DHABI">ABU DHABI</option>
+                    <option value="Z-01 AL QATTARA SECTOR A">Z-01 AL QATTARA SECTOR A</option>
+                    <option value="Z-02 AL JIMI CENTRAL">Z-02 AL JIMI CENTRAL</option>
+                    <option value="Z-03 ZAKHER SOUTH">Z-03 ZAKHER SOUTH</option>
+                    <option value="Z-04 FALAJ HAZZAA">Z-04 FALAJ HAZZAA</option>
+                    <option value="Z-05 AL MUWAIJI WEST">Z-05 AL MUWAIJI WEST</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
+                    City *
+                  </label>
+                  <select
+                    value={form.city}
+                    onChange={(e) => setForm({ ...form, city: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#5948DB]"
+                  >
+                    <option value="AL_AIN">AL_AIN</option>
+                    <option value="ABU_DHABI">ABU_DHABI</option>
                     <option value="DUBAI">DUBAI</option>
                   </select>
                 </div>
-              </div>
-
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">Route Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Route AA-04 Al Foah Residential"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">Zone Area</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.zone_name}
-                  onChange={(e) => setFormData({ ...formData, zone_name: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-700 font-semibold block mb-1">Salesman / Driver</label>
+                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
+                    Truck ID *
+                  </label>
                   <input
                     type="text"
                     required
-                    value={formData.salesman_name}
-                    onChange={(e) => setFormData({ ...formData, salesman_name: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    placeholder="e.g. T6335"
+                    value={form.truck}
+                    onChange={(e) => setForm({ ...form, truck: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
                   />
                 </div>
                 <div>
-                  <label className="text-slate-700 font-semibold block mb-1">Assigned Vehicle</label>
+                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
+                    Salesman *
+                  </label>
                   <input
                     type="text"
                     required
-                    value={formData.vehicle}
-                    onChange={(e) => setFormData({ ...formData, vehicle: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
+                    placeholder="e.g. 32 - ABDULLAHNOOR"
+                    value={form.salesman}
+                    onChange={(e) => setForm({ ...form, salesman: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
                   />
                 </div>
               </div>
-
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">Daily Capacity (Bottles)</label>
-                <input
-                  type="number"
-                  min="50"
-                  step="50"
-                  required
-                  value={formData.daily_capacity}
-                  onChange={(e) => setFormData({ ...formData, daily_capacity: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-3.5 py-1.5 text-slate-600 hover:bg-slate-100 rounded-md font-medium text-xs border border-slate-200"
+                  onClick={() => setModalOpen(false)}
+                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-[12.5px] font-semibold hover:bg-slate-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-bold text-xs shadow-2xs transition-all active:scale-[0.98]"
+                  className="px-5 py-2 rounded-lg bg-[#5948DB] hover:bg-[#4938c7] text-white text-[12.5px] font-semibold shadow-xs cursor-pointer"
                 >
-                  {editingRoute ? "Save Route" : "Create Route"}
+                  {editingRoute ? "Update Route" : "Save Route"}
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Popup Modal */}
-      {deleteTarget && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-5 shadow-2xl space-y-4 animate-in zoom-in-95">
-            <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-5 h-5" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-sm font-bold text-slate-900">Confirm Move to Deleted</h3>
-                <p className="text-xs text-slate-500">
-                  Are you sure you want to delete route <strong className="text-slate-800">{deleteTarget.code}</strong> ({deleteTarget.name})?
-                </p>
-                <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-[11px] text-rose-800 mt-2 font-medium">
-                  This route will be highlighted with a <strong>prominent red border</strong> in the table and can be restored at any time.
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => setDeleteTarget(null)}
-                className="px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={confirmDeleteRoute}
-                className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-all active:scale-[0.98] cursor-pointer flex items-center gap-1.5"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Move to Deleted</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Universal CRUD Action Popup Modal */}
-      {crudPopup && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-2xs z-50 flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-sm p-5 shadow-2xl text-center space-y-3.5 animate-in zoom-in-95">
-            <div className="mx-auto w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner">
-              {crudPopup.type === "delete" ? (
-                <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center">
-                  <Trash2 className="w-6 h-6" />
-                </div>
-              ) : crudPopup.type === "restore" ? (
-                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                  <Undo2 className="w-6 h-6" />
-                </div>
-              ) : (
-                <div className="w-12 h-12 rounded-2xl bg-[#5948DB]/10 text-[#5948DB] flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6" />
-                </div>
-              )}
-            </div>
-
-            <div>
-              <h3 className="text-base font-bold text-slate-900">{crudPopup.title}</h3>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                {crudPopup.message}
-              </p>
-            </div>
-
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => setCrudPopup(null)}
-                className="w-full py-2 bg-[#5948DB] hover:bg-[#4A3AC9] text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer"
-              >
-                Done
-              </button>
-            </div>
           </div>
         </div>
       )}

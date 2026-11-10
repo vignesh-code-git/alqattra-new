@@ -1,424 +1,380 @@
 "use client";
+import React, { useState, useMemo } from "react";
+import { Plus, Download, X, Search } from "lucide-react";
 
-import { useState } from "react";
-import Header from "@/components/Header";
-import { useToast } from "@/components/Toast";
-import {
-  ShieldCheck,
-  Plus,
-  Users,
-  Check,
-  Lock,
-  KeyRound,
-  Shield,
-  Edit2,
-  Trash2,
-  X,
-  FileCheck,
-} from "lucide-react";
+const ALL_MODULES = [
+  "Dashboard",
+  "Utilities",
+  "Orders",
+  "Invoices",
+  "Customers",
+  "Reports",
+  "Wallet",
+  "Cashier",
+  "Zones",
+  "Routes",
+  "Salesman",
+  "Masters",
+  "Privileges",
+];
+
+const INITIAL_USERS = [
+  { id: "U-01", username: "admin", email: "admin@alqattara.ae", role: "Super Admin", modules: [...ALL_MODULES], status: "ACTIVE" },
+  { id: "U-02", username: "operations_mgr", email: "ops@alqattara.ae", role: "Manager", modules: ["Dashboard", "Utilities", "Orders", "Invoices", "Customers", "Reports", "Zones", "Routes", "Salesman"], status: "ACTIVE" },
+  { id: "U-03", username: "cashier_alain", email: "cashier@alqattara.ae", role: "Cashier", modules: ["Dashboard", "Orders", "Invoices", "Wallet", "Cashier", "Reports"], status: "ACTIVE" },
+  { id: "U-04", username: "store_supervisor", email: "store@alqattara.ae", role: "Supervisor", modules: ["Dashboard", "Utilities", "Orders", "Routes", "Salesman"], status: "ACTIVE" },
+  { id: "U-05", username: "accounts_exec", email: "accounts@alqattara.ae", role: "Accountant", modules: ["Dashboard", "Invoices", "Reports", "Wallet", "Cashier"], status: "ACTIVE" },
+  { id: "U-06", username: "dispatch_desk", email: "dispatch@alqattara.ae", role: "Dispatcher", modules: ["Dashboard", "Orders", "Customers", "Zones", "Routes", "Salesman"], status: "ACTIVE" },
+];
 
 export default function PrivilegesPage() {
-  const { addToast } = useToast();
+  const [users, setUsers] = useState(INITIAL_USERS);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [entriesPerPage, setEntriesPerPage] = useState(10);
 
-  const [roles, setRoles] = useState([
-    {
-      id: 1,
-      role: "Operations Super Admin",
-      users_count: 2,
-      description: "Full unconstrained control over system lookups, financials, and logistics.",
-      permissions: [
-        "Full System Access",
-        "Master Records Configuration",
-        "Cashier Day End Closures",
-        "All Emirates Access",
-        "User & Privilege Management",
-        "Database Backup & Export",
-      ],
-      level: "Tier 1 - Root",
-    },
-    {
-      id: 2,
-      role: "Cashier & Commercial Accountant",
-      users_count: 4,
-      description: "Dedicated to billing, customer credit limits, and cashier drawer balances.",
-      permissions: [
-        "Record Collections",
-        "Generate Tax Invoices (5% VAT)",
-        "Adjust Credit Limits",
-        "Process Wallet Recharges",
-        "View Financial Reports",
-      ],
-      level: "Tier 2 - Finance",
-    },
-    {
-      id: 3,
-      role: "Logistics & Route Supervisor",
-      users_count: 5,
-      description: "Oversees truck loading, route assignment, and driver daily stock reconcile.",
-      permissions: [
-        "Truck Stock Load / Unload",
-        "Route Dispatch & Assignment",
-        "Customer Account Registration",
-        "Daily Bottle Quota Tracking",
-      ],
-      level: "Tier 3 - Operations",
-    },
-    {
-      id: 4,
-      role: "Mobile Driver & Salesman",
-      users_count: 27,
-      description: "Field staff delivering bottles to villas, hotels, and retail stores.",
-      permissions: [
-        "Route Delivery Execution",
-        "Mobile POS Cash Collection",
-        "Empty Bottle Recovery Scan",
-        "Vehicle Stock Tally View",
-      ],
-      level: "Tier 4 - Field Agent",
-    },
-  ]);
-
-  // Matrix Modules & Permissions
-  const [matrix, setMatrix] = useState([
-    { module: "Dashboard & Live KPIs", admin: true, finance: true, supervisor: true, driver: false },
-    { module: "Customer Master & CRM", admin: true, finance: true, supervisor: true, driver: false },
-    { module: "Customer Credit & Wallet", admin: true, finance: true, supervisor: false, driver: false },
-    { module: "Order Dispatch & Booking", admin: true, finance: true, supervisor: true, driver: true },
-    { module: "Utility Stock & Inventory", admin: true, finance: false, supervisor: true, driver: false },
-    { module: "Tax Invoices & Billing", admin: true, finance: true, supervisor: false, driver: false },
-    { module: "Cashier Drawer Settlement", admin: true, finance: true, supervisor: false, driver: false },
-    { module: "Logistics Zones & Routes", admin: true, finance: false, supervisor: true, driver: false },
-    { module: "Driver Commission & Payroll", admin: true, finance: true, supervisor: false, driver: false },
-    { module: "Master Configurations", admin: true, finance: false, supervisor: false, driver: false },
-  ]);
-
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newRole, setNewRole] = useState({
-    role: "",
-    description: "",
-    level: "Tier 3 - Custom",
-    permissions: "Order Booking, Customer View",
+  // Modal State (Figma 3:1887 Add New Privilege)
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [form, setForm] = useState({
+    id: "",
+    username: "",
+    email: "",
+    role: "Manager",
+    password: "",
+    modules: ["Dashboard", "Orders", "Customers"],
+    status: "ACTIVE",
   });
 
-  const toggleMatrixCell = (rowIndex, roleKey) => {
-    setMatrix((prev) =>
-      prev.map((row, idx) => {
-        if (idx === rowIndex) {
-          const updated = { ...row, [roleKey]: !row[roleKey] };
-          addToast(`Updated permission for ${row.module} (${roleKey.toUpperCase()})`, "info");
-          return updated;
-        }
-        return row;
-      })
+  const filteredUsers = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return users.filter(
+      (u) =>
+        !q ||
+        u.id.toLowerCase().includes(q) ||
+        u.username.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        u.role.toLowerCase().includes(q)
     );
+  }, [users, searchQuery]);
+
+  const openNewModal = () => {
+    setEditingUser(null);
+    setForm({
+      id: `U-0${users.length + 1}`,
+      username: "",
+      email: "",
+      role: "Manager",
+      password: "",
+      modules: ["Dashboard", "Orders", "Customers"],
+      status: "ACTIVE",
+    });
+    setModalOpen(true);
   };
 
-  const handleAddRole = (e) => {
+  const openEditModal = (row) => {
+    setEditingUser(row);
+    setForm({ ...row, password: "" });
+    setModalOpen(true);
+  };
+
+  const toggleModuleInForm = (mod) => {
+    setForm((prev) => {
+      const exists = prev.modules.includes(mod);
+      return {
+        ...prev,
+        modules: exists ? prev.modules.filter((m) => m !== mod) : [...prev.modules, mod],
+      };
+    });
+  };
+
+  const handleSave = (e) => {
     e.preventDefault();
-    const roleEntry = {
-      id: Date.now(),
-      role: newRole.role,
-      users_count: 1,
-      description: newRole.description,
-      permissions: newRole.permissions.split(",").map((s) => s.trim()),
-      level: newRole.level,
-    };
-    setRoles((prev) => [...prev, roleEntry]);
-    setShowAddModal(false);
-    addToast(`Added new security role: ${newRole.role}`, "success");
+    if (!form.username.trim()) return;
+    if (editingUser) {
+      setUsers((prev) => prev.map((u) => (u.id === editingUser.id ? { ...u, ...form } : u)));
+    } else {
+      setUsers((prev) => [{ ...form }, ...prev]);
+    }
+    setModalOpen(false);
+  };
+
+  const handleDelete = (id) => {
+    setUsers((prev) => prev.filter((u) => u.id !== id));
+  };
+
+  const handleExportCSV = () => {
+    const headers = ["USER ID", "USERNAME", "EMAIL", "ROLE", "MODULES ACCESS", "STATUS"];
+    const rows = filteredUsers.map((u) => [u.id, u.username, u.email, u.role, u.modules.join(" | "), u.status]);
+    const csv = [headers, ...rows].map((row) => row.map((v) => `"${v}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "privileges-list.csv";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
-    <div className="flex-1 flex flex-col">
-      <Header title="Role Privileges & Access Security" subtitle="Security & Permissions" />
+    <div className="space-y-5">
+      {/* Top Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="text-[13px] text-slate-400 font-medium">
+          Home <span className="mx-1.5 text-slate-300">/</span>{" "}
+          <span className="text-slate-700 font-semibold">Privileges</span>
+        </div>
+        <button
+          onClick={openNewModal}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#FF5A5F] hover:bg-[#e84c51] text-white text-[13px] font-semibold shadow-sm transition cursor-pointer"
+        >
+          <Plus size={15} /> Add New
+        </button>
+      </div>
 
-      <main className="p-6 space-y-6 flex-1 overflow-y-auto">
-        {/* Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Configured Roles
-              </span>
-              <div className="w-8 h-8 rounded-md bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-slate-900">
-              {roles.length} Roles
-            </div>
-            <div className="mt-1 text-[11px] text-blue-600 font-medium">
-              Granular RBAC model active
-            </div>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Authorized Staff
-              </span>
-              <div className="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-                <Users className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-slate-900">
-              38 Active Users
-            </div>
-            <div className="mt-1 text-[11px] text-emerald-600 font-medium">
-              All with authenticated login
-            </div>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Security Policy
-              </span>
-              <div className="w-8 h-8 rounded-md bg-cyan-50 border border-cyan-100 flex items-center justify-center text-cyan-600">
-                <Lock className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-slate-900">
-              Enforced 2FA
-            </div>
-            <div className="mt-1 text-[11px] text-cyan-700 font-medium">
-              Mandatory for Cashier & Admin
-            </div>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Audit Trail
-              </span>
-              <div className="w-8 h-8 rounded-md bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
-                <FileCheck className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-slate-900">
-              100% Logged
-            </div>
-            <div className="mt-1 text-[11px] text-amber-600 font-medium">
-              Real-time audit telemetry
-            </div>
-          </div>
+      {/* Privileges Table Card (Figma 3:1886) */}
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="bg-linear-to-r from-[#0F172A] via-[#1E3A5F] to-[#3B6998] px-5 py-3.5 flex items-center justify-between">
+          <h3 className="text-[15px] font-bold text-white tracking-wide">User Privileges & Roles</h3>
+          <button
+            onClick={handleExportCSV}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white text-[12px] font-semibold transition cursor-pointer"
+          >
+            <Download size={14} /> Export
+          </button>
         </div>
 
-        {/* Roles Cards Grid with Reduced Border Radius */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-bold text-slate-900">System Role Profiles</h2>
-              <p className="text-xs text-slate-500">Security scopes assigned to organization members</p>
-            </div>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold shadow-2xs transition-all active:scale-[0.98]"
+        <div className="px-5 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 text-[12.5px] text-slate-600">
+          <div className="flex items-center gap-2">
+            <span>Show</span>
+            <select
+              value={entriesPerPage}
+              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+              className="h-8 px-2 rounded-md border border-slate-200 text-[12.5px] bg-white focus:outline-none focus:border-[#5948DB]"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Role Privilege</span>
-            </button>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
+            <span>entries</span>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {roles.map((r) => (
-              <div
-                key={r.id}
-                className="bg-white rounded-md border border-slate-200 p-4.5 shadow-2xs hover:shadow-xs transition-all space-y-3"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-md bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-700 font-bold shrink-0">
-                      <Shield className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h3 className="text-xs font-bold text-slate-900">{r.role}</h3>
-                      <div className="text-[10px] font-mono text-blue-600 font-semibold">{r.level}</div>
-                    </div>
-                  </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                    {r.users_count} Staff
-                  </span>
-                </div>
-
-                <p className="text-[11px] text-slate-500 leading-relaxed">{r.description}</p>
-
-                <div className="pt-2 border-t border-slate-100 space-y-1.5">
-                  <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
-                    Granted Permissions
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {r.permissions.map((p, pIdx) => (
-                      <span
-                        key={pIdx}
-                        className="px-2 py-0.5 rounded-sm bg-slate-50 border border-slate-200 text-slate-700 font-medium text-[10px] flex items-center gap-1"
-                      >
-                        <Check className="w-3 h-3 text-emerald-600 font-bold" />
-                        {p}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Permissions Matrix with Column Lines */}
-        <div className="space-y-3">
-          <div>
-            <h2 className="text-sm font-bold text-slate-900">Module Access Matrix</h2>
-            <p className="text-xs text-slate-500">
-              Interactive permission grid with vertical column separation lines. Click checkboxes to toggle.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-md border border-slate-200 shadow-2xs overflow-hidden">
-            <div className="overflow-x-auto touch-pan-x">
-              <table className="w-full text-left text-xs border-collapse min-w-[650px]">
-                <thead className="bg-[#5948DB] text-xs font-semibold text-white tracking-normal border-b border-[#4A3AC9]">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold border-r border-[#7161F0]/70 text-white">System Functional Module</th>
-                    <th className="px-4 py-3 font-semibold border-r border-[#7161F0]/70 text-center w-36 text-white">Super Admin</th>
-                    <th className="px-4 py-3 font-semibold border-r border-[#7161F0]/70 text-center w-36 text-white">Cashier & Finance</th>
-                    <th className="px-4 py-3 font-semibold border-r border-[#7161F0]/70 text-center w-36 text-white">Route Supervisor</th>
-                    <th className="px-4 py-3 font-semibold text-center w-36 text-white">Field Driver</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {matrix.map((m, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="px-4 py-3 font-semibold text-slate-800 border-r border-slate-200">
-                        {m.module}
-                      </td>
-                      <td className="px-4 py-3 border-r border-slate-200 text-center bg-slate-50/40">
-                        <input
-                          type="checkbox"
-                          checked={m.admin}
-                          onChange={() => toggleMatrixCell(idx, "admin")}
-                          className="rounded-xs border-slate-300 text-blue-600 focus:ring-0 cursor-pointer w-4 h-4"
-                        />
-                      </td>
-                      <td className="px-4 py-3 border-r border-slate-200 text-center">
-                        <input
-                          type="checkbox"
-                          checked={m.finance}
-                          onChange={() => toggleMatrixCell(idx, "finance")}
-                          className="rounded-xs border-slate-300 text-blue-600 focus:ring-0 cursor-pointer w-4 h-4"
-                        />
-                      </td>
-                      <td className="px-4 py-3 border-r border-slate-200 text-center bg-slate-50/40">
-                        <input
-                          type="checkbox"
-                          checked={m.supervisor}
-                          onChange={() => toggleMatrixCell(idx, "supervisor")}
-                          className="rounded-xs border-slate-300 text-blue-600 focus:ring-0 cursor-pointer w-4 h-4"
-                        />
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={m.driver}
-                          onChange={() => toggleMatrixCell(idx, "driver")}
-                          className="rounded-xs border-slate-300 text-blue-600 focus:ring-0 cursor-pointer w-4 h-4"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500">Search:</span>
+            <div className="relative">
+              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search privileges..."
+                className="h-8 pl-8 pr-3 w-52 rounded-md border border-slate-200 text-[12.5px] focus:outline-none focus:border-[#5948DB]"
+              />
             </div>
           </div>
         </div>
-      </main>
 
-      {/* Add Role Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white border border-slate-200 rounded-md w-full max-w-md max-h-[90vh] overflow-y-auto p-4 sm:p-5 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-md bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-bold text-slate-900">Define Security Role</h2>
-                  <p className="text-[11px] text-slate-400">Create access tier and permission tags</p>
-                </div>
-              </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-[#5948DB] text-white text-[11px] font-bold uppercase tracking-wider">
+                <th className="py-3 px-4">USER ID</th>
+                <th className="py-3 px-4">USERNAME</th>
+                <th className="py-3 px-4">EMAIL</th>
+                <th className="py-3 px-4">ROLE</th>
+                <th className="py-3 px-4">MODULES ACCESS</th>
+                <th className="py-3 px-4">STATUS</th>
+                <th className="py-3 px-4 text-center">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-[12.5px] text-slate-700">
+              {filteredUsers.slice(0, entriesPerPage).map((row, idx) => (
+                <tr key={row.id} className={idx % 2 === 0 ? "bg-white hover:bg-slate-50/70" : "bg-slate-50/40 hover:bg-slate-50/90"}>
+                  <td className="py-3 px-4 font-bold text-[#5948DB]">{row.id}</td>
+                  <td className="py-3 px-4 font-semibold text-slate-800">{row.username}</td>
+                  <td className="py-3 px-4 text-slate-500">{row.email}</td>
+                  <td className="py-3 px-4">
+                    <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 text-[#5948DB] text-[11px] font-semibold">
+                      {row.role}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex flex-wrap gap-1 max-w-md">
+                      {row.modules.map((m) => (
+                        <span
+                          key={m}
+                          className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10.5px] font-medium"
+                        >
+                          {m}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <span
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10.5px] font-bold ${
+                        row.status === "ACTIVE"
+                          ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                          : "bg-rose-50 text-rose-600 border border-rose-200"
+                      }`}
+                    >
+                      {row.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center justify-center gap-1.5">
+                      <button
+                        onClick={() => openEditModal(row)}
+                        className="px-2.5 py-1 rounded bg-[#10B981] hover:bg-[#059669] text-white text-[11px] font-semibold transition cursor-pointer"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(row.id)}
+                        className="px-2.5 py-1 rounded bg-[#FF5A5F] hover:bg-[#e0484d] text-white text-[11px] font-semibold transition cursor-pointer"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="px-5 py-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[12px] text-slate-500">
+          <span>
+            Showing 1 to {Math.min(entriesPerPage, filteredUsers.length)} of {filteredUsers.length} entries
+          </span>
+          <div className="flex items-center gap-1">
+            <button className="px-2.5 py-1 rounded border border-slate-200 text-slate-500 hover:bg-slate-50">Previous</button>
+            <button className="px-2.5 py-1 rounded bg-[#5948DB] text-white font-semibold">1</button>
+            <button className="px-2.5 py-1 rounded border border-slate-200 text-slate-500 hover:bg-slate-50">Next</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal: Add New / Edit Privilege (Figma 3:1887) */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-[1px] p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-200">
+            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
+              <h3 className="text-[15px] font-bold">
+                {editingUser ? `Edit User Privileges - ${editingUser.username}` : "Add New User Privilege"}
+              </h3>
               <button
-                onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-slate-700 p-1 rounded-md"
+                onClick={() => setModalOpen(false)}
+                className="w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X size={15} />
               </button>
             </div>
-
-            <form onSubmit={handleAddRole} className="space-y-3.5 text-xs">
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">Role Title</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Inventory Storekeeper"
-                  value={newRole.role}
-                  onChange={(e) => setNewRole({ ...newRole, role: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
+            <form onSubmit={handleSave} className="p-5 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
+                    Username *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={form.username}
+                    onChange={(e) => setForm({ ...form, username: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
+                    Role *
+                  </label>
+                  <select
+                    value={form.role}
+                    onChange={(e) => setForm({ ...form, role: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#5948DB]"
+                  >
+                    <option value="Super Admin">Super Admin</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Supervisor">Supervisor</option>
+                    <option value="Cashier">Cashier</option>
+                    <option value="Accountant">Accountant</option>
+                    <option value="Dispatcher">Dispatcher</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={form.status}
+                    onChange={(e) => setForm({ ...form, status: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#5948DB]"
+                  >
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="INACTIVE">INACTIVE</option>
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label className="text-slate-700 font-semibold block mb-1">Hierarchy Level</label>
-                <select
-                  value={newRole.level}
-                  onChange={(e) => setNewRole({ ...newRole, level: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
-                >
-                  <option value="Tier 2 - Department Manager">Tier 2 - Department Manager</option>
-                  <option value="Tier 3 - Store Operations">Tier 3 - Store Operations</option>
-                  <option value="Tier 4 - Support Staff">Tier 4 - Support Staff</option>
-                </select>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-[11.5px] font-semibold text-slate-600">
+                    Module Access Permissions
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        modules: prev.modules.length === ALL_MODULES.length ? [] : [...ALL_MODULES],
+                      }))
+                    }
+                    className="text-[11px] font-semibold text-[#5948DB] hover:underline cursor-pointer"
+                  >
+                    {form.modules.length === ALL_MODULES.length ? "Clear All" : "Select All"}
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 rounded-lg border border-slate-200 bg-slate-50/50">
+                  {ALL_MODULES.map((mod) => (
+                    <label
+                      key={mod}
+                      className="flex items-center gap-2 text-[12px] text-slate-700 font-medium cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={form.modules.includes(mod)}
+                        onChange={() => toggleModuleInForm(mod)}
+                        className="rounded border-slate-300 text-[#5948DB] focus:ring-[#5948DB]"
+                      />
+                      <span>{mod}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">Scope Description</label>
-                <textarea
-                  rows={2}
-                  required
-                  placeholder="Brief description of duties and privileges..."
-                  value={newRole.description}
-                  onChange={(e) => setNewRole({ ...newRole, description: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Permissions (comma separated)
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Stock In/Out, Inventory Audit, Supplier POs"
-                  value={newRole.permissions}
-                  onChange={(e) => setNewRole({ ...newRole, permissions: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-3.5 py-1.5 text-slate-600 hover:bg-slate-100 rounded-md font-medium text-xs border border-slate-200"
+                  onClick={() => setModalOpen(false)}
+                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-[12.5px] font-semibold hover:bg-slate-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-bold text-xs shadow-2xs transition-all active:scale-[0.98]"
+                  className="px-5 py-2 rounded-lg bg-[#5948DB] hover:bg-[#4938c7] text-white text-[12.5px] font-semibold shadow-xs cursor-pointer"
                 >
-                  Save Role
+                  {editingUser ? "Update Privilege" : "Save Privilege"}
                 </button>
               </div>
             </form>
