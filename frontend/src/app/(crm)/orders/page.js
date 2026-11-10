@@ -127,14 +127,34 @@ export default function OrdersPage() {
       status: "Delivered",
       total_amount: "0.00",
       balance: "0.00",
-      payment_method: "Credit",
-      payment_status: "Pending",
+      payment_method: "Paid",
+      payment_status: "Paid",
       route: "Route AA-02",
       product: "Dispenser Service",
       quantity: 1,
     },
     {
       id: 6,
+      delivery_note: "DN-T6345-14586",
+      order_no: "DN-T6345-14586",
+      invoice_no: "IN-T6345/030843",
+      customer_name: "DR. PARVEZ (KHALIFA PALACE)",
+      customer_id: "112651",
+      salesman_name: "Saeed Al Dhaheri",
+      order_date: "2026-11-08",
+      delivery_date: "08/09/2026",
+      truck: "T6345",
+      status: "Delivered",
+      total_amount: "10.00",
+      balance: "0.00",
+      payment_method: "Paid",
+      payment_status: "Paid",
+      route: "Route AA-02",
+      product: "5 Gallon Water Bottle",
+      quantity: 2,
+    },
+    {
+      id: 7,
       delivery_note: "DN-T6350-16650",
       order_no: "DN-T6350-16650",
       invoice_no: "IN-T6350/032176",
@@ -154,7 +174,27 @@ export default function OrdersPage() {
       quantity: 2,
     },
     {
-      id: 7,
+      id: 8,
+      delivery_note: "DN-T6343-14385",
+      order_no: "DN-T6343-14385",
+      invoice_no: "IN-T6343/028213",
+      customer_name: "SHAIKHA AL SHAMSI",
+      customer_id: "116220",
+      salesman_name: "Tariq Aziz",
+      order_date: "2026-11-08",
+      delivery_date: "08/09/2026",
+      truck: "T6343",
+      status: "Delivered",
+      total_amount: "31.50",
+      balance: "0.00",
+      payment_method: "Paid",
+      payment_status: "Paid",
+      route: "Route AA-04",
+      product: "5 Gallon Water Bottle",
+      quantity: 6,
+    },
+    {
+      id: 9,
       delivery_note: "DN-T6343-14384",
       order_no: "DN-T6343-14384",
       invoice_no: "IN-T6343/028212",
@@ -174,7 +214,7 @@ export default function OrdersPage() {
       quantity: 6,
     },
     {
-      id: 8,
+      id: 10,
       delivery_note: "DN-T6354-18247",
       order_no: "DN-T6354-18247",
       invoice_no: "IN-T6354/033058",
@@ -184,11 +224,11 @@ export default function OrdersPage() {
       order_date: "2026-11-08",
       delivery_date: "08/09/2026",
       truck: "T6354",
-      status: "Confirmed",
+      status: "Delivered",
       total_amount: "5.25",
-      balance: "5.25",
-      payment_method: "Unpaid",
-      payment_status: "Unpaid",
+      balance: "0.00",
+      payment_method: "Paid",
+      payment_status: "Paid",
       route: "Route AA-03",
       product: "5 Gallon Water Bottle",
       quantity: 1,
@@ -197,6 +237,10 @@ export default function OrdersPage() {
 
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const [filterCustomer, setFilterCustomer] = useState("All");
+  const [filterSalesRep, setFilterSalesRep] = useState("All");
+  const [filterTruck, setFilterTruck] = useState("All");
+  const [showOrderSummaryModal, setShowOrderSummaryModal] = useState(false);
   const [dateRange, setDateRange] = useState("ALL");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -386,6 +430,11 @@ export default function OrdersPage() {
           if (selectedStatus !== "All" && o.status !== selectedStatus) return false;
         }
 
+        // Customer, Sales Rep, and Truck filters
+        if (filterCustomer !== "All" && o.customer_name !== filterCustomer) return false;
+        if (filterSalesRep !== "All" && o.salesman_name !== filterSalesRep) return false;
+        if (filterTruck !== "All" && o.truck !== filterTruck) return false;
+
         // Date filter
         const orderDate = o.delivery_date || o.order_date;
         if (!isOrderDateInRange(orderDate)) return false;
@@ -411,7 +460,7 @@ export default function OrdersPage() {
         if (valA > valB) return sortAsc ? 1 : -1;
         return 0;
       });
-  }, [orders, search, selectedStatus, dateRange, startDate, endDate, sortField, sortAsc]);
+  }, [orders, search, selectedStatus, filterCustomer, filterSalesRep, filterTruck, dateRange, startDate, endDate, sortField, sortAsc]);
 
   // Checkbox selection
   const toggleSelectAll = () => {
@@ -561,6 +610,162 @@ export default function OrdersPage() {
       <Header title="Orders & Deliveries" subtitle="Orders" />
 
       <main className="p-6 space-y-5 flex-1 overflow-y-auto">
+        {/* 4 KPI Cards at Top (Exact Figma 3:1724 values) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-md border border-slate-200 border-l-4 border-l-[#3B82F6] p-4 shadow-2xs flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">TOTAL ORDERS</span>
+              <div className="text-xl font-extrabold font-mono text-slate-900 mt-1">241405</div>
+            </div>
+            <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <ShoppingCart className="w-4.5 h-4.5" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-md border border-slate-200 border-l-4 border-l-[#F59E0B] p-4 shadow-2xs flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">PENDING ORDERS</span>
+              <div className="text-xl font-extrabold font-mono text-amber-600 mt-1">2</div>
+            </div>
+            <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+              <Clock className="w-4.5 h-4.5" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-md border border-slate-200 border-l-4 border-l-[#10B981] p-4 shadow-2xs flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">TOTAL REVENUE</span>
+              <div className="text-xl font-extrabold font-mono text-emerald-600 mt-1">AED 5817740.39</div>
+            </div>
+            <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <CheckCircle2 className="w-4.5 h-4.5" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-md border border-slate-200 border-l-4 border-l-[#F43F5E] p-4 shadow-2xs flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">PENDING PAYMENTS</span>
+              <div className="text-xl font-extrabold font-mono text-rose-600 mt-1">8158</div>
+            </div>
+            <div className="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+              <Truck className="w-4.5 h-4.5" />
+            </div>
+          </div>
+        </div>
+
+        {/* Filter Orders Panel (Figma 3:1724) */}
+        <div className="bg-white rounded-md border border-slate-200 p-4 shadow-2xs space-y-3">
+          <div className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+            Filter Orders
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 text-xs">
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Customer</label>
+              <select
+                value={filterCustomer}
+                onChange={(e) => setFilterCustomer(e.target.value)}
+                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-medium"
+              >
+                <option value="All">Select Customer</option>
+                {Array.from(new Set(orders.map((o) => o.customer_name))).map((c, idx) => (
+                  <option key={idx} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Sales Rep</label>
+              <select
+                value={filterSalesRep}
+                onChange={(e) => setFilterSalesRep(e.target.value)}
+                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-medium"
+              >
+                <option value="All">Select Sales Rep</option>
+                {Array.from(new Set(orders.map((o) => o.salesman_name).filter(Boolean))).map((s, idx) => (
+                  <option key={idx} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Truck</label>
+              <select
+                value={filterTruck}
+                onChange={(e) => setFilterTruck(e.target.value)}
+                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-medium"
+              >
+                <option value="All">Select Truck</option>
+                {Array.from(new Set(orders.map((o) => o.truck).filter(Boolean))).map((t, idx) => (
+                  <option key={idx} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Status</label>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-medium"
+              >
+                <option value="All">All Statuses</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Pending">Pending</option>
+                <option value="Out For Delivery">Out For Delivery</option>
+                <option value="Deleted">Deleted</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">From Date</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  setDateRange("CUSTOM");
+                }}
+                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">To Date</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  setDateRange("CUSTOM");
+                }}
+                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800"
+              />
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => {
+                setFilterCustomer("All");
+                setFilterSalesRep("All");
+                setFilterTruck("All");
+                setSelectedStatus("All");
+                setDateRange("ALL");
+                setStartDate("");
+                setEndDate("");
+                setSearch("");
+                addToast("Order filters reset", "info");
+              }}
+              className="px-4 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+            >
+              Reset
+            </button>
+            <button
+              type="button"
+              onClick={() => addToast(`Filtered ${filteredOrders.length} orders`, "success")}
+              className="px-5 py-1.5 rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+
         {/* Status Pills with Modern Count Badges */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl text-xs font-semibold overflow-x-auto max-w-full">
@@ -772,8 +977,16 @@ export default function OrdersPage() {
             )}
 
             <button
+              onClick={() => setShowOrderSummaryModal(true)}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-md text-xs font-bold shadow-2xs transition-colors whitespace-nowrap cursor-pointer"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>Order Summary</span>
+            </button>
+
+            <button
               onClick={() => setShowNewModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold shadow-2xs transition-all whitespace-nowrap active:scale-[0.98]"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#FF5A5F] hover:bg-[#E0484D] text-white rounded-md text-xs font-bold shadow-2xs transition-colors whitespace-nowrap cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>New Order</span>
@@ -1011,6 +1224,82 @@ export default function OrdersPage() {
           </div>
         </div>
       </main>
+
+      {/* Order Summary Modal (Figma 3:1728) */}
+      {showOrderSummaryModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-md w-full max-w-2xl p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h2 className="text-sm font-bold text-slate-900">Order Summary Breakdown</h2>
+                <p className="text-[11px] text-slate-500">Consolidated summary of orders, quantities, and payment collections</p>
+              </div>
+              <button onClick={() => setShowOrderSummaryModal(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold">×</button>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-md">
+                <span className="text-[10px] font-bold text-blue-600 uppercase block">Total Orders</span>
+                <span className="text-base font-extrabold font-mono text-slate-900">241,405</span>
+              </div>
+              <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-md">
+                <span className="text-[10px] font-bold text-emerald-600 uppercase block">Total Revenue</span>
+                <span className="text-base font-extrabold font-mono text-emerald-700">AED 5,817,740.39</span>
+              </div>
+              <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-md">
+                <span className="text-[10px] font-bold text-amber-600 uppercase block">Pending Orders</span>
+                <span className="text-base font-extrabold font-mono text-amber-700">2</span>
+              </div>
+              <div className="p-3 bg-rose-50/70 border border-rose-200 rounded-md">
+                <span className="text-[10px] font-bold text-rose-600 uppercase block">Pending Payments</span>
+                <span className="text-base font-extrabold font-mono text-rose-700">8,158</span>
+              </div>
+            </div>
+            <div className="border border-slate-200 rounded-md overflow-hidden">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead className="bg-[#5948DB] text-white font-semibold">
+                  <tr>
+                    <th className="px-4 py-2.5 border-r border-[#7161F0]/70">TRUCK ID</th>
+                    <th className="px-4 py-2.5 text-center border-r border-[#7161F0]/70">DELIVERY NOTES</th>
+                    <th className="px-4 py-2.5 text-center border-r border-[#7161F0]/70">BOTTLES DELIVERED</th>
+                    <th className="px-4 py-2.5 text-right">TOTAL AMOUNT</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 font-medium">
+                  <tr>
+                    <td className="px-4 py-2.5 font-mono font-bold text-slate-900 border-r border-slate-200">T6350</td>
+                    <td className="px-4 py-2.5 text-center font-mono border-r border-slate-200">3</td>
+                    <td className="px-4 py-2.5 text-center font-mono font-bold text-blue-700 border-r border-slate-200">6</td>
+                    <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-700">AED 33.60</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-2.5 font-mono font-bold text-slate-900 border-r border-slate-200">T6356</td>
+                    <td className="px-4 py-2.5 text-center font-mono border-r border-slate-200">1</td>
+                    <td className="px-4 py-2.5 text-center font-mono font-bold text-blue-700 border-r border-slate-200">5</td>
+                    <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-700">AED 31.50</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-2.5 font-mono font-bold text-slate-900 border-r border-slate-200">T6354</td>
+                    <td className="px-4 py-2.5 text-center font-mono border-r border-slate-200">2</td>
+                    <td className="px-4 py-2.5 text-center font-mono font-bold text-blue-700 border-r border-slate-200">3</td>
+                    <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-700">AED 17.85</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-2.5 font-mono font-bold text-slate-900 border-r border-slate-200">T6343</td>
+                    <td className="px-4 py-2.5 text-center font-mono border-r border-slate-200">2</td>
+                    <td className="px-4 py-2.5 text-center font-mono font-bold text-blue-700 border-r border-slate-200">12</td>
+                    <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-700">AED 63.00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="flex justify-end pt-2">
+              <button onClick={() => setShowOrderSummaryModal(false)} className="px-4 py-1.5 rounded-md bg-[#5948DB] text-white text-xs font-bold">
+                Close Summary
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* New Order Modal */}
       {showNewModal && (

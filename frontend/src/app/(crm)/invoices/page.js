@@ -142,6 +142,34 @@ export default function InvoicesPage() {
       paid_amount: "163.80",
       status: "Paid",
     },
+    {
+      id: 9,
+      invoice_no: "IN-T6352/029880",
+      customer_name: "ABU DHABI CO-OP SOCIETY",
+      customer_id: "108812",
+      invoice_date: "08/09/2026",
+      truck: "T6352",
+      quantity: 12,
+      subtotal: "60.00",
+      tax_amount: "3.00",
+      total_amount: "63.00",
+      paid_amount: "63.00",
+      status: "Paid",
+    },
+    {
+      id: 10,
+      invoice_no: "IN-T6352/029879",
+      customer_name: "AL JIMI MALL ADMINISTRATION",
+      customer_id: "109455",
+      invoice_date: "08/09/2026",
+      truck: "T6352",
+      quantity: 8,
+      subtotal: "40.00",
+      tax_amount: "2.00",
+      total_amount: "42.00",
+      paid_amount: "42.00",
+      status: "Paid",
+    },
   ]);
 
   const [selectedInvoice, setSelectedInvoice] = useState(null);
@@ -151,6 +179,9 @@ export default function InvoicesPage() {
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [activeTab, setActiveTab] = useState("All");
   const [search, setSearch] = useState("");
+  const [filterCustomer, setFilterCustomer] = useState("All");
+  const [filterSalesRep, setFilterSalesRep] = useState("All");
+  const [filterTruck, setFilterTruck] = useState("All");
   const [dateRange, setDateRange] = useState("ALL");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -324,6 +355,10 @@ export default function InvoicesPage() {
           if (activeTab !== "All" && i.status !== activeTab) return false;
         }
 
+        // Customer and Truck filters
+        if (filterCustomer !== "All" && i.customer_name !== filterCustomer) return false;
+        if (filterTruck !== "All" && i.truck !== filterTruck) return false;
+
         // Date range filter
         const invDate = i.invoice_date || i.due_date;
         if (!isInvoiceDateInRange(invDate)) return false;
@@ -349,7 +384,7 @@ export default function InvoicesPage() {
         if (valA > valB) return sortAsc ? 1 : -1;
         return 0;
       });
-  }, [invoices, search, activeTab, dateRange, startDate, endDate, sortField, sortAsc]);
+  }, [invoices, search, activeTab, filterCustomer, filterTruck, dateRange, startDate, endDate, sortField, sortAsc]);
 
   // Checkbox selection
   const toggleSelectAll = () => {
@@ -488,6 +523,148 @@ export default function InvoicesPage() {
       <Header title="Billing & Invoicing" subtitle="Invoices" />
 
       <main className="p-6 space-y-5 flex-1 overflow-y-auto">
+        {/* 4 KPI Cards at Top (Exact Figma 3:1740 values) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-md border border-slate-200 border-l-4 border-l-[#3B82F6] p-4 shadow-2xs flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">TOTAL INVOICE</span>
+              <div className="text-xl font-extrabold font-mono text-slate-900 mt-1">188594</div>
+            </div>
+            <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <CheckCircle2 className="w-4.5 h-4.5" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-md border border-slate-200 border-l-4 border-l-[#10B981] p-4 shadow-2xs flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">INVOICE AMOUNT</span>
+              <div className="text-xl font-extrabold font-mono text-emerald-600 mt-1">6357997.57</div>
+            </div>
+            <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <CheckCircle2 className="w-4.5 h-4.5" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-md border border-slate-200 border-l-4 border-l-[#F59E0B] p-4 shadow-2xs flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">PENDING INVOICE</span>
+              <div className="text-xl font-extrabold font-mono text-amber-600 mt-1">62435</div>
+            </div>
+            <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+              <Clock className="w-4.5 h-4.5" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-md border border-slate-200 border-l-4 border-l-[#F43F5E] p-4 shadow-2xs flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">TOTAL PENDING</span>
+              <div className="text-xl font-extrabold font-mono text-rose-600 mt-1">332272.83</div>
+            </div>
+            <div className="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+              <AlertTriangle className="w-4.5 h-4.5" />
+            </div>
+          </div>
+        </div>
+
+        {/* Filter Orders / Invoices Panel (Figma 3:1740) */}
+        <div className="bg-white rounded-md border border-slate-200 p-4 shadow-2xs space-y-3">
+          <div className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+            Filter Orders
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Customer</label>
+              <select
+                value={filterCustomer}
+                onChange={(e) => setFilterCustomer(e.target.value)}
+                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-medium"
+              >
+                <option value="All">Select Customer</option>
+                {Array.from(new Set(invoices.map((i) => i.customer_name))).map((c, idx) => (
+                  <option key={idx} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Sales Rep</label>
+              <select
+                value={filterSalesRep}
+                onChange={(e) => setFilterSalesRep(e.target.value)}
+                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-medium"
+              >
+                <option value="All">Select Sales Rep</option>
+                <option value="56 - ANAS">56 - ANAS</option>
+                <option value="38 - NISAR">38 - NISAR</option>
+                <option value="47 - HASHIM">47 - HASHIM</option>
+                <option value="57 - MUFEED">57 - MUFEED</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Truck</label>
+              <select
+                value={filterTruck}
+                onChange={(e) => setFilterTruck(e.target.value)}
+                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-medium"
+              >
+                <option value="All">Select Truck</option>
+                {Array.from(new Set(invoices.map((i) => i.truck).filter(Boolean))).map((t, idx) => (
+                  <option key={idx} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">From Date</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  setDateRange("CUSTOM");
+                }}
+                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">To Date</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  setDateRange("CUSTOM");
+                }}
+                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800"
+              />
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => {
+                setFilterCustomer("All");
+                setFilterSalesRep("All");
+                setFilterTruck("All");
+                setDateRange("ALL");
+                setStartDate("");
+                setEndDate("");
+                setSearch("");
+                setActiveTab("All");
+                addToast("Invoice filters reset", "info");
+              }}
+              className="px-4 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+            >
+              Reset
+            </button>
+            <button
+              type="button"
+              onClick={() => addToast(`Filtered ${filteredInvoices.length} invoices`, "success")}
+              className="px-5 py-1.5 rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+
         {/* Controls */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-wrap">

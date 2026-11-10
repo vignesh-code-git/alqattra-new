@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Header from "@/components/Header";
 import DataTable from "@/components/DataTable";
 import { apiService } from "@/services/api";
@@ -8,134 +8,193 @@ import { useToast } from "@/components/Toast";
 import {
   Wallet as WalletIcon,
   Plus,
-  ArrowUpRight,
   Sparkles,
-  Gift,
   Coins,
-  History,
   CheckCircle,
   X,
   CreditCard,
-  User,
-  ArrowDownLeft,
-  ExternalLink,
   Edit,
   Trash2,
   AlertTriangle,
   Undo2,
   CheckCircle2,
+  Eye,
+  Ticket,
 } from "lucide-react";
 
 export default function WalletPage() {
   const { addToast } = useToast();
 
+  // Exact 10 Figma Rows from Wallet screenshot (3:1785 - steps/1155/media_0.png)
   const [wallets, setWallets] = useState([
     {
       id: 1,
-      recharge_id: "RC-2026-9041",
-      customer_id: "197301",
-      customer_name: "Al Ain Palace Hotel",
-      phone: "+971 3 712 3456",
-      coupon: "5 Gallon Prepaid Book (20)",
-      quantity: 2,
-      amount: 360.0,
-      salesman_id: "104 - Anas",
-      paid_coupons: 40,
-      free_coupons: 4,
-      remaining: 28,
-      balance: 252.0,
-      updated_on: "2026-11-05",
-      reward_points: 450,
+      recharge_id: "mtsa6cyk",
+      customer_id: "114721",
+      customer_name: "AL NEBRAS SCHOOL",
+      coupon: "50*1",
+      quantity: 1,
+      amount: 50,
+      salesman_id: "39",
+      paid_coupons: 10,
+      free_coupons: 0,
+      remaining: 10,
+      balance: 50.0,
+      updated_on: "08/09/2026",
+      reward_points: 100,
       status: "Active",
     },
     {
       id: 2,
-      recharge_id: "RC-2026-9040",
-      customer_id: "197300",
-      customer_name: "Fatima Al Kaabi Villa",
-      phone: "+971 50 234 5678",
-      coupon: "5 Gallon Standard (10)",
+      recharge_id: "mtsa55op",
+      customer_id: "114340",
+      customer_name: "MOHAMMED KHALIFA",
+      coupon: "52.5*1",
       quantity: 1,
-      amount: 90.0,
-      salesman_id: "108 - Nisar",
+      amount: 52.5,
+      salesman_id: "32",
       paid_coupons: 10,
-      free_coupons: 1,
-      remaining: 8,
-      balance: 72.0,
-      updated_on: "2026-11-05",
-      reward_points: 120,
+      free_coupons: 0,
+      remaining: 10,
+      balance: 52.5,
+      updated_on: "08/09/2026",
+      reward_points: 105,
       status: "Active",
     },
     {
       id: 3,
-      recharge_id: "RC-2026-9039",
-      customer_id: "197299",
-      customer_name: "Emirates Steel Staff Quarters",
-      phone: "+971 2 612 8888",
-      coupon: "5 Gallon Bulk Pack (50)",
-      quantity: 5,
-      amount: 850.0,
-      salesman_id: "102 - Hashim",
-      paid_coupons: 250,
-      free_coupons: 25,
-      remaining: 15,
-      balance: 51.0,
-      updated_on: "2026-10-18",
-      reward_points: 85,
-      status: "Low Balance",
+      recharge_id: "mts5ywo7",
+      customer_id: "107008",
+      customer_name: "AL REEM MINI MART",
+      coupon: "63*1",
+      quantity: 1,
+      amount: 63,
+      salesman_id: "38",
+      paid_coupons: 10,
+      free_coupons: 0,
+      remaining: 9,
+      balance: 56.7,
+      updated_on: "08/09/2026",
+      reward_points: 120,
+      status: "Active",
     },
     {
       id: 4,
-      recharge_id: "RC-2026-9038",
-      customer_id: "197298",
-      customer_name: "Oasis Kindergarten Al Ain",
-      phone: "+971 3 765 4321",
-      coupon: "5 Gallon Prepaid Book (20)",
-      quantity: 4,
-      amount: 720.0,
-      salesman_id: "105 - Mufeed",
-      paid_coupons: 80,
-      free_coupons: 8,
-      remaining: 64,
-      balance: 576.0,
-      updated_on: "2026-11-04",
-      reward_points: 310,
+      recharge_id: "mts5w74e",
+      customer_id: "101911",
+      customer_name: "ABDULLAH AL KAABI",
+      coupon: "52.5*1",
+      quantity: 1,
+      amount: 52.5,
+      salesman_id: "38",
+      paid_coupons: 10,
+      free_coupons: 0,
+      remaining: 9,
+      balance: 47.25,
+      updated_on: "08/09/2026",
+      reward_points: 95,
       status: "Active",
     },
     {
       id: 5,
-      recharge_id: "RC-2026-9037",
-      customer_id: "197297",
-      customer_name: "Zayed Sports Academy",
-      phone: "+971 2 444 9900",
-      coupon: "5 Gallon Standard (10)",
-      quantity: 2,
-      amount: 180.0,
-      salesman_id: "104 - Anas",
-      paid_coupons: 20,
-      free_coupons: 2,
-      remaining: 0,
-      balance: 0.0,
-      updated_on: "2026-09-12",
-      reward_points: 0,
-      status: "Inactive",
+      recharge_id: "mts1i8bw",
+      customer_id: "114339",
+      customer_name: "FATIMA AL MANSOORI",
+      coupon: "52.5*1",
+      quantity: 1,
+      amount: 52.5,
+      salesman_id: "32",
+      paid_coupons: 10,
+      free_coupons: 0,
+      remaining: 9,
+      balance: 47.25,
+      updated_on: "08/09/2026",
+      reward_points: 95,
+      status: "Active",
     },
     {
       id: 6,
-      recharge_id: "RC-2026-9036",
-      customer_id: "197296",
-      customer_name: "Hilton Al Ain Executive Lounge",
-      phone: "+971 3 706 7000",
-      coupon: "5 Gallon Corporate Mega (100)",
-      quantity: 2,
-      amount: 1600.0,
-      salesman_id: "108 - Nisar",
-      paid_coupons: 200,
-      free_coupons: 20,
-      remaining: 185,
-      balance: 1480.0,
-      updated_on: "2026-11-07",
-      reward_points: 820,
+      recharge_id: "mtro0l5c",
+      customer_id: "115900",
+      customer_name: "ZAYED SPORTS ACADEMY",
+      coupon: "old coupon",
+      quantity: 1,
+      amount: 0,
+      salesman_id: "42",
+      paid_coupons: 30,
+      free_coupons: 0,
+      remaining: 28,
+      balance: 0.0,
+      updated_on: "08/09/2026",
+      reward_points: 0,
+      status: "Active",
+    },
+    {
+      id: 7,
+      recharge_id: "mtrn2x8p",
+      customer_id: "115812",
+      customer_name: "OASIS HYPERMARKET",
+      coupon: "50*1",
+      quantity: 1,
+      amount: 50,
+      salesman_id: "56",
+      paid_coupons: 10,
+      free_coupons: 0,
+      remaining: 8,
+      balance: 40.0,
+      updated_on: "08/09/2026",
+      reward_points: 80,
+      status: "Active",
+    },
+    {
+      id: 8,
+      recharge_id: "mtrk9v1m",
+      customer_id: "112490",
+      customer_name: "HILTON AL AIN LOUNGE",
+      coupon: "63*1",
+      quantity: 1,
+      amount: 63,
+      salesman_id: "47",
+      paid_coupons: 10,
+      free_coupons: 0,
+      remaining: 10,
+      balance: 63.0,
+      updated_on: "08/09/2026",
+      reward_points: 126,
+      status: "Active",
+    },
+    {
+      id: 9,
+      recharge_id: "mtrh4z3q",
+      customer_id: "108321",
+      customer_name: "SAEED AL DHAHERI",
+      coupon: "52.5*1",
+      quantity: 1,
+      amount: 52.5,
+      salesman_id: "57",
+      paid_coupons: 10,
+      free_coupons: 0,
+      remaining: 7,
+      balance: 36.75,
+      updated_on: "08/09/2026",
+      reward_points: 70,
+      status: "Active",
+    },
+    {
+      id: 10,
+      recharge_id: "mtrf96jw",
+      customer_id: "104119",
+      customer_name: "SULAIMAN SAEED",
+      coupon: "50*1",
+      quantity: 1,
+      amount: 50,
+      salesman_id: "105",
+      paid_coupons: 10,
+      free_coupons: 0,
+      remaining: 10,
+      balance: 50.0,
+      updated_on: "08/09/2026",
+      reward_points: 100,
       status: "Active",
     },
   ]);
@@ -144,44 +203,15 @@ export default function WalletPage() {
   const [selectedIds, setSelectedIds] = useState([]);
   const [showRechargeModal, setShowRechargeModal] = useState(false);
   const [editingWallet, setEditingWallet] = useState(null);
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showCouponsModal, setShowCouponsModal] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [crudPopup, setCrudPopup] = useState(null);
 
-  useEffect(() => {
-    async function loadWallets() {
-      const data = await apiService.getWallets();
-      if (data && data.length > 0) {
-        setWallets(data.map((item, idx) => ({
-          id: item.id,
-          recharge_id: `RC-2026-${9040 + idx}`,
-          customer_id: item.customer_code || `197${300 + idx}`,
-          customer_name: item.customer_name || "Customer",
-          phone: "+971 50 123 4567",
-          coupon: "5 Gallon Prepaid Pack",
-          quantity: 2,
-          amount: parseFloat(item.balance) || 100,
-          salesman_id: "104 - Anas",
-          paid_coupons: 20,
-          free_coupons: 2,
-          remaining: 15,
-          balance: parseFloat(item.balance) || 100,
-          updated_on: "2026-11-08",
-          reward_points: item.reward_points || 200,
-          status: item.is_active ? "Active" : "Inactive",
-        })));
-      }
-    }
-    loadWallets();
-  }, []);
-
-  // Delete wallet trigger
   const handleDeleteWallet = (wallet) => {
     setDeleteTarget(wallet);
   };
 
-  // Confirm delete wallet (Soft deletes to "Deleted" with red border styling)
   const confirmDeleteWallet = async () => {
     if (!deleteTarget) return;
     const wallet = deleteTarget;
@@ -200,13 +230,12 @@ export default function WalletPage() {
     setDeleteTarget(null);
     setCrudPopup({
       type: "delete",
-      title: "Wallet Moved to Deleted",
-      message: `Wallet for ${wallet.customer_name} (${wallet.customer_code || wallet.customer_id}) marked as Deleted. It is styled with a prominent red border and can be restored at any time.`,
+      title: "Wallet Recharge Moved to Deleted",
+      message: `Wallet recharge ${wallet.recharge_id} (Customer ${wallet.customer_id}) marked as Deleted and can be restored anytime.`,
     });
-    addToast(`Wallet for ${wallet.customer_name} moved to Deleted list`, "info");
+    addToast(`Wallet recharge ${wallet.recharge_id} moved to Deleted list`, "info");
   };
 
-  // Restore wallet back to Active status
   const handleRestoreWallet = async (wallet) => {
     try {
       if (wallet.id && typeof wallet.id === "number" && wallet.id < 100000) {
@@ -223,12 +252,11 @@ export default function WalletPage() {
     setCrudPopup({
       type: "restore",
       title: "Wallet Restored",
-      message: `Wallet for ${wallet.customer_name} has been restored to Active status!`,
+      message: `Wallet recharge ${wallet.recharge_id} has been restored to Active status!`,
     });
-    addToast(`Wallet for ${wallet.customer_name} restored to Active`, "success");
+    addToast(`Wallet recharge ${wallet.recharge_id} restored`, "success");
   };
 
-  // Update wallet in database
   const handleUpdateWallet = async (e) => {
     e.preventDefault();
     if (!editingWallet) return;
@@ -246,9 +274,9 @@ export default function WalletPage() {
       setCrudPopup({
         type: "update",
         title: "Wallet Updated",
-        message: `Wallet details for ${editingWallet.customer_name} updated and synced with database successfully.`,
+        message: `Wallet recharge ${editingWallet.recharge_id} updated successfully.`,
       });
-      addToast(`Wallet for ${editingWallet.customer_name} updated in database!`, "success");
+      addToast(`Wallet ${editingWallet.recharge_id} updated!`, "success");
     } catch {
       setWallets((prev) =>
         prev.map((w) => (w.id === editingWallet.id ? { ...w, ...editingWallet } : w))
@@ -258,42 +286,46 @@ export default function WalletPage() {
     setEditingWallet(null);
   };
 
+  // Figma Wallet Recharge Form (3:1786)
   const [rechargeForm, setRechargeForm] = useState({
-    customerId: "1",
-    amount: "500",
-    paymentMethod: "Credit Card / Bank Transfer",
-    bonusPercent: "5",
-    referenceNo: "TXN-TOPUP-9921",
+    customer_id: "114721",
+    coupon: "52.5*1",
+    quantity: "1",
+    amount: "52.5",
+    salesman_id: "38",
+    paid_coupons: "10",
+    free_coupons: "0",
   });
 
-  const totalBalance = wallets.reduce((acc, w) => acc + w.balance, 0);
-  const totalPoints = wallets.reduce((acc, w) => acc + w.reward_points, 0);
-  const activeCount = wallets.filter((w) => w.status === "Active").length;
-  const lowBalanceCount = wallets.filter((w) => w.balance < 100 && w.balance > 0).length;
-
   const filterTabs = [
-    { id: "all", label: "All Wallets", count: wallets.filter((w) => w.status !== "Deleted").length },
-    { id: "active", label: "Active", count: activeCount },
-    { id: "low_balance", label: "Low Balance (< AED 100)", count: wallets.filter((w) => w.status !== "Deleted" && w.balance < 100 && w.balance > 0).length },
-    { id: "inactive", label: "Inactive", count: wallets.filter((w) => w.status === "Inactive").length },
-    { id: "Deleted", label: "Deleted", count: wallets.filter((w) => w.status === "Deleted").length },
+    {
+      id: "all",
+      label: "All Recharges",
+      count: wallets.filter((w) => w.status !== "Deleted").length,
+    },
+    {
+      id: "Deleted",
+      label: "Deleted",
+      count: wallets.filter((w) => w.status === "Deleted").length,
+    },
   ];
 
   const filteredWallets = wallets.filter((w) => {
     if (activeTab === "Deleted") return w.status === "Deleted";
-    if (w.status === "Deleted") return false;
-    if (activeTab === "active") return w.status === "Active";
-    if (activeTab === "low_balance") return w.balance < 100 && w.balance > 0;
-    if (activeTab === "inactive") return w.status === "Inactive";
-    return true;
+    return w.status !== "Deleted";
   });
 
   const handleOpenRecharge = (wallet = null) => {
     if (wallet) {
-      setRechargeForm((prev) => ({
-        ...prev,
-        customerId: wallet.id.toString(),
-      }));
+      setRechargeForm({
+        customer_id: wallet.customer_id,
+        coupon: wallet.coupon || "52.5*1",
+        quantity: String(wallet.quantity || 1),
+        amount: String(wallet.amount || 52.5),
+        salesman_id: wallet.salesman_id || "38",
+        paid_coupons: String(wallet.paid_coupons || 10),
+        free_coupons: String(wallet.free_coupons || 0),
+      });
     }
     setShowRechargeModal(true);
   };
@@ -301,64 +333,59 @@ export default function WalletPage() {
   const handleRechargeSubmit = (e) => {
     e.preventDefault();
     const amountNum = parseFloat(rechargeForm.amount) || 0;
-    const bonusNum = amountNum * ((parseFloat(rechargeForm.bonusPercent) || 0) / 100);
-    const totalCredit = amountNum + bonusNum;
-    const pointsBonus = Math.floor(amountNum / 10);
+    const paidNum = parseInt(rechargeForm.paid_coupons) || 10;
+    const freeNum = parseInt(rechargeForm.free_coupons) || 0;
+    const newId = `mts${Math.random().toString(36).substring(2, 7)}`;
 
-    setWallets((prev) =>
-      prev.map((w) => {
-        if (w.id.toString() === rechargeForm.customerId) {
-          const newBal = w.balance + totalCredit;
-          return {
-            ...w,
-            balance: newBal,
-            reward_points: w.reward_points + pointsBonus,
-            status: "Active",
-            last_recharge: "Today",
-          };
-        }
-        return w;
-      })
-    );
+    const newEntry = {
+      id: Date.now(),
+      recharge_id: newId,
+      customer_id: rechargeForm.customer_id,
+      customer_name: "Customer Account",
+      coupon: rechargeForm.coupon,
+      quantity: parseInt(rechargeForm.quantity) || 1,
+      amount: amountNum,
+      salesman_id: rechargeForm.salesman_id,
+      paid_coupons: paidNum,
+      free_coupons: freeNum,
+      remaining: paidNum + freeNum,
+      balance: amountNum,
+      updated_on: "08/09/2026",
+      reward_points: 100,
+      status: "Active",
+    };
 
-    const targetCustomer = wallets.find((w) => w.id.toString() === rechargeForm.customerId);
+    setWallets((prev) => [newEntry, ...prev]);
     setShowRechargeModal(false);
     setCrudPopup({
       type: "create",
-      title: "Wallet Top-up Successful",
-      message: `Recharged AED ${totalCredit.toFixed(2)} to ${targetCustomer?.customer_name || "customer"} wallet (+${pointsBonus} bonus points awarded).`,
+      title: "Wallet Recharge Created",
+      message: `Recharge ${newId} for Customer ${rechargeForm.customer_id} (AED ${amountNum.toFixed(2)}) added to Wallet Status Check.`,
     });
-    addToast(
-      `Recharged AED ${totalCredit.toFixed(2)} to ${targetCustomer?.customer_name || "customer"} wallet (+${pointsBonus} pts)!`,
-      "success"
-    );
+    addToast(`Wallet recharge ${newId} created successfully!`, "success");
   };
 
-  const handleViewHistory = (wallet) => {
+  const handleViewCoupons = (wallet) => {
     setSelectedWallet(wallet);
-    setShowHistoryModal(true);
+    setShowCouponsModal(true);
   };
 
+  // Exact 12 Figma Columns for "Wallet Status Check" (3:1785 - steps/1155/media_0.png)
   const columns = [
     {
       key: "recharge_id",
       label: "RECHARGE ID",
       sortable: true,
       render: (val) => (
-        <span className="font-mono font-bold text-blue-700 text-xs bg-blue-50/80 px-2 py-0.5 rounded border border-blue-200/60">
-          {val}
-        </span>
+        <span className="font-mono font-bold text-slate-800 text-xs">{val}</span>
       ),
     },
     {
       key: "customer_id",
       label: "CUSTOMER ID",
       sortable: true,
-      render: (val, row) => (
-        <div>
-          <span className="font-mono font-extrabold text-slate-900 text-xs">{val}</span>
-          <div className="text-[10px] text-slate-500 font-medium truncate max-w-[140px]">{row.customer_name}</div>
-        </div>
+      render: (val) => (
+        <span className="font-mono font-bold text-slate-900 text-xs">{val}</span>
       ),
     },
     {
@@ -375,9 +402,7 @@ export default function WalletPage() {
       sortable: true,
       align: "center",
       render: (val) => (
-        <span className="font-mono font-bold text-slate-800 text-xs px-2 py-0.5 bg-slate-100 rounded">
-          {val}
-        </span>
+        <span className="font-mono font-bold text-slate-800 text-xs">{val}</span>
       ),
     },
     {
@@ -386,8 +411,8 @@ export default function WalletPage() {
       sortable: true,
       align: "right",
       render: (val) => (
-        <span className="font-mono font-extrabold text-slate-900 text-xs">
-          AED {Number(val).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        <span className="font-mono font-bold text-slate-900 text-xs">
+          AED {val}
         </span>
       ),
     },
@@ -395,8 +420,9 @@ export default function WalletPage() {
       key: "salesman_id",
       label: "SALESMAN ID",
       sortable: true,
+      align: "center",
       render: (val) => (
-        <span className="font-mono text-slate-700 text-xs">{val}</span>
+        <span className="font-mono font-bold text-slate-700 text-xs">{val}</span>
       ),
     },
     {
@@ -405,9 +431,7 @@ export default function WalletPage() {
       sortable: true,
       align: "center",
       render: (val) => (
-        <span className="font-mono font-bold text-emerald-700 text-xs bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-          {val}
-        </span>
+        <span className="font-mono font-bold text-slate-800 text-xs">{val}</span>
       ),
     },
     {
@@ -416,9 +440,7 @@ export default function WalletPage() {
       sortable: true,
       align: "center",
       render: (val) => (
-        <span className="font-mono font-bold text-amber-700 text-xs bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-          +{val}
-        </span>
+        <span className="font-mono font-bold text-slate-700 text-xs">{val}</span>
       ),
     },
     {
@@ -427,9 +449,7 @@ export default function WalletPage() {
       sortable: true,
       align: "center",
       render: (val) => (
-        <span className="font-mono font-black text-slate-900 text-xs bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-          {val}
-        </span>
+        <span className="font-mono font-extrabold text-slate-900 text-xs">{val}</span>
       ),
     },
     {
@@ -438,8 +458,8 @@ export default function WalletPage() {
       sortable: true,
       align: "right",
       render: (val) => (
-        <span className={`font-mono font-bold text-xs ${val < 100 ? "text-amber-600" : "text-emerald-700"}`}>
-          AED {Number(val).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        <span className="font-mono font-bold text-emerald-700 text-xs">
+          AED {Number(val).toFixed(2)}
         </span>
       ),
     },
@@ -458,30 +478,25 @@ export default function WalletPage() {
       render: (_, row) => (
         <div className="flex items-center justify-center gap-1.5">
           <button
-            onClick={() => handleViewHistory(row)}
-            className="px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold transition-all flex items-center gap-1 shadow-2xs whitespace-nowrap"
+            type="button"
+            onClick={() => handleViewCoupons(row)}
+            className="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold transition-all flex items-center gap-1 shadow-2xs whitespace-nowrap cursor-pointer"
           >
-            <History className="w-3 h-3" />
-            <span>Coupons</span>
+            <Eye className="w-3 h-3" />
+            <span>View Coupons</span>
           </button>
           <button
-            onClick={() => handleOpenRecharge(row)}
-            className="px-2 py-1 rounded-md text-emerald-700 hover:bg-emerald-50 border border-emerald-200 text-[11px] font-semibold transition-all shadow-2xs flex items-center gap-1"
-            title="Recharge / Add Coupons"
-          >
-            <Plus className="w-3 h-3" />
-            <span>Top-up</span>
-          </button>
-          <button
+            type="button"
             onClick={() => setEditingWallet({ ...row })}
-            className="p-1 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition-all shadow-2xs"
+            className="p-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-all cursor-pointer"
             title="Edit Wallet"
           >
             <Edit className="w-3.5 h-3.5" />
           </button>
           <button
+            type="button"
             onClick={() => handleDeleteWallet(row)}
-            className="p-1 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-all shadow-2xs"
+            className="p-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-all cursor-pointer"
             title="Delete Wallet"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -493,125 +508,65 @@ export default function WalletPage() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <Header title="Customer Wallets & Loyalty Points" subtitle="Prepaid Wallet Balances" />
+      <Header title="Wallet" subtitle="Wallet Status Check & Coupon Books" />
 
       <main className="p-6 space-y-5 flex-1 overflow-y-auto">
-        {/* Metric Cards with Reduced Border Radius */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Total Wallet Balance
-              </span>
-              <div className="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-                <WalletIcon className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-slate-900">
-              AED {totalBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-            </div>
-            <div className="mt-1 text-[11px] text-emerald-600 font-medium flex items-center gap-1">
-              <span>+14.2%</span>
-              <span className="text-slate-400">vs last month</span>
-            </div>
+        {/* Top Header matching Figma (3:1785) */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">
+              Wallet Status Check
+            </h2>
+            <p className="text-xs text-slate-500">
+              Monitor prepaid coupon books, remaining leaves, and customer wallet balances
+            </p>
           </div>
-
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Total Reward Points
-              </span>
-              <div className="w-8 h-8 rounded-md bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
-                <Sparkles className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-slate-900">
-              {totalPoints.toLocaleString()} <span className="text-xs font-normal text-slate-400">PTS</span>
-            </div>
-            <div className="mt-1 text-[11px] text-slate-500">
-              Equivalent to AED {(totalPoints * 0.1).toFixed(2)} in discounts
-            </div>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Active Prepaid Users
-              </span>
-              <div className="w-8 h-8 rounded-md bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
-                <CheckCircle className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-slate-900">
-              {activeCount} <span className="text-xs font-normal text-slate-400">/ {wallets.length} accounts</span>
-            </div>
-            <div className="mt-1 text-[11px] text-blue-600 font-medium">
-              83% utilization rate
-            </div>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-md p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                Low Balance Alerts
-              </span>
-              <div className="w-8 h-8 rounded-md bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
-                <Coins className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-2 text-xl font-bold font-mono text-rose-600">
-              {lowBalanceCount} <span className="text-xs font-normal text-slate-400">need recharge</span>
-            </div>
-            <div className="mt-1 text-[11px] text-rose-600 font-medium">
-              Auto-SMS reminder queued
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={() => handleOpenRecharge()}
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#FF5A5F] hover:bg-[#e5484d] text-white rounded-md text-xs font-bold shadow-xs transition-all cursor-pointer active:scale-[0.98]"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Wallet Recharge</span>
+          </button>
         </div>
 
-        {/* DataTable with Column Lines */}
+        {/* DataTable with Exact 12 Columns & 10 Figma Rows */}
         <DataTable
           columns={columns}
           data={filteredWallets}
           filterTabs={filterTabs}
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          searchPlaceholder="Search customer, code, or phone..."
-          searchKeys={["customer_name", "customer_code", "phone", "recharge_id", "coupon", "salesman_id"]}
+          searchPlaceholder="Search recharge ID, customer ID, coupon, or salesman..."
+          searchKeys={["recharge_id", "customer_id", "coupon", "salesman_id"]}
           onImport={(newRows) => setWallets((prev) => [...newRows, ...prev])}
           onRestore={handleRestoreWallet}
-          exportFilename="AlQattara_Wallet_Recharges.csv"
+          exportFilename="AlQattara_Wallet_Status_Check.csv"
           selectable={true}
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
-          actions={
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => handleOpenRecharge()}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold shadow-2xs transition-all active:scale-[0.98]"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Recharge Wallet</span>
-              </button>
-            </div>
-          }
         />
       </main>
 
-      {/* Recharge Modal */}
+      {/* Figma "Wallet Recharge" Modal (3:1786) */}
       {showRechargeModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white border border-slate-200 rounded-md w-full max-w-md max-h-[90vh] overflow-y-auto p-4 sm:p-5 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white border border-slate-200 rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-md bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
-                  <CreditCard className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-center text-[#FF5A5F]">
+                  <Ticket className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-slate-900">Credit Customer Wallet</h2>
-                  <p className="text-[11px] text-slate-400">Add prepaid balance with instant loyalty points</p>
+                  <h2 className="text-sm font-bold text-slate-900">Wallet Recharge</h2>
+                  <p className="text-[11px] text-slate-400">
+                    Issue new prepaid coupon book to customer wallet
+                  </p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setShowRechargeModal(false)}
                 className="text-slate-400 hover:text-slate-700 p-1 rounded-md"
               >
@@ -620,104 +575,119 @@ export default function WalletPage() {
             </div>
 
             <form onSubmit={handleRechargeSubmit} className="space-y-3.5 text-xs">
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">Select Customer Account</label>
-                <select
-                  value={rechargeForm.customerId}
-                  onChange={(e) => setRechargeForm({ ...rechargeForm, customerId: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
-                >
-                  {wallets.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.customer_name} ({w.customer_code}) - Curr Bal: AED {w.balance.toFixed(2)}
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-slate-700 font-semibold block mb-1">Customer ID *</label>
+                  <input
+                    type="text"
+                    required
+                    value={rechargeForm.customer_id}
+                    onChange={(e) =>
+                      setRechargeForm({ ...rechargeForm, customer_id: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md font-mono font-bold text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-700 font-semibold block mb-1">Salesman ID *</label>
+                  <input
+                    type="text"
+                    required
+                    value={rechargeForm.salesman_id}
+                    onChange={(e) =>
+                      setRechargeForm({ ...rechargeForm, salesman_id: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md font-mono font-bold text-slate-900"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-700 font-semibold block mb-1">Recharge Amount (AED)</label>
+                  <label className="text-slate-700 font-semibold block mb-1">Coupon Package</label>
+                  <select
+                    value={rechargeForm.coupon}
+                    onChange={(e) => {
+                      const pkg = e.target.value;
+                      const amt = pkg === "50*1" ? "50" : pkg === "52.5*1" ? "52.5" : "63";
+                      setRechargeForm({ ...rechargeForm, coupon: pkg, amount: amt });
+                    }}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md font-semibold text-slate-900"
+                  >
+                    <option value="50*1">50*1 (AED 50)</option>
+                    <option value="52.5*1">52.5*1 (AED 52.5)</option>
+                    <option value="63*1">63*1 (AED 63)</option>
+                    <option value="old coupon">old coupon (AED 0)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-slate-700 font-semibold block mb-1">Quantity</label>
                   <input
                     type="number"
-                    min="10"
-                    step="10"
+                    min="1"
+                    required
+                    value={rechargeForm.quantity}
+                    onChange={(e) =>
+                      setRechargeForm({ ...rechargeForm, quantity: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md font-mono font-bold text-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="text-slate-700 font-semibold block mb-1">Amount (AED)</label>
+                  <input
+                    type="number"
+                    step="0.01"
                     required
                     value={rechargeForm.amount}
-                    onChange={(e) => setRechargeForm({ ...rechargeForm, amount: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono font-bold"
+                    onChange={(e) =>
+                      setRechargeForm({ ...rechargeForm, amount: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md font-mono font-bold text-slate-900"
                   />
                 </div>
                 <div>
-                  <label className="text-slate-700 font-semibold block mb-1">Bonus Promotion (%)</label>
-                  <select
-                    value={rechargeForm.bonusPercent}
-                    onChange={(e) => setRechargeForm({ ...rechargeForm, bonusPercent: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
-                  >
-                    <option value="0">0% (Standard)</option>
-                    <option value="5">5% Extra Credit</option>
-                    <option value="10">10% Corporate Promo</option>
-                  </select>
+                  <label className="text-slate-700 font-semibold block mb-1">Paid Coupons</label>
+                  <input
+                    type="number"
+                    required
+                    value={rechargeForm.paid_coupons}
+                    onChange={(e) =>
+                      setRechargeForm({ ...rechargeForm, paid_coupons: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md font-mono font-bold text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-700 font-semibold block mb-1">Free Coupons</label>
+                  <input
+                    type="number"
+                    required
+                    value={rechargeForm.free_coupons}
+                    onChange={(e) =>
+                      setRechargeForm({ ...rechargeForm, free_coupons: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md font-mono font-bold text-slate-900"
+                  />
                 </div>
               </div>
 
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">Payment Method</label>
-                <select
-                  value={rechargeForm.paymentMethod}
-                  onChange={(e) => setRechargeForm({ ...rechargeForm, paymentMethod: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
-                >
-                  <option>Credit Card / Bank Transfer</option>
-                  <option>Cash at Office</option>
-                  <option>Corporate Cheque</option>
-                  <option>Salesman Handover</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">Receipt / Reference No.</label>
-                <input
-                  type="text"
-                  required
-                  value={rechargeForm.referenceNo}
-                  onChange={(e) => setRechargeForm({ ...rechargeForm, referenceNo: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
-                />
-              </div>
-
-              {/* Total Summary */}
-              <div className="bg-slate-50 border border-slate-200 rounded-md p-3 space-y-1.5 text-[11px]">
-                <div className="flex justify-between text-slate-600">
-                  <span>Gross Recharge:</span>
-                  <span className="font-mono font-bold">AED {parseFloat(rechargeForm.amount || 0).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-emerald-600">
-                  <span>Promotional Bonus ({rechargeForm.bonusPercent}%):</span>
-                  <span className="font-mono font-bold">+AED {(parseFloat(rechargeForm.amount || 0) * (parseFloat(rechargeForm.bonusPercent) / 100)).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between border-t border-slate-200 pt-1.5 text-xs font-bold text-slate-900">
-                  <span>Net Credited to Wallet:</span>
-                  <span className="font-mono text-emerald-700">
-                    AED {(parseFloat(rechargeForm.amount || 0) * (1 + parseFloat(rechargeForm.bonusPercent) / 100)).toFixed(2)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowRechargeModal(false)}
-                  className="px-3.5 py-1.5 text-slate-600 hover:bg-slate-100 rounded-md font-medium text-xs border border-slate-200"
+                  className="px-4 py-1.5 text-slate-600 hover:bg-slate-100 rounded-md font-semibold text-xs border border-slate-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-bold text-xs shadow-2xs transition-all active:scale-[0.98]"
+                  className="px-4 py-1.5 bg-[#FF5A5F] hover:bg-[#e5484d] text-white rounded-md font-bold text-xs shadow-2xs transition-all cursor-pointer"
                 >
-                  Confirm & Credit
+                  Recharge Wallet
                 </button>
               </div>
             </form>
@@ -725,89 +695,92 @@ export default function WalletPage() {
         </div>
       )}
 
-      {/* Statement History Modal */}
-      {showHistoryModal && selectedWallet && (
+      {/* Figma "View Coupons" Modal (3:1787 & 3:1788) */}
+      {showCouponsModal && selectedWallet && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white border border-slate-200 rounded-md w-full max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:p-5 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white border border-slate-200 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h2 className="text-sm font-bold text-slate-900">Wallet Statement: {selectedWallet.customer_name}</h2>
-                <p className="text-[11px] text-slate-400 font-mono">Code: {selectedWallet.customer_code}</p>
+                <h2 className="text-sm font-extrabold text-slate-900">
+                  Coupon Book Details — Recharge #{selectedWallet.recharge_id}
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Customer ID: <span className="font-mono font-bold">{selectedWallet.customer_id}</span> • Package:{" "}
+                  <span className="font-bold">{selectedWallet.coupon}</span> • Remaining:{" "}
+                  <span className="font-bold text-emerald-700">
+                    {selectedWallet.remaining} / {selectedWallet.paid_coupons}
+                  </span>
+                </p>
               </div>
               <button
-                onClick={() => setShowHistoryModal(false)}
+                type="button"
+                onClick={() => setShowCouponsModal(false)}
                 className="text-slate-400 hover:text-slate-700 p-1 rounded-md"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="bg-slate-50 border border-slate-200 rounded-md p-3">
-                <div className="text-[10px] text-slate-500 uppercase font-semibold">Current Balance</div>
-                <div className="text-base font-bold font-mono text-emerald-700 mt-0.5">
-                  AED {selectedWallet.balance.toFixed(2)}
-                </div>
-              </div>
-              <div className="bg-slate-50 border border-slate-200 rounded-md p-3">
-                <div className="text-[10px] text-slate-500 uppercase font-semibold">Reward Points</div>
-                <div className="text-base font-bold font-mono text-amber-600 mt-0.5">
-                  {selectedWallet.reward_points} PTS
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
-                Recent Transactions
-              </span>
-              <div className="border border-slate-200 rounded-md overflow-hidden text-xs">
-                <div className="overflow-x-auto touch-pan-x">
-                  <table className="w-full text-left border-collapse min-w-[350px]">
-                  <thead className="bg-[#5948DB] text-xs text-white border-b border-[#4A3AC9] font-semibold">
-                    <tr>
-                      <th className="px-3 py-2 border-r border-[#7161F0]/70 text-white font-semibold">Date</th>
-                      <th className="px-3 py-2 border-r border-[#7161F0]/70 text-white font-semibold">Description</th>
-                      <th className="px-3 py-2 text-right text-white font-semibold">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    <tr>
-                      <td className="px-3 py-2 font-mono text-[11px] border-r border-slate-100">2026-11-05</td>
-                      <td className="px-3 py-2 border-r border-slate-100 text-slate-700">Online Top-up (+Bonus)</td>
-                      <td className="px-3 py-2 text-right font-mono font-bold text-emerald-600">+AED 525.00</td>
-                    </tr>
-                    <tr>
-                      <td className="px-3 py-2 font-mono text-[11px] border-r border-slate-100">2026-11-04</td>
-                      <td className="px-3 py-2 border-r border-slate-100 text-slate-700">Order #ORD-7782 Payment</td>
-                      <td className="px-3 py-2 text-right font-mono font-bold text-rose-600">-AED 180.00</td>
-                    </tr>
-                    <tr>
-                      <td className="px-3 py-2 font-mono text-[11px] border-r border-slate-100">2026-10-30</td>
-                      <td className="px-3 py-2 border-r border-slate-100 text-slate-700">Order #ORD-7740 Payment</td>
-                      <td className="px-3 py-2 text-right font-mono font-bold text-rose-600">-AED 120.00</td>
-                    </tr>
-                  </tbody>
-                </table>
-                </div>
-              </div>
+            <div className="border border-slate-200 rounded-md overflow-hidden text-xs">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-[#5948DB] text-white font-semibold">
+                  <tr>
+                    <th className="px-3.5 py-2.5 border-r border-[#7161F0]/70">COUPON LEAF #</th>
+                    <th className="px-3.5 py-2.5 border-r border-[#7161F0]/70">SERIAL CODE</th>
+                    <th className="px-3.5 py-2.5 border-r border-[#7161F0]/70">VALUE</th>
+                    <th className="px-3.5 py-2.5 border-r border-[#7161F0]/70">REDEEMED DATE</th>
+                    <th className="px-3.5 py-2.5 text-center">STATUS</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 font-medium">
+                  {Array.from({ length: Math.min(selectedWallet.paid_coupons || 10, 10) }).map(
+                    (_, idx) => {
+                      const usedCount =
+                        (selectedWallet.paid_coupons || 10) - (selectedWallet.remaining || 10);
+                      const isUsed = idx < usedCount;
+                      const unitVal = (
+                        (selectedWallet.amount || 50) / (selectedWallet.paid_coupons || 10)
+                      ).toFixed(2);
+                      return (
+                        <tr key={idx} className="hover:bg-slate-50">
+                          <td className="px-3.5 py-2 font-mono font-bold text-slate-700 border-r border-slate-200">
+                            Leaf #{idx + 1}
+                          </td>
+                          <td className="px-3.5 py-2 font-mono text-blue-700 border-r border-slate-200">
+                            {selectedWallet.recharge_id.toUpperCase()}-0{idx + 1}
+                          </td>
+                          <td className="px-3.5 py-2 font-mono text-slate-800 border-r border-slate-200">
+                            AED {unitVal}
+                          </td>
+                          <td className="px-3.5 py-2 font-mono text-slate-500 border-r border-slate-200">
+                            {isUsed ? "08/09/2026" : "—"}
+                          </td>
+                          <td className="px-3.5 py-2 text-center">
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                                isUsed
+                                  ? "bg-slate-100 text-slate-600 border-slate-300"
+                                  : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              }`}
+                            >
+                              {isUsed ? "Redeemed" : "Available"}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  )}
+                </tbody>
+              </table>
             </div>
 
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
-                onClick={() => {
-                  setShowHistoryModal(false);
-                  addToast("Statement exported as PDF", "success");
-                }}
-                className="px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-md text-xs font-semibold"
+                type="button"
+                onClick={() => setShowCouponsModal(false)}
+                className="px-4 py-1.5 bg-[#5948DB] hover:bg-[#4A3AC9] text-white rounded-md text-xs font-bold cursor-pointer"
               >
-                Download PDF
-              </button>
-              <button
-                onClick={() => setShowHistoryModal(false)}
-                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold"
-              >
-                Done
+                Close
               </button>
             </div>
           </div>
@@ -820,8 +793,10 @@ export default function WalletPage() {
           <div className="bg-white border border-slate-200 rounded-xl w-full max-w-lg p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-sm font-semibold text-slate-900">Edit Customer Wallet</h3>
-                <p className="text-[11px] text-slate-500">{editingWallet.customer_name} ({editingWallet.customer_id})</p>
+                <h3 className="text-sm font-semibold text-slate-900">Edit Wallet Recharge</h3>
+                <p className="text-[11px] text-slate-500">
+                  Recharge #{editingWallet.recharge_id} (Customer {editingWallet.customer_id})
+                </p>
               </div>
               <button
                 type="button"
@@ -835,51 +810,51 @@ export default function WalletPage() {
             <form onSubmit={handleUpdateWallet} className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-700 font-medium block mb-1">Wallet Balance (AED)</label>
+                  <label className="text-slate-700 font-medium block mb-1">Remaining Coupons</label>
                   <input
                     type="number"
-                    step="0.01"
-                    value={editingWallet.balance}
-                    onChange={(e) => setEditingWallet({ ...editingWallet, balance: parseFloat(e.target.value) || 0 })}
+                    value={editingWallet.remaining}
+                    onChange={(e) =>
+                      setEditingWallet({
+                        ...editingWallet,
+                        remaining: parseInt(e.target.value) || 0,
+                      })
+                    }
                     className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-900 font-mono font-medium"
                   />
                 </div>
                 <div>
-                  <label className="text-slate-700 font-medium block mb-1">Reward Points</label>
+                  <label className="text-slate-700 font-medium block mb-1">
+                    Wallet Balance (AED)
+                  </label>
                   <input
                     type="number"
-                    value={editingWallet.reward_points}
-                    onChange={(e) => setEditingWallet({ ...editingWallet, reward_points: parseInt(e.target.value) || 0 })}
+                    step="0.01"
+                    value={editingWallet.balance}
+                    onChange={(e) =>
+                      setEditingWallet({
+                        ...editingWallet,
+                        balance: parseFloat(e.target.value) || 0,
+                      })
+                    }
                     className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-900 font-mono font-medium"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="text-slate-700 font-medium block mb-1">Status</label>
-                <select
-                  value={editingWallet.status}
-                  onChange={(e) => setEditingWallet({ ...editingWallet, status: e.target.value })}
-                  className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-900 font-medium"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
               </div>
 
               <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setEditingWallet(null)}
-                  className="px-3.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium text-xs transition-colors"
+                  className="px-3.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs shadow-xs transition-colors"
+                  className="px-4 py-1.5 rounded-lg bg-[#5948DB] hover:bg-[#4A3AC9] text-white font-medium text-xs shadow-xs"
                 >
-                  Save Changes to Database
+                  Save Changes
                 </button>
               </div>
             </form>
@@ -898,11 +873,10 @@ export default function WalletPage() {
               <div className="space-y-1">
                 <h3 className="text-sm font-bold text-slate-900">Confirm Move to Deleted</h3>
                 <p className="text-xs text-slate-500">
-                  Are you sure you want to delete wallet for <strong className="text-slate-800">{deleteTarget.customer_name}</strong> ({deleteTarget.customer_code || deleteTarget.customer_id})?
+                  Are you sure you want to delete wallet recharge{" "}
+                  <strong className="text-slate-800">{deleteTarget.recharge_id}</strong> (Customer{" "}
+                  <strong className="text-slate-800">{deleteTarget.customer_id}</strong>)?
                 </p>
-                <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-[11px] text-rose-800 mt-2 font-medium">
-                  This wallet record will be marked as Deleted, highlighted with a <strong>prominent red border</strong>, and can be restored at any time.
-                </div>
               </div>
             </div>
 
@@ -910,14 +884,14 @@ export default function WalletPage() {
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
-                className="px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                className="px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={confirmDeleteWallet}
-                className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-all active:scale-[0.98] cursor-pointer flex items-center gap-1.5"
+                className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Move to Deleted</span>
@@ -949,9 +923,7 @@ export default function WalletPage() {
 
             <div>
               <h3 className="text-base font-bold text-slate-900">{crudPopup.title}</h3>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                {crudPopup.message}
-              </p>
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">{crudPopup.message}</p>
             </div>
 
             <div className="pt-2">
