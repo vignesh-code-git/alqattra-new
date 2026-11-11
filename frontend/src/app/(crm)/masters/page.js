@@ -249,12 +249,12 @@ export default function MastersPage() {
           /* Main Table iOS Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
             {/* Header Banner */}
-            <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4 flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
               <div>
-                <h2 className="text-white font-bold text-[15px] tracking-tight">
+                <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">
                   Manage Master Data Records
                 </h2>
-                <p className="text-white/60 text-[11px] mt-0.5">Control employee accounts and designations</p>
+                <p className="text-[#8E8E93] text-[11px] mt-0.5">Control employee accounts and designations</p>
               </div>
             </div>
 
@@ -296,45 +296,45 @@ export default function MastersPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-[#F2F2F7] border-b border-[#3C3C43]/10 text-[11px] font-semibold text-[#8E8E93] tracking-wider uppercase">
+                  <tr className="bg-[#007AFF] text-white text-[11px] font-semibold tracking-wider uppercase">
                     <th className="py-3 px-6">
                       <div className="flex items-center justify-between">
                         <span>CUSTOMER NAME</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                        <ArrowUpDown className="w-3 h-3 text-white/70" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>CUSTOMER ID</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                        <ArrowUpDown className="w-3 h-3 text-white/70" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>REGISTERED ON</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                        <ArrowUpDown className="w-3 h-3 text-white/70" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>CONTACT</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                        <ArrowUpDown className="w-3 h-3 text-white/70" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>LAST LOGIN</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                        <ArrowUpDown className="w-3 h-3 text-white/70" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>LAST LOGOUT</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                        <ArrowUpDown className="w-3 h-3 text-white/70" />
                       </div>
                     </th>
                     <th className="py-3 px-6 text-right">
-                      <ArrowUpDown className="w-3 h-3 text-[#8E8E93] inline" />
+                      <ArrowUpDown className="w-3 h-3 text-white/70 inline" />
                     </th>
                   </tr>
                 </thead>
@@ -401,8 +401,8 @@ export default function MastersPage() {
         ) : (
           /* Add New / Edit Employee Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden max-w-3xl mx-auto">
-            <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4">
-              <h2 className="text-white font-bold text-[15px] tracking-tight">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">
                 {viewMode === "edit" ? "Update Employee Record" : "Employee Registration"}
               </h2>
             </div>

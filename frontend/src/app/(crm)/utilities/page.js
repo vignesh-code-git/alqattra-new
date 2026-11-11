@@ -566,9 +566,9 @@ export default function UtilitiesPage() {
         {/* 1. STORE INVENTORY LIST VIEW */}
         {subView === "list" && activeTab === "store" && (
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
-            <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4">
-              <h2 className="text-white font-bold text-[15px] tracking-tight">Warehouse Inventory</h2>
-              <p className="text-white/60 text-[11px] mt-0.5">Stock availability, damages, and replenishment</p>
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Warehouse Inventory</h2>
+              <p className="text-[#8E8E93] text-xs mt-0.5">Stock availability, damages, and replenishment</p>
             </div>
 
             <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
@@ -600,7 +600,7 @@ export default function UtilitiesPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-[#F2F2F7] border-b border-[#3C3C43]/10 text-[11px] font-semibold text-[#8E8E93] tracking-wider uppercase">
+                  <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                     {[
                       "PRODUCT ID",
                       "ITEM",
@@ -688,11 +688,11 @@ export default function UtilitiesPage() {
         {/* 2. CAR STOCK TRANSACTION LIST VIEW */}
         {subView === "list" && activeTab === "car" && (
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
-            <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4">
-              <h2 className="text-white font-bold text-[15px] tracking-tight">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Truck Fleet & Vehicle Stock
               </h2>
-              <p className="text-white/60 text-[11px] mt-0.5">Mobile truck stock tracking and route distribution</p>
+              <p className="text-[#8E8E93] text-xs mt-0.5">Mobile truck stock tracking and route distribution</p>
             </div>
 
             <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
@@ -723,7 +723,7 @@ export default function UtilitiesPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-[#F2F2F7] border-b border-[#3C3C43]/10 text-[11px] font-semibold text-[#8E8E93] tracking-wider uppercase">
+                  <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                     {[
                       "TRUCK ID",
                       "IN-CHARGE",
@@ -829,8 +829,8 @@ export default function UtilitiesPage() {
         {subView === "update_inventory" && (
           <div className="space-y-6">
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                <h2 className="text-white font-semibold text-base tracking-tight">Update Stock</h2>
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Update Stock</h2>
               </div>
 
               <form onSubmit={handleAddInputStock} className="p-8 space-y-4 max-w-5xl mx-auto">
@@ -940,14 +940,14 @@ export default function UtilitiesPage() {
 
             {/* Bottom Input Stocks Table Card */}
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                <h2 className="text-white font-semibold text-base tracking-tight">Input Stocks</h2>
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Input Stocks</h2>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {[
                         "DATE",
                         "ITEM ID",
@@ -1005,8 +1005,8 @@ export default function UtilitiesPage() {
         {/* 4. ADD NEW ITEM SUB-VIEW (add new item.png) */}
         {subView === "add_item" && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-semibold text-base tracking-tight">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Add / Update Product
               </h2>
             </div>
@@ -1149,15 +1149,15 @@ export default function UtilitiesPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                <h2 className="text-white font-semibold text-base tracking-tight">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Stock Transaction History - {selectedItem.item} ({selectedItem.product_id})
                 </h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {["DATE", "STORE", "ITEM", "ITEM TYPE", "QUANTITY", "UPDATED BY"].map(
                         (col) => (
                           <th key={col} className="py-3 px-6">
@@ -1188,8 +1188,8 @@ export default function UtilitiesPage() {
         {/* 6. ADD NEW TRUCK SUB-VIEW (add-new truck.png) */}
         {subView === "add_truck" && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-semibold text-base tracking-tight">Add New Truck</h2>
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Add New Truck</h2>
             </div>
 
             <form onSubmit={handleAddNewTruck} className="p-8 space-y-5 max-w-5xl mx-auto">
@@ -1269,8 +1269,8 @@ export default function UtilitiesPage() {
         {/* 7. MANAGE TRUCK STOCK SUB-VIEW (truck-manage.png) */}
         {subView === "manage_truck" && selectedTruck && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-semibold text-base tracking-tight">Manage Truck Stock</h2>
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Manage Truck Stock</h2>
             </div>
 
             <div className="p-8 space-y-6">
@@ -1394,10 +1394,10 @@ export default function UtilitiesPage() {
               </form>
 
               {/* Truck Stock Table inside Manage Truck Stock */}
-              <div className="overflow-x-auto border-t border-[#3C3C43]/10 pt-4">
+              <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl overflow-hidden mt-4">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {[
                         "PRODUCT",
                         "ADDED",
@@ -1475,10 +1475,10 @@ export default function UtilitiesPage() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse border-t border-[#3C3C43]/10">
+              <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
+                <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7]/60 border-b border-[#3C3C43]/10 text-[10px] font-semibold text-[#8E8E93] uppercase">
+                    <tr className="bg-[#007AFF] text-white text-[10px] font-semibold uppercase tracking-wider">
                       {[
                         "ITEM",
                         "ADDED",

@@ -168,9 +168,9 @@ export default function RoutesPage() {
           /* Main Routes iOS Table Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
             {/* Header Banner */}
-            <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4">
-              <h2 className="text-white font-bold text-[15px] tracking-tight">Manage Fleet Routes</h2>
-              <p className="text-white/60 text-[11px] mt-0.5">Assigned city territories and delivery channels</p>
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">Manage Fleet Routes</h2>
+              <p className="text-[#8E8E93] text-[11px] mt-0.5">Assigned city territories and delivery channels</p>
             </div>
 
             {/* Show Entries & Search Bar */}
@@ -211,35 +211,35 @@ export default function RoutesPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-[#F2F2F7] border-b border-[#3C3C43]/10 text-[11px] font-semibold text-[#8E8E93] tracking-wider uppercase">
+                  <tr className="bg-[#007AFF] text-white text-[11px] font-semibold tracking-wider uppercase">
                     <th className="py-3 px-6">
                       <div className="flex items-center justify-between">
                         <span>ROUTE ID</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                        <ArrowUpDown className="w-3 h-3 text-white/70" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>CITY</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                        <ArrowUpDown className="w-3 h-3 text-white/70" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>CREATION DATE</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                        <ArrowUpDown className="w-3 h-3 text-white/70" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>UPDATED AT</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                        <ArrowUpDown className="w-3 h-3 text-white/70" />
                       </div>
                     </th>
                     <th className="py-3 px-6">
                       <div className="flex items-center justify-between">
                         <span>ACTIONS</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                        <ArrowUpDown className="w-3 h-3 text-white/70" />
                       </div>
                     </th>
                   </tr>
@@ -300,8 +300,8 @@ export default function RoutesPage() {
         ) : (
           /* Add New Route iOS Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden max-w-2xl mx-auto">
-            <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4">
-              <h2 className="text-white font-bold text-[15px] tracking-tight">Add New Route</h2>
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">Add New Route</h2>
             </div>
 
             <form onSubmit={handleAddRoute} className="p-8 space-y-5">

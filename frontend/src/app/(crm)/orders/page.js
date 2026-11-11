@@ -702,15 +702,15 @@ export default function OrdersPage() {
 
             {/* Orders Management iOS Table Card */}
             <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4 flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
                 <div>
-                  <h2 className="text-white font-bold text-[15px] tracking-tight">Orders Management</h2>
-                  <p className="text-white/60 text-[11px] mt-0.5">Live delivery records, billing and status</p>
+                  <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Orders Management</h2>
+                  <p className="text-[#8E8E93] text-xs mt-0.5">Live delivery records, billing and status</p>
                 </div>
                 <button
                   type="button"
                   onClick={handleExportCSV}
-                  className="px-4 py-1.5 rounded-full bg-[#34C759] hover:bg-[#2FB34F] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-sm shadow-[#34C759]/20"
+                  className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-[0_2px_8px_rgba(0,122,255,0.25)] active:scale-95 transition"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Download
@@ -746,7 +746,7 @@ export default function OrdersPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-b border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] tracking-wider uppercase">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold tracking-wider uppercase">
                       {[
                         "DELIVERY NOTE",
                         "INVOICE NO.",
@@ -763,7 +763,7 @@ export default function OrdersPage() {
                         <th key={col} className="py-3 px-3.5 first:pl-6 last:pr-6 whitespace-nowrap">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 text-white/70 shrink-0" />
                           </div>
                         </th>
                       ))}
@@ -847,8 +847,8 @@ export default function OrdersPage() {
         {/* NEW ORDER SUB-VIEW (new orders.png) */}
         {viewMode === "new" && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-semibold text-base tracking-tight">Order Information</h2>
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Order Information</h2>
             </div>
 
             <div className="p-8 space-y-6">
@@ -928,7 +928,7 @@ export default function OrdersPage() {
                 <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#F2F2F7]/60 border-b border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase">
+                      <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                         <th className="py-2.5 px-4">PRODUCT</th>
                         <th className="py-2.5 px-4">QUANTITY</th>
                         <th className="py-2.5 px-4">TYPE</th>
@@ -1080,8 +1080,8 @@ export default function OrdersPage() {
         {/* EDIT ORDER SUB-VIEW (edit orders.png) */}
         {viewMode === "edit" && editingOrder && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-semibold text-base tracking-tight">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Update Order #{editingOrder.delivery_note}
               </h2>
             </div>
@@ -1213,7 +1213,7 @@ export default function OrdersPage() {
                 <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#F2F2F7]/60 border-b border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase">
+                      <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                         <th className="py-2.5 px-4">PRODUCT NAME</th>
                         <th className="py-2.5 px-4">QUANTITY</th>
                         <th className="py-2.5 px-4">LEND/RETURN</th>
@@ -1377,16 +1377,17 @@ export default function OrdersPage() {
 
               <div>
                 <div className="font-semibold text-[#1C1C1E] mb-2 text-xs">Order Items</div>
-                <table className="w-full text-left border-collapse border-t border-[#3C3C43]/10">
-                  <thead>
-                    <tr className="bg-[#F2F2F7]/60 border-b border-[#3C3C43]/10 text-[10px] font-semibold text-[#8E8E93] uppercase">
-                      <th className="py-2.5 px-3">PRODUCT</th>
-                      <th className="py-2.5 px-3">LEND TYPE</th>
-                      <th className="py-2.5 px-3">QUANTITY</th>
-                      <th className="py-2.5 px-3">UNIT PRICE</th>
-                      <th className="py-2.5 px-3">TOTAL</th>
-                    </tr>
-                  </thead>
+                <div className="border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-[#007AFF] text-white text-[10px] font-semibold uppercase tracking-wider">
+                        <th className="py-2.5 px-3">PRODUCT</th>
+                        <th className="py-2.5 px-3">LEND TYPE</th>
+                        <th className="py-2.5 px-3">QUANTITY</th>
+                        <th className="py-2.5 px-3">UNIT PRICE</th>
+                        <th className="py-2.5 px-3">TOTAL</th>
+                      </tr>
+                    </thead>
                   <tbody className="divide-y divide-[#3C3C43]/10">
                     {(viewModalOrder.items || []).map((it, idx) => (
                       <tr key={idx}>
@@ -1420,9 +1421,10 @@ export default function OrdersPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
 
-              <div>
-                <div className="font-semibold text-[#1C1C1E] mb-1 text-xs">Delivery Notes</div>
+            <div>
+              <div className="font-semibold text-[#1C1C1E] mb-1 text-xs">Delivery Notes</div>
                 <div className="text-[#8E8E93]">No special instructions</div>
               </div>
 

@@ -320,8 +320,8 @@ export default function InvoicesPage() {
 
             {/* Invoices Management Table Card */}
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                <h2 className="text-white font-semibold text-base tracking-tight">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Invoices Management
                 </h2>
               </div>
@@ -354,7 +354,7 @@ export default function InvoicesPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {[
                         "INVOICE NO.",
                         "CUSTOMER NAME",
@@ -369,7 +369,7 @@ export default function InvoicesPage() {
                         <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 text-white/70 shrink-0" />
                           </div>
                         </th>
                       ))}
@@ -436,8 +436,8 @@ export default function InvoicesPage() {
         ) : (
           /* GENERATE INVOICE SUB-VIEW (generate-invoices.png) */
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-semibold text-base tracking-tight">Billing Information</h2>
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Billing Information</h2>
             </div>
 
             <div className="p-8 space-y-6">
@@ -529,7 +529,7 @@ export default function InvoicesPage() {
                 <div className="overflow-x-auto border-x border-b border-[#3C3C43]/10 rounded-b-2xl">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#F2F2F7]/40 border-b border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase">
+                      <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                         {[
                           "CUSTOMER NAME",
                           "CUSTOMER ID",
@@ -654,16 +654,17 @@ export default function InvoicesPage() {
 
               <div>
                 <div className="font-semibold text-[#1C1C1E] mb-2 text-xs">Order Items</div>
-                <table className="w-full text-left border-collapse border-t border-[#3C3C43]/10">
-                  <thead>
-                    <tr className="bg-[#F2F2F7]/60 border-b border-[#3C3C43]/10 text-[10px] font-semibold text-[#8E8E93] uppercase">
-                      <th className="py-2.5 px-3">PRODUCT</th>
-                      <th className="py-2.5 px-3">LEND TYPE</th>
-                      <th className="py-2.5 px-3">QUANTITY</th>
-                      <th className="py-2.5 px-3">UNIT PRICE</th>
-                      <th className="py-2.5 px-3">TOTAL</th>
-                    </tr>
-                  </thead>
+                <div className="border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-[#007AFF] text-white text-[10px] font-semibold uppercase tracking-wider">
+                        <th className="py-2.5 px-3">PRODUCT</th>
+                        <th className="py-2.5 px-3">LEND TYPE</th>
+                        <th className="py-2.5 px-3">QUANTITY</th>
+                        <th className="py-2.5 px-3">UNIT PRICE</th>
+                        <th className="py-2.5 px-3">TOTAL</th>
+                      </tr>
+                    </thead>
                   <tbody className="divide-y divide-[#3C3C43]/10">
                     {(viewModalInvoice.items || []).map((it, idx) => (
                       <tr key={idx}>
@@ -685,9 +686,10 @@ export default function InvoicesPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
 
-              <div>
-                <div className="font-semibold text-[#1C1C1E] mb-1 text-xs">Delivery Notes</div>
+            <div>
+              <div className="font-semibold text-[#1C1C1E] mb-1 text-xs">Delivery Notes</div>
                 <div className="text-[#8E8E93]">No special instructions</div>
               </div>
             </div>

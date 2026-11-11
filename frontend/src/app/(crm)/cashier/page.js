@@ -584,15 +584,15 @@ export default function CashierPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4 flex items-center justify-between">
-                <h2 className="text-white font-semibold text-base tracking-tight">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Payment Collection Details
                 </h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {[
                         "DATE",
                         "SALESMAN ID",
@@ -665,8 +665,8 @@ export default function CashierPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4 flex items-center justify-between">
-                <h2 className="text-white font-semibold text-base tracking-tight">Pending Payments</h2>
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Pending Payments</h2>
               </div>
 
               <div className="px-6 py-3.5 bg-[#F2F2F7]/50 border-b border-[#E5E5EA] flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
@@ -699,7 +699,7 @@ export default function CashierPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {[
                         "SALESMAN ID",
                         "SALESMAN NAME",
@@ -714,7 +714,7 @@ export default function CashierPage() {
                         <th key={c} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{c}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                            <ArrowUpDown className="w-3 h-3 text-white/70" />
                           </div>
                         </th>
                       ))}
@@ -796,8 +796,8 @@ export default function CashierPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4 flex items-center justify-between">
-                <h2 className="text-white font-semibold text-base tracking-tight">Customer Credits</h2>
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Customer Credits</h2>
               </div>
 
               <div className="px-6 py-3.5 bg-[#F2F2F7]/50 border-b border-[#E5E5EA] flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
@@ -823,7 +823,7 @@ export default function CashierPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {[
                         "CUSTOMER ID",
                         "NAME",
@@ -836,7 +836,7 @@ export default function CashierPage() {
                         <th key={c} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{c}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                            <ArrowUpDown className="w-3 h-3 text-white/70" />
                           </div>
                         </th>
                       ))}

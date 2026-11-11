@@ -489,14 +489,14 @@ export default function ReportsPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4 flex items-center justify-between">
-                <h2 className="text-white font-semibold text-base tracking-tight">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Salesman Collection Report
                 </h2>
                 <button
                   type="button"
                   onClick={() => addToast("Exported Salesman Report CSV", "success")}
-                  className="px-4 py-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-all cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Export
@@ -505,7 +505,7 @@ export default function ReportsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {[
                         "SALESMAN",
                         "ROUTE",
@@ -644,12 +644,12 @@ export default function ReportsPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4 flex items-center justify-between">
-                <h2 className="text-white font-semibold text-base tracking-tight">Customer Report</h2>
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Customer Report</h2>
                 <button
                   type="button"
                   onClick={() => addToast("Exported Customer Report", "success")}
-                  className="px-4 py-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-all cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Export
@@ -658,7 +658,7 @@ export default function ReportsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {[
                         "ID",
                         "NAME",
@@ -672,7 +672,7 @@ export default function ReportsPage() {
                         <th key={c} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{c}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                            <ArrowUpDown className="w-3 h-3 text-white/70" />
                           </div>
                         </th>
                       ))}
@@ -772,13 +772,13 @@ export default function ReportsPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4 flex items-center justify-between">
-                <h2 className="text-white font-semibold text-base tracking-tight">Truck Report</h2>
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Truck Report</h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {[
                         "TRUCK ID",
                         "SALESMAN",
@@ -792,7 +792,7 @@ export default function ReportsPage() {
                         <th key={c} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{c}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                            <ArrowUpDown className="w-3 h-3 text-white/70" />
                           </div>
                         </th>
                       ))}
@@ -872,15 +872,15 @@ export default function ReportsPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4">
-                <h2 className="text-white font-semibold text-base tracking-tight">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Commission Report
                 </h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {[
                         "SALESMAN",
                         "CITY",

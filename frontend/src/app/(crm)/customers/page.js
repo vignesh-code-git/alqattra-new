@@ -775,27 +775,32 @@ export default function CustomersPage() {
 
             {/* Customer Management Table Card */}
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4 flex items-center justify-between">
-                <h2 className="text-white font-semibold text-base tracking-tight">
-                  Customer Management
-                </h2>
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+                <div>
+                  <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
+                    Customer Management
+                  </h2>
+                  <p className="text-[#8E8E93] text-xs mt-0.5">
+                    Live customer directory, deliveries and transactions
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={() => addToast("Exported customer records", "success")}
-                  className="px-4 py-1.5 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95 transition"
+                  className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-[0_2px_8px_rgba(0,122,255,0.25)] active:scale-95 transition"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Export
                 </button>
               </div>
 
-              <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
+              <div className="px-6 py-4 bg-[#F2F2F7]/50 border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
                 <div className="flex items-center gap-2">
                   <span>Show</span>
                   <select
                     value={entriesPerPage}
                     onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                    className="border border-[#3C3C43]/15 rounded-xl px-3 py-1.5 bg-[#F2F2F7] text-[#1C1C1E] font-medium focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                    className="border border-[#3C3C43]/15 rounded-xl px-3 py-1.5 bg-white text-[#1C1C1E] font-medium focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
@@ -809,7 +814,7 @@ export default function CustomersPage() {
                     value={searchQuery}
                     placeholder="Search customers..."
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="border border-[#3C3C43]/15 rounded-full px-3.5 py-1.5 w-52 bg-[#F2F2F7] text-[#1C1C1E] text-xs focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                    className="border border-[#3C3C43]/15 rounded-full px-3.5 py-1.5 w-52 bg-white text-[#1C1C1E] text-xs focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   />
                 </div>
               </div>
@@ -817,7 +822,7 @@ export default function CustomersPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       {[
                         "CUSTOMER NAME",
                         "CUSTOMER ID",
@@ -831,7 +836,7 @@ export default function CustomersPage() {
                         <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 text-white/70 shrink-0" />
                           </div>
                         </th>
                       ))}
@@ -903,16 +908,21 @@ export default function CustomersPage() {
         {/* 2. DELETED CUSTOMERS SUB-VIEW (delt-customers.png) */}
         {viewMode === "deleted" && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-semibold text-base tracking-tight">
-                Deleted Customer Details
-              </h2>
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+              <div>
+                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
+                  Deleted Customer Details
+                </h2>
+                <p className="text-[#8E8E93] text-xs mt-0.5">
+                  Archived accounts and historical delivery records
+                </p>
+              </div>
             </div>
 
-            <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
+            <div className="px-6 py-4 bg-[#F2F2F7]/50 border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
               <div className="flex items-center gap-2">
                 <span>Show</span>
-                <select className="border border-[#3C3C43]/15 rounded-xl px-3 py-1.5 bg-[#F2F2F7] text-[#1C1C1E]">
+                <select className="border border-[#3C3C43]/15 rounded-xl px-3 py-1.5 bg-white text-[#1C1C1E]">
                   <option>10</option>
                 </select>
                 <span>entries</span>
@@ -924,7 +934,7 @@ export default function CustomersPage() {
                   value={searchQuery}
                   placeholder="Search deleted..."
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border border-[#3C3C43]/15 rounded-full px-3.5 py-1.5 w-52 bg-[#F2F2F7] text-[#1C1C1E] text-xs focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  className="border border-[#3C3C43]/15 rounded-full px-3.5 py-1.5 w-52 bg-white text-[#1C1C1E] text-xs focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                 />
               </div>
             </div>
@@ -932,7 +942,7 @@ export default function CustomersPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                  <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                     {[
                       "CUSTOMER NAME",
                       "CUSTOMER ID",
@@ -1008,8 +1018,8 @@ export default function CustomersPage() {
         {/* 3. NEW CUSTOMER & EDIT CUSTOMER SUB-VIEWS (new customer.png & edit customer.png) */}
         {(viewMode === "new" || viewMode === "edit") && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-semibold text-base tracking-tight">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 {viewMode === "edit"
                   ? `Edit Customer - ${selectedCustomer?.name || ""}`
                   : "Add New Customer"}
@@ -1462,15 +1472,15 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                    <h2 className="text-white font-semibold text-base tracking-tight">
+                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                    <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Asset History of {selectedCustomer.customer_id}
                     </h2>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase">
+                        <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                           {[
                             "CREATED AT",
                             "ASSET TYPE",
@@ -1594,15 +1604,15 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                    <h2 className="text-white font-semibold text-base tracking-tight">
+                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                    <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Order History of {selectedCustomer.customer_id}
                     </h2>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase">
+                        <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                           {[
                             "CREATED AT",
                             "TRUCK ID",
@@ -1680,15 +1690,15 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                    <h2 className="text-white font-semibold text-base tracking-tight">
+                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                    <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Payment History of {selectedCustomer.customer_id}
                     </h2>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase">
+                        <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                           {[
                             "ORDER ID",
                             "DATE",
@@ -1754,15 +1764,15 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                    <h2 className="text-white font-semibold text-base tracking-tight">
+                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                    <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Wallet Recharge of {selectedCustomer.customer_id}
                     </h2>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase">
+                        <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                           {[
                             "UPDATED AT",
                             "RECHARGE CODE",
@@ -2140,7 +2150,7 @@ export default function CustomersPage() {
               <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       <th className="py-2.5 px-3.5">PRODUCT</th>
                       <th className="py-2.5 px-3.5">LEND TYPE</th>
                       <th className="py-2.5 px-3.5">QUANTITY</th>
@@ -2215,7 +2225,7 @@ export default function CustomersPage() {
               <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       <th className="py-3 px-3.5">COUPON CODE</th>
                       <th className="py-3 px-3.5">PRODUCT</th>
                       <th className="py-3 px-3.5">TYPE</th>

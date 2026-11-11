@@ -249,8 +249,8 @@ export default function WalletPage() {
         {viewMode === "list" ? (
           /* Main Wallet Table Card (wallets.png) */
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4">
-              <h2 className="text-white font-semibold text-base tracking-tight">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Wallet Management
               </h2>
             </div>
@@ -283,7 +283,7 @@ export default function WalletPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                  <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                     {[
                       "RECHARGE ID",
                       "CUSTOMER ID",
@@ -297,10 +297,10 @@ export default function WalletPage() {
                       "UPDATED ON",
                       "ACTIONS",
                     ].map((col) => (
-                      <th key={col} className="py-3 px-4 first:pl-6 last:pr-6 whitespace-nowrap">
+                      <th key={col} className="py-3.5 px-4 first:pl-6 last:pr-6 whitespace-nowrap">
                         <div className="flex items-center justify-between gap-1">
                           <span>{col}</span>
-                          <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
+                          <ArrowUpDown className="w-3 h-3 text-white/70 shrink-0" />
                         </div>
                       </th>
                     ))}
@@ -361,8 +361,8 @@ export default function WalletPage() {
         ) : (
           /* WALLET RECHARGE SUB-VIEW (wallet recharge.png) */
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden max-w-4xl mx-auto">
-            <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4">
-              <h2 className="text-white font-semibold text-base tracking-tight">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Create Wallet Recharge Order
               </h2>
             </div>
@@ -564,7 +564,7 @@ export default function WalletPage() {
               <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
                       <th className="py-2.5 px-3.5">COUPON ID</th>
                       <th className="py-2.5 px-3.5">AMOUNT</th>
                       <th className="py-2.5 px-3.5">TYPE</th>
