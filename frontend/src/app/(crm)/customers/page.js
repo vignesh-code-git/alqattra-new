@@ -822,7 +822,7 @@ export default function CustomersPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       {[
                         "CUSTOMER NAME",
                         "CUSTOMER ID",
@@ -836,7 +836,7 @@ export default function CustomersPage() {
                         <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-white/70 shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
                           </div>
                         </th>
                       ))}
@@ -942,7 +942,7 @@ export default function CustomersPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                  <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                     {[
                       "CUSTOMER NAME",
                       "CUSTOMER ID",
@@ -1480,7 +1480,7 @@ export default function CustomersPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                        <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                           {[
                             "CREATED AT",
                             "ASSET TYPE",
@@ -1612,7 +1612,7 @@ export default function CustomersPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                        <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                           {[
                             "CREATED AT",
                             "TRUCK ID",
@@ -1698,7 +1698,7 @@ export default function CustomersPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                        <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                           {[
                             "ORDER ID",
                             "DATE",
@@ -1772,7 +1772,7 @@ export default function CustomersPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                        <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                           {[
                             "UPDATED AT",
                             "RECHARGE CODE",
@@ -2150,7 +2150,7 @@ export default function CustomersPage() {
               <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       <th className="py-2.5 px-3.5">PRODUCT</th>
                       <th className="py-2.5 px-3.5">LEND TYPE</th>
                       <th className="py-2.5 px-3.5">QUANTITY</th>
@@ -2225,7 +2225,7 @@ export default function CustomersPage() {
               <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       <th className="py-3 px-3.5">COUPON CODE</th>
                       <th className="py-3 px-3.5">PRODUCT</th>
                       <th className="py-3 px-3.5">TYPE</th>

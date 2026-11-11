@@ -600,7 +600,7 @@ export default function UtilitiesPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                  <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                     {[
                       "PRODUCT ID",
                       "ITEM",
@@ -723,7 +723,7 @@ export default function UtilitiesPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                  <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                     {[
                       "TRUCK ID",
                       "IN-CHARGE",
@@ -947,7 +947,7 @@ export default function UtilitiesPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       {[
                         "DATE",
                         "ITEM ID",
@@ -1157,7 +1157,7 @@ export default function UtilitiesPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       {["DATE", "STORE", "ITEM", "ITEM TYPE", "QUANTITY", "UPDATED BY"].map(
                         (col) => (
                           <th key={col} className="py-3 px-6">
@@ -1397,7 +1397,7 @@ export default function UtilitiesPage() {
               <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl overflow-hidden mt-4">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       {[
                         "PRODUCT",
                         "ADDED",
@@ -1478,7 +1478,7 @@ export default function UtilitiesPage() {
               <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[10px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[10px] font-semibold text-[#636366] uppercase tracking-wider">
                       {[
                         "ITEM",
                         "ADDED",

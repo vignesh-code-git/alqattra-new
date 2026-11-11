@@ -12,7 +12,7 @@ export default function CRMLayout({ children }) {
         <SidebarProvider>
           <div className="min-h-screen bg-[#F2F2F7] flex text-[#1C1C1E]">
             <Sidebar />
-            <div className="flex-1 ml-0 lg:ml-64 flex flex-col min-w-0 bg-[#F2F2F7] min-h-screen">
+            <div className="flex-1 ml-0 lg:ml-20 flex flex-col min-w-0 bg-[#F2F2F7] min-h-screen">
               {children}
             </div>
           </div>

@@ -592,7 +592,7 @@ export default function CashierPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       {[
                         "DATE",
                         "SALESMAN ID",
@@ -699,7 +699,7 @@ export default function CashierPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       {[
                         "SALESMAN ID",
                         "SALESMAN NAME",
@@ -823,7 +823,7 @@ export default function CashierPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       {[
                         "CUSTOMER ID",
                         "NAME",

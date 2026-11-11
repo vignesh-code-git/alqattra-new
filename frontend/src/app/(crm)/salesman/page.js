@@ -276,45 +276,45 @@ export default function SalesmanPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-[#007AFF] text-white text-[11px] font-semibold tracking-wider uppercase">
+                  <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] tracking-wider uppercase">
                     <th className="py-3 px-6">
                       <div className="flex items-center justify-between">
                         <span>SALESMAN NAME</span>
-                        <ArrowUpDown className="w-3 h-3 text-white/70" />
+                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>SALESMAN ID</span>
-                        <ArrowUpDown className="w-3 h-3 text-white/70" />
+                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>CITY</span>
-                        <ArrowUpDown className="w-3 h-3 text-white/70" />
+                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>COMMISSION SCHEMES</span>
-                        <ArrowUpDown className="w-3 h-3 text-white/70" />
+                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>ACCESS</span>
-                        <ArrowUpDown className="w-3 h-3 text-white/70" />
+                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>REGISTERED ON</span>
-                        <ArrowUpDown className="w-3 h-3 text-white/70" />
+                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                       </div>
                     </th>
                     <th className="py-3 px-6 text-right">
-                      <ArrowUpDown className="w-3 h-3 text-white/70 inline" />
+                      <ArrowUpDown className="w-3 h-3 text-[#8E8E93] inline" />
                     </th>
                   </tr>
                 </thead>

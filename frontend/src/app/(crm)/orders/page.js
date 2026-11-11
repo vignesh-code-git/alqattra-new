@@ -746,7 +746,7 @@ export default function OrdersPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold tracking-wider uppercase">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] tracking-wider uppercase">
                       {[
                         "DELIVERY NOTE",
                         "INVOICE NO.",
@@ -763,7 +763,7 @@ export default function OrdersPage() {
                         <th key={col} className="py-3 px-3.5 first:pl-6 last:pr-6 whitespace-nowrap">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-white/70 shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
                           </div>
                         </th>
                       ))}
@@ -928,7 +928,7 @@ export default function OrdersPage() {
                 <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                      <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                         <th className="py-2.5 px-4">PRODUCT</th>
                         <th className="py-2.5 px-4">QUANTITY</th>
                         <th className="py-2.5 px-4">TYPE</th>
@@ -1213,7 +1213,7 @@ export default function OrdersPage() {
                 <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                      <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                         <th className="py-2.5 px-4">PRODUCT NAME</th>
                         <th className="py-2.5 px-4">QUANTITY</th>
                         <th className="py-2.5 px-4">LEND/RETURN</th>
@@ -1380,7 +1380,7 @@ export default function OrdersPage() {
                 <div className="border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#007AFF] text-white text-[10px] font-semibold uppercase tracking-wider">
+                      <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[10px] font-semibold text-[#636366] uppercase tracking-wider">
                         <th className="py-2.5 px-3">PRODUCT</th>
                         <th className="py-2.5 px-3">LEND TYPE</th>
                         <th className="py-2.5 px-3">QUANTITY</th>

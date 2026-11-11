@@ -505,7 +505,7 @@ export default function ReportsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       {[
                         "SALESMAN",
                         "ROUTE",
@@ -658,7 +658,7 @@ export default function ReportsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       {[
                         "ID",
                         "NAME",
@@ -778,7 +778,7 @@ export default function ReportsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       {[
                         "TRUCK ID",
                         "SALESMAN",
@@ -880,7 +880,7 @@ export default function ReportsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF] text-white text-[11px] font-semibold uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
                       {[
                         "SALESMAN",
                         "CITY",

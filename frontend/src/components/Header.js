@@ -285,9 +285,9 @@ export default function Header({
 
   return (
     <>
-      <header className="h-16 bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-3 sm:px-6 flex items-center justify-between sticky top-0 z-30 transition-colors">
-        {/* Left: Mobile Hamburger & Breadcrumbs with bluish water droplet accent */}
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+      <header className="h-16 bg-white/85 backdrop-blur-xl border-b border-[#3C3C43]/10 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 transition-colors">
+        {/* Left: Brand Heading moved from Sidebar + Page Title & Breadcrumbs */}
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <button
             type="button"
             onClick={toggleMobileSidebar}
@@ -297,14 +297,30 @@ export default function Header({
             <Menu className="w-5 h-5" />
           </button>
 
+          {/* Sidebar Top Heading moved to Header */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#007AFF] to-[#5856D6] flex items-center justify-center text-white shadow-sm shadow-[#007AFF]/30 shrink-0">
+              <Droplets className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="text-[#1C1C1E] font-bold text-sm tracking-tight leading-tight flex items-center gap-1.5">
+                <span>القطارة</span>
+                <span className="text-[#007AFF] font-bold tracking-wide text-xs">AL QATTARA</span>
+              </div>
+              <div className="text-[9.5px] text-[#8E8E93] font-semibold tracking-wider uppercase">
+                Water Delivery CRM
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden sm:block h-7 w-px bg-[#3C3C43]/15 mx-1" />
+
+          {/* Page Title & Breadcrumbs */}
           <div className="min-w-0">
             <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-[#8E8E93] font-normal">
-              <span className="flex items-center gap-1 text-[#007AFF] font-medium">
-                <Droplets className="w-3.5 h-3.5 text-[#007AFF]" />
-                <span>CRM</span>
-              </span>
-              <ChevronRight className="w-3 h-3 text-slate-300" />
-              <span className="text-[#3C3C43] font-normal truncate">{subtitle}</span>
+              <span className="text-[#007AFF] font-medium">CRM</span>
+              <ChevronRight className="w-3 h-3 text-[#8E8E93]" />
+              <span className="text-[#3C3C43] truncate">{subtitle}</span>
             </div>
             <h1 className="text-sm font-bold text-[#1C1C1E] tracking-tight leading-tight truncate">
               {title}
