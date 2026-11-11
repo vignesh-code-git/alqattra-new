@@ -157,42 +157,43 @@ export default function PrivilegesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F6F9] flex flex-col">
+    <div className="min-h-screen bg-[#F2F2F7] flex flex-col">
       <Header title="Previlages" subtitle="Manage Previlages" />
 
-      {/* Figma Black Top Banner */}
-      <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+      {/* iOS Top Hero Navigation Bar */}
+      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-3.5 flex items-center justify-between sticky top-16 z-20">
         <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight">Previlages</span>
-          <Home className="w-3.5 h-3.5 text-slate-300" />
-          <span className="text-slate-300 text-xs">
-            - {viewMode === "add" ? "Create Previlages" : "Manage Previlages"} - ALL
+          <span className="font-bold text-base tracking-tight text-[#1C1C1E]">Previlages</span>
+          <Home className="w-3.5 h-3.5 text-[#8E8E93]" />
+          <span className="text-[#8E8E93] text-xs">
+            / {viewMode === "add" ? "Create Previlages" : "Manage Previlages"}
           </span>
         </div>
         {viewMode === "list" && (
           <button
             type="button"
             onClick={openAddView}
-            className="px-3.5 py-1.5 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+            className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#007AFF]/20"
           >
-            Add New
+            + Add New
           </button>
         )}
       </div>
 
-      <div className="p-6 flex-1">
+      <div className="p-6 flex-1 max-w-7xl w-full mx-auto">
         {viewMode === "list" ? (
-          /* Main Privileges Table Card (Figma privillages.png) */
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
-            {/* Dark Navy-to-Teal Header Banner */}
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-bold text-base tracking-wide">
+          /* Main Privileges iOS Table Card */
+          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
+            {/* Header Banner */}
+            <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4">
+              <h2 className="text-white font-bold text-[15px] tracking-tight">
                 Control and Customize User Access Levels
               </h2>
+              <p className="text-white/60 text-[11px] mt-0.5">Role-based permission matrix across all modules</p>
             </div>
 
             {/* Show Entries & Search Bar */}
-            <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
+            <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
               <div className="flex items-center gap-2">
                 <span>Show</span>
                 <select
@@ -201,7 +202,7 @@ export default function PrivilegesPage() {
                     setEntriesPerPage(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="border border-slate-300 rounded px-2 py-1 bg-white text-slate-700 focus:outline-none focus:border-[#5948DB]"
+                  className="rounded-xl px-2.5 py-1 bg-white text-[#1C1C1E] focus:outline-none"
                 >
                   <option value={10}>10</option>
                   <option value={25}>25</option>
@@ -211,62 +212,63 @@ export default function PrivilegesPage() {
               </div>
 
               <div className="flex items-center gap-2">
-                <span>Search:</span>
+                <span className="text-[#8E8E93]">Search:</span>
                 <input
                   type="text"
+                  placeholder="Filter privileges..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="border border-slate-300 rounded px-2.5 py-1 w-44 focus:outline-none focus:border-[#5948DB]"
+                  className="rounded-xl px-3 py-1.5 w-52 bg-white focus:outline-none"
                 />
               </div>
             </div>
 
-            {/* Exact 4-Column Figma Table */}
+            {/* Exact 4-Column Table */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                  <tr className="bg-[#F2F2F7] border-b border-[#3C3C43]/10 text-[11px] font-semibold text-[#8E8E93] tracking-wider uppercase">
                     <th className="py-3 px-6">
                       <div className="flex items-center justify-between">
                         <span>CLASS NAME</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>READONLY</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                       </div>
                     </th>
                     <th className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <span>READ WRITE</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                       </div>
                     </th>
                     <th className="py-3 px-6">
                       <div className="flex items-center justify-between">
                         <span>REGISTERED ON</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                       </div>
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200/70 text-[12px] text-slate-700">
+                <tbody className="divide-y divide-[#3C3C43]/10 text-[12.5px] text-[#1C1C1E]">
                   {paginatedRows.map((row) => (
-                    <tr key={row.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 px-6 font-medium text-slate-800">{row.class_name}</td>
-                      <td className="py-3.5 px-4 text-slate-600 break-all">{row.readonly}</td>
-                      <td className="py-3.5 px-4 text-slate-600 break-all">{row.read_write}</td>
-                      <td className="py-3.5 px-6 text-slate-600 whitespace-nowrap">{row.registered_on}</td>
+                    <tr key={row.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
+                      <td className="py-3.5 px-6 font-semibold text-[#1C1C1E]">{row.class_name}</td>
+                      <td className="py-3.5 px-4 text-[#8E8E93] text-xs font-mono break-all">{row.readonly || "-"}</td>
+                      <td className="py-3.5 px-4 text-[#3C3C43] text-xs font-mono break-all">{row.read_write}</td>
+                      <td className="py-3.5 px-6 text-[#8E8E93] whitespace-nowrap">{row.registered_on}</td>
                     </tr>
                   ))}
                   {paginatedRows.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center text-slate-400">
+                      <td colSpan={4} className="py-8 text-center text-[#8E8E93]">
                         No matching privilege records found.
                       </td>
                     </tr>
@@ -276,22 +278,22 @@ export default function PrivilegesPage() {
             </div>
 
             {/* Footer Pagination */}
-            <div className="px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+            <div className="px-6 py-3.5 bg-[#F9F9FB] border-t border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
               <div>
                 Showing {filteredPrivileges.length === 0 ? 0 : (currentPage - 1) * entriesPerPage + 1} to{" "}
                 {Math.min(currentPage * entriesPerPage, filteredPrivileges.length)} of{" "}
                 {filteredPrivileges.length} entries
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <button
                     key={page}
                     type="button"
                     onClick={() => setCurrentPage(page)}
-                    className={`w-6 h-6 rounded-full text-[11px] flex items-center justify-center transition cursor-pointer ${
+                    className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition cursor-pointer ${
                       currentPage === page
-                        ? "bg-[#5948DB] text-white font-semibold"
-                        : "text-slate-500 hover:bg-slate-100"
+                        ? "bg-[#007AFF] text-white shadow-xs"
+                        : "text-[#3C3C43] hover:bg-black/5"
                     }`}
                   >
                     {page}
@@ -301,161 +303,145 @@ export default function PrivilegesPage() {
             </div>
           </div>
         ) : (
-          /* Previlage Class Registration Card (Figma add new-1.png) */
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-visible">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4 rounded-t-lg">
-              <h2 className="text-white font-bold text-base tracking-wide">
+          /* Previlage Class Registration Card */
+          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-visible max-w-3xl mx-auto">
+            <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4 rounded-t-3xl">
+              <h2 className="text-white font-bold text-[15px] tracking-tight">
                 Previlage Class Registration
               </h2>
             </div>
 
-            <form onSubmit={handleRegister} className="p-8 space-y-5 max-w-6xl mx-auto">
-              {/* Previlage Class */}
-              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
-                  Previlage Class
-                </label>
-                <div className="md:col-span-9">
-                  <input
-                    type="text"
-                    placeholder="Class name"
-                    value={className}
-                    onChange={(e) => setClassName(e.target.value)}
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 focus:outline-none focus:border-[#5948DB]"
-                  />
-                </div>
+            <form onSubmit={handleRegister} className="p-8 space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-[#3C3C43]">Previlage Class</label>
+                <input
+                  type="text"
+                  placeholder="Class name"
+                  value={className}
+                  onChange={(e) => setClassName(e.target.value)}
+                  className="w-full px-3.5 py-2 text-xs text-[#1C1C1E]"
+                />
               </div>
 
-              {/* ReadOnly Access */}
-              <div className="grid grid-cols-1 md:grid-cols-12 items-start gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600 pt-2">
-                  ReadOnly Access
-                </label>
-                <div className="md:col-span-9 relative">
-                  <div
-                    onClick={() => {
-                      setOpenReadOnlyDropdown(!openReadOnlyDropdown);
-                      setOpenWriteDropdown(false);
-                    }}
-                    className="min-h-[36px] w-full border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-700 flex items-center justify-between flex-wrap gap-1.5 cursor-pointer bg-white"
-                  >
-                    {readOnlyModules.length === 0 ? (
-                      <span className="text-slate-400">Select ReadOnly Access</span>
-                    ) : (
-                      <div className="flex flex-wrap gap-1">
-                        {readOnlyModules.map((mod) => (
-                          <span
-                            key={mod}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px]"
-                          >
-                            {mod}
-                            <X
-                              className="w-3 h-3 cursor-pointer hover:text-rose-600"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleModule(readOnlyModules, setReadOnlyModules, mod);
-                              }}
-                            />
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-auto shrink-0" />
-                  </div>
-
-                  {openReadOnlyDropdown && (
-                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded shadow-lg z-20 max-h-48 overflow-y-auto p-2 grid grid-cols-2 sm:grid-cols-3 gap-1">
-                      {ALL_MODULES.map((mod) => (
-                        <label
-                          key={mod}
-                          className="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 text-xs text-slate-700 cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={readOnlyModules.includes(mod)}
-                            onChange={() => toggleModule(readOnlyModules, setReadOnlyModules, mod)}
-                            className="rounded border-slate-300 text-[#5948DB]"
-                          />
-                          <span>{mod}</span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Write Access */}
-              <div className="grid grid-cols-1 md:grid-cols-12 items-start gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600 pt-2">
-                  Write Access
-                </label>
-                <div className="md:col-span-9 relative">
-                  <div
-                    onClick={() => {
-                      setOpenWriteDropdown(!openWriteDropdown);
-                      setOpenReadOnlyDropdown(false);
-                    }}
-                    className="min-h-[36px] w-full border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-700 flex items-center justify-between flex-wrap gap-1.5 cursor-pointer bg-white"
-                  >
-                    {writeModules.length === 0 ? (
-                      <span className="text-slate-400">Select Read/Write Access</span>
-                    ) : (
-                      <div className="flex flex-wrap gap-1">
-                        {writeModules.map((mod) => (
-                          <span
-                            key={mod}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px]"
-                          >
-                            {mod}
-                            <X
-                              className="w-3 h-3 cursor-pointer hover:text-rose-600"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleModule(writeModules, setWriteModules, mod);
-                              }}
-                            />
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-auto shrink-0" />
-                  </div>
-
-                  {openWriteDropdown && (
-                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded shadow-lg z-20 max-h-48 overflow-y-auto p-2 grid grid-cols-2 sm:grid-cols-3 gap-1">
-                      {ALL_MODULES.map((mod) => (
-                        <label
-                          key={mod}
-                          className="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 text-xs text-slate-700 cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={writeModules.includes(mod)}
-                            onChange={() => toggleModule(writeModules, setWriteModules, mod)}
-                            className="rounded border-slate-300 text-[#5948DB]"
-                          />
-                          <span>{mod}</span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-2 pt-3">
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
+              <div className="space-y-1.5 relative">
+                <label className="text-xs font-semibold text-[#3C3C43]">ReadOnly Access</label>
+                <div
+                  onClick={() => {
+                    setOpenReadOnlyDropdown(!openReadOnlyDropdown);
+                    setOpenWriteDropdown(false);
+                  }}
+                  className="min-h-[40px] w-full border border-black/15 rounded-xl px-3 py-1.5 text-xs text-[#1C1C1E] flex items-center justify-between flex-wrap gap-1.5 cursor-pointer bg-white"
                 >
-                  Register
-                </button>
+                  {readOnlyModules.length === 0 ? (
+                    <span className="text-[#8E8E93]">Select ReadOnly Access</span>
+                  ) : (
+                    <div className="flex flex-wrap gap-1">
+                      {readOnlyModules.map((mod) => (
+                        <span
+                          key={mod}
+                          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#E5E5EA] text-[#1C1C1E] text-[11px] font-medium"
+                        >
+                          {mod}
+                          <X
+                            className="w-3 h-3 cursor-pointer hover:text-[#FF3B30]"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleModule(readOnlyModules, setReadOnlyModules, mod);
+                            }}
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <ChevronDown className="w-3.5 h-3.5 text-[#8E8E93] ml-auto shrink-0" />
+                </div>
+
+                {openReadOnlyDropdown && (
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white/95 backdrop-blur-xl border border-[#3C3C43]/10 rounded-2xl shadow-xl z-20 max-h-48 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                    {ALL_MODULES.map((mod) => (
+                      <label
+                        key={mod}
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#F2F2F7] text-xs text-[#1C1C1E] cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={readOnlyModules.includes(mod)}
+                          onChange={() => toggleModule(readOnlyModules, setReadOnlyModules, mod)}
+                          className="rounded border-slate-300 text-[#007AFF]"
+                        />
+                        <span>{mod}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-1.5 relative">
+                <label className="text-xs font-semibold text-[#3C3C43]">Write Access</label>
+                <div
+                  onClick={() => {
+                    setOpenWriteDropdown(!openWriteDropdown);
+                    setOpenReadOnlyDropdown(false);
+                  }}
+                  className="min-h-[40px] w-full border border-black/15 rounded-xl px-3 py-1.5 text-xs text-[#1C1C1E] flex items-center justify-between flex-wrap gap-1.5 cursor-pointer bg-white"
+                >
+                  {writeModules.length === 0 ? (
+                    <span className="text-[#8E8E93]">Select Read/Write Access</span>
+                  ) : (
+                    <div className="flex flex-wrap gap-1">
+                      {writeModules.map((mod) => (
+                        <span
+                          key={mod}
+                          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#007AFF]/10 text-[#007AFF] text-[11px] font-semibold"
+                        >
+                          {mod}
+                          <X
+                            className="w-3 h-3 cursor-pointer hover:text-[#FF3B30]"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleModule(writeModules, setWriteModules, mod);
+                            }}
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <ChevronDown className="w-3.5 h-3.5 text-[#8E8E93] ml-auto shrink-0" />
+                </div>
+
+                {openWriteDropdown && (
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white/95 backdrop-blur-xl border border-[#3C3C43]/10 rounded-2xl shadow-xl z-20 max-h-48 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                    {ALL_MODULES.map((mod) => (
+                      <label
+                        key={mod}
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#F2F2F7] text-xs text-[#1C1C1E] cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={writeModules.includes(mod)}
+                          onChange={() => toggleModule(writeModules, setWriteModules, mod)}
+                          className="rounded border-slate-300 text-[#007AFF]"
+                        />
+                        <span>{mod}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#3C3C43]/10">
                 <button
                   type="button"
                   onClick={() => setViewMode("list")}
-                  className="px-4 py-1.5 rounded bg-[#E53E6A] hover:bg-[#d12c57] text-white text-xs font-semibold transition cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold cursor-pointer transition"
                 >
                   Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm shadow-[#007AFF]/25 transition"
+                >
+                  Register
                 </button>
               </div>
             </form>

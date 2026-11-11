@@ -445,16 +445,16 @@ export default function UtilitiesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F6F9] flex flex-col">
+    <div className="min-h-screen bg-[#F2F2F7] flex flex-col">
       <Header title="Utilities" subtitle="Manage Inventory" />
 
-      {/* Figma Black Top Banner */}
-      <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+      {/* iOS Top Hero Navigation Bar */}
+      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-3.5 flex items-center justify-between sticky top-16 z-20">
         <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight">Utilities</span>
-          <Home className="w-3.5 h-3.5 text-slate-300" />
-          <span className="text-slate-300 text-xs">
-            -{" "}
+          <span className="font-bold text-base tracking-tight text-[#1C1C1E]">Utilities</span>
+          <Home className="w-3.5 h-3.5 text-[#8E8E93]" />
+          <span className="text-[#8E8E93] text-xs">
+            /{" "}
             {subView === "update_inventory"
               ? "Update Inventory"
               : subView === "add_item"
@@ -463,35 +463,34 @@ export default function UtilitiesPage() {
               ? "Add New Truck"
               : subView === "manage_truck"
               ? "Manage Truck Stock"
-              : "Manage Inventory"}{" "}
-            - ALL
+              : "Manage Inventory"}
           </span>
         </div>
         {subView !== "list" && (
           <button
             type="button"
             onClick={() => setSubView("list")}
-            className="px-3.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition cursor-pointer"
+            className="px-4 py-1.5 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition cursor-pointer"
           >
             Back to List
           </button>
         )}
       </div>
 
-      {/* Sub-navigation bar when in main list view */}
+      {/* iOS Segmented Sub-navigation Tabs */}
       {subView === "list" && (
-        <div className="px-6 pt-5 pb-1 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+        <div className="px-6 pt-5 pb-1 flex flex-wrap items-center justify-between gap-4 max-w-7xl w-full mx-auto">
+          <div className="flex items-center bg-[#E5E5EA]/80 p-0.5 rounded-full border border-black/5 shadow-2xs">
             <button
               type="button"
               onClick={() => {
                 setActiveTab("store");
                 setSearchQuery("");
               }}
-              className={`px-4 py-2 rounded text-xs font-semibold transition cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                 activeTab === "store"
-                  ? "bg-white text-slate-800 shadow-xs border border-slate-200/80"
-                  : "bg-slate-200/70 text-slate-500 hover:text-slate-800"
+                  ? "bg-white text-[#1C1C1E] shadow-sm font-semibold"
+                  : "text-[#8E8E93] hover:text-[#1C1C1E]"
               }`}
             >
               Store Inventory
@@ -502,10 +501,10 @@ export default function UtilitiesPage() {
                 setActiveTab("car");
                 setSearchQuery("");
               }}
-              className={`px-4 py-2 rounded text-xs font-semibold transition cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                 activeTab === "car"
-                  ? "bg-white text-slate-800 shadow-xs border border-slate-200/80"
-                  : "bg-slate-200/70 text-slate-500 hover:text-slate-800"
+                  ? "bg-white text-[#1C1C1E] shadow-sm font-semibold"
+                  : "text-[#8E8E93] hover:text-[#1C1C1E]"
               }`}
             >
               Car Stock Transaction
@@ -517,9 +516,9 @@ export default function UtilitiesPage() {
               <button
                 type="button"
                 onClick={() => setSubView("update_inventory")}
-                className="px-3.5 py-1.5 rounded bg-[#1E3A5F] hover:bg-[#152c4a] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition cursor-pointer"
               >
-                Update Inventory
+                Update Stock
               </button>
               <button
                 type="button"
@@ -534,7 +533,7 @@ export default function UtilitiesPage() {
                   });
                   setSubView("add_item");
                 }}
-                className="px-3.5 py-1.5 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#007AFF]/20"
               >
                 + Add New Item
               </button>
@@ -547,14 +546,14 @@ export default function UtilitiesPage() {
                   setNewTruckForm({ truck_id: "", city: "", route: "" });
                   setSubView("add_truck");
                 }}
-                className="px-3.5 py-1.5 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#007AFF]/20"
               >
                 + Add New Truck
               </button>
               <button
                 type="button"
                 onClick={() => setProductSummaryDrawerOpen(true)}
-                className="px-3.5 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded-full bg-[#34C759] hover:bg-[#2FB34F] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#34C759]/20"
               >
                 Product Summary
               </button>
@@ -563,21 +562,22 @@ export default function UtilitiesPage() {
         </div>
       )}
 
-      <div className="p-6 flex-1 space-y-6">
-        {/* 1. STORE INVENTORY LIST VIEW (utilities-store inventery.png) */}
+      <div className="p-6 flex-1 space-y-6 max-w-7xl w-full mx-auto">
+        {/* 1. STORE INVENTORY LIST VIEW */}
         {subView === "list" && activeTab === "store" && (
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-bold text-base tracking-wide">Inventory Management</h2>
+          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
+            <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4">
+              <h2 className="text-white font-bold text-[15px] tracking-tight">Warehouse Inventory</h2>
+              <p className="text-white/60 text-[11px] mt-0.5">Stock availability, damages, and replenishment</p>
             </div>
 
-            <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
+            <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
               <div className="flex items-center gap-2">
                 <span>Show</span>
                 <select
                   value={entriesPerPage}
                   onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                  className="border border-slate-300 rounded px-2 py-1 bg-white text-slate-700 focus:outline-none"
+                  className="rounded-xl px-2.5 py-1 bg-white text-[#1C1C1E] focus:outline-none"
                 >
                   <option value={10}>10</option>
                   <option value={25}>25</option>
@@ -586,20 +586,21 @@ export default function UtilitiesPage() {
                 <span>entries</span>
               </div>
               <div className="flex items-center gap-2">
-                <span>Search:</span>
+                <span className="text-[#8E8E93]">Search:</span>
                 <input
                   type="text"
+                  placeholder="Search item..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border border-slate-300 rounded px-2.5 py-1 w-44 focus:outline-none focus:border-[#5948DB]"
+                  className="rounded-xl px-3 py-1.5 w-52 bg-white focus:outline-none"
                 />
               </div>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                  <tr className="bg-[#F2F2F7] border-b border-[#3C3C43]/10 text-[11px] font-semibold text-[#8E8E93] tracking-wider uppercase">
                     {[
                       "PRODUCT ID",
                       "ITEM",
@@ -613,36 +614,36 @@ export default function UtilitiesPage() {
                       <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
                         <div className="flex items-center justify-between gap-1">
                           <span>{col}</span>
-                          <ArrowUpDown className="w-3 h-3 text-slate-400 shrink-0" />
+                          <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
                         </div>
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200/70 text-[12px] text-slate-700">
+                <tbody className="divide-y divide-[#3C3C43]/10 text-[12.5px] text-[#1C1C1E]">
                   {filteredStoreItems.slice(0, entriesPerPage).map((row) => (
-                    <tr key={row.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 pl-6 pr-4 font-medium text-slate-800">
+                    <tr key={row.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
+                      <td className="py-3.5 pl-6 pr-4 font-mono font-medium text-[#007AFF]">
                         {row.product_id}
                       </td>
-                      <td className="py-3.5 px-4 text-slate-700">{row.item}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.description}</td>
+                      <td className="py-3.5 px-4 font-semibold text-[#1C1C1E]">{row.item}</td>
+                      <td className="py-3.5 px-4 text-[#8E8E93]">{row.description}</td>
                       <td className="py-3.5 px-4 font-semibold">
                         <span
                           className={
                             row.stock_color === "emerald"
-                              ? "text-[#48BB78]"
+                              ? "text-[#34C759]"
                               : row.stock_color === "amber"
-                              ? "text-[#ECC94B]"
-                              : "text-slate-600 font-normal"
+                              ? "text-[#FF9500]"
+                              : "text-[#8E8E93] font-normal"
                           }
                         >
                           {row.current_stock}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.old_stock}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.damaged}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.discarded}</td>
+                      <td className="py-3.5 px-4 text-[#8E8E93]">{row.old_stock}</td>
+                      <td className="py-3.5 px-4 text-[#8E8E93]">{row.damaged}</td>
+                      <td className="py-3.5 px-4 text-[#8E8E93]">{row.discarded}</td>
                       <td className="py-3.5 pl-4 pr-6">
                         <div className="flex items-center gap-1.5">
                           <button
@@ -651,14 +652,14 @@ export default function UtilitiesPage() {
                               setSelectedItem(row);
                               setSubView("view_item");
                             }}
-                            className="px-3 py-1 rounded bg-[#38A3C7] hover:bg-[#2d89a8] text-white text-[11px] font-semibold transition cursor-pointer"
+                            className="px-3.5 py-1 rounded-full bg-[#007AFF]/10 hover:bg-[#007AFF] text-[#007AFF] hover:text-white text-[11px] font-semibold transition cursor-pointer"
                           >
                             View
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDeleteStoreItem(row)}
-                            className="px-3 py-1 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-[11px] font-semibold transition cursor-pointer"
+                            className="px-3.5 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-[11px] font-semibold transition cursor-pointer"
                           >
                             Delete
                           </button>
@@ -670,13 +671,13 @@ export default function UtilitiesPage() {
               </table>
             </div>
 
-            <div className="px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+            <div className="px-6 py-3.5 bg-[#F9F9FB] border-t border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
               <div>Showing 1 to 10 of 15 entries</div>
-              <div className="flex items-center gap-1">
-                <button className="w-6 h-6 rounded-full bg-[#5948DB] text-white text-[11px] font-semibold flex items-center justify-center">
+              <div className="flex items-center gap-1.5">
+                <button className="w-7 h-7 rounded-full bg-[#007AFF] text-white text-xs font-semibold flex items-center justify-center">
                   1
                 </button>
-                <button className="w-6 h-6 rounded-full text-slate-500 hover:bg-slate-100 text-[11px] flex items-center justify-center">
+                <button className="w-7 h-7 rounded-full text-[#3C3C43] hover:bg-black/5 text-xs flex items-center justify-center">
                   2
                 </button>
               </div>
@@ -684,22 +685,23 @@ export default function UtilitiesPage() {
           </div>
         )}
 
-        {/* 2. CAR STOCK TRANSACTION LIST VIEW (car stock transactions.png) */}
+        {/* 2. CAR STOCK TRANSACTION LIST VIEW */}
         {subView === "list" && activeTab === "car" && (
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-bold text-base tracking-wide">
-                Truck Delivery and Details
+          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
+            <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4">
+              <h2 className="text-white font-bold text-[15px] tracking-tight">
+                Truck Fleet & Vehicle Stock
               </h2>
+              <p className="text-white/60 text-[11px] mt-0.5">Mobile truck stock tracking and route distribution</p>
             </div>
 
-            <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
+            <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
               <div className="flex items-center gap-2">
                 <span>Show</span>
                 <select
                   value={entriesPerPage}
                   onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                  className="border border-slate-300 rounded px-2 py-1 bg-white text-slate-700 focus:outline-none"
+                  className="rounded-xl px-2.5 py-1 bg-white text-[#1C1C1E] focus:outline-none"
                 >
                   <option value={10}>10</option>
                   <option value={25}>25</option>
@@ -707,20 +709,21 @@ export default function UtilitiesPage() {
                 <span>entries</span>
               </div>
               <div className="flex items-center gap-2">
-                <span>Search:</span>
+                <span className="text-[#8E8E93]">Search:</span>
                 <input
                   type="text"
+                  placeholder="Filter trucks..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border border-slate-300 rounded px-2.5 py-1 w-44 focus:outline-none focus:border-[#5948DB]"
+                  className="rounded-xl px-3 py-1.5 w-52 bg-white focus:outline-none"
                 />
               </div>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                  <tr className="bg-[#F2F2F7] border-b border-[#3C3C43]/10 text-[11px] font-semibold text-[#8E8E93] tracking-wider uppercase">
                     {[
                       "TRUCK ID",
                       "IN-CHARGE",
@@ -733,22 +736,22 @@ export default function UtilitiesPage() {
                       <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
                         <div className="flex items-center justify-between gap-1">
                           <span>{col}</span>
-                          <ArrowUpDown className="w-3 h-3 text-slate-400 shrink-0" />
+                          <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
                         </div>
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200/70 text-[12px] text-slate-700">
+                <tbody className="divide-y divide-[#3C3C43]/10 text-[12.5px] text-[#1C1C1E]">
                   {filteredTrucks.slice(0, entriesPerPage).map((truck) => (
-                    <tr key={truck.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 pl-6 pr-4 font-medium text-slate-800">
+                    <tr key={truck.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
+                      <td className="py-3.5 pl-6 pr-4 font-semibold text-[#1C1C1E]">
                         {truck.truck_id}
                       </td>
-                      <td className="py-3.5 px-4 text-slate-600">{truck.in_charge}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{truck.assistants}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{truck.route}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{truck.last_updated}</td>
+                      <td className="py-3.5 px-4 text-[#3C3C43]">{truck.in_charge}</td>
+                      <td className="py-3.5 px-4 text-[#8E8E93]">{truck.assistants}</td>
+                      <td className="py-3.5 px-4 font-mono text-[#007AFF] font-medium">{truck.route}</td>
+                      <td className="py-3.5 px-4 text-[#8E8E93]">{truck.last_updated}</td>
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-1.5">
                           <button
@@ -757,7 +760,7 @@ export default function UtilitiesPage() {
                               setSelectedTruck(truck);
                               setTruckModalOpen(true);
                             }}
-                            className="px-3 py-1 rounded bg-[#4A90E2] hover:bg-[#357ABD] text-white text-[11px] font-semibold transition cursor-pointer"
+                            className="px-3 py-1 rounded-full bg-[#007AFF]/10 hover:bg-[#007AFF] text-[#007AFF] hover:text-white text-[11px] font-semibold transition cursor-pointer"
                           >
                             View
                           </button>
@@ -767,14 +770,14 @@ export default function UtilitiesPage() {
                               setSelectedTruck(truck);
                               setSubView("manage_truck");
                             }}
-                            className="px-3 py-1 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-[11px] font-semibold transition cursor-pointer"
+                            className="px-3 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[11px] font-semibold transition cursor-pointer"
                           >
                             Manage
                           </button>
                         </div>
                       </td>
                       <td className="py-3.5 pl-4 pr-6">
-                        <div className="flex items-center gap-3 text-slate-500">
+                        <div className="flex items-center gap-3 text-[#8E8E93]">
                           <button
                             type="button"
                             onClick={() => {
@@ -782,7 +785,7 @@ export default function UtilitiesPage() {
                               setSubView("manage_truck");
                             }}
                             title="Configure Truck"
-                            className="hover:text-slate-800 cursor-pointer"
+                            className="hover:text-[#1C1C1E] cursor-pointer"
                           >
                             <Settings className="w-4 h-4" />
                           </button>
@@ -792,7 +795,7 @@ export default function UtilitiesPage() {
                               addToast(`Stock history synced for ${truck.truck_id}`, "info")
                             }
                             title="Reset / History"
-                            className="hover:text-slate-800 cursor-pointer"
+                            className="hover:text-[#1C1C1E] cursor-pointer"
                           >
                             <RotateCcw className="w-4 h-4" />
                           </button>
@@ -804,14 +807,14 @@ export default function UtilitiesPage() {
               </table>
             </div>
 
-            <div className="px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+            <div className="px-6 py-3.5 bg-[#F9F9FB] border-t border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
               <div>Showing 1 to 10 of 29 entries</div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 {[1, 2, 3].map((p) => (
                   <button
                     key={p}
-                    className={`w-6 h-6 rounded-full text-[11px] flex items-center justify-center ${
-                      p === 1 ? "bg-[#5948DB] text-white font-semibold" : "text-slate-500"
+                    className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center ${
+                      p === 1 ? "bg-[#007AFF] text-white" : "text-[#3C3C43] hover:bg-black/5"
                     }`}
                   >
                     {p}
@@ -825,14 +828,14 @@ export default function UtilitiesPage() {
         {/* 3. UPDATE INVENTORY SUB-VIEW (update-inventrery.png) */}
         {subView === "update_inventory" && (
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
               <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                <h2 className="text-white font-bold text-base tracking-wide">Update Stock</h2>
+                <h2 className="text-white font-semibold text-base tracking-tight">Update Stock</h2>
               </div>
 
               <form onSubmit={handleAddInputStock} className="p-8 space-y-4 max-w-5xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                     Stock Date
                   </label>
                   <div className="md:col-span-9">
@@ -842,13 +845,13 @@ export default function UtilitiesPage() {
                       onChange={(e) =>
                         setUpdateStockForm({ ...updateStockForm, date: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                     Store
                   </label>
                   <div className="md:col-span-9">
@@ -857,7 +860,7 @@ export default function UtilitiesPage() {
                       onChange={(e) =>
                         setUpdateStockForm({ ...updateStockForm, store: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     >
                       <option value="Al Ain">Al Ain</option>
                       <option value="Abu Dhabi">Abu Dhabi</option>
@@ -866,7 +869,7 @@ export default function UtilitiesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                     Item
                   </label>
                   <div className="md:col-span-9">
@@ -875,7 +878,7 @@ export default function UtilitiesPage() {
                       onChange={(e) =>
                         setUpdateStockForm({ ...updateStockForm, item: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     >
                       <option value="">Select Item</option>
                       {storeItems.map((it) => (
@@ -888,7 +891,7 @@ export default function UtilitiesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                     Item Type
                   </label>
                   <div className="md:col-span-9">
@@ -897,7 +900,7 @@ export default function UtilitiesPage() {
                       onChange={(e) =>
                         setUpdateStockForm({ ...updateStockForm, itemType: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     >
                       <option value="New">New</option>
                       <option value="Old">Old</option>
@@ -908,7 +911,7 @@ export default function UtilitiesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                     Quantity
                   </label>
                   <div className="md:col-span-9">
@@ -919,7 +922,7 @@ export default function UtilitiesPage() {
                       onChange={(e) =>
                         setUpdateStockForm({ ...updateStockForm, quantity: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     />
                   </div>
                 </div>
@@ -927,7 +930,7 @@ export default function UtilitiesPage() {
                 <div className="flex justify-end pt-2">
                   <button
                     type="submit"
-                    className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
+                    className="px-5 py-2 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold transition cursor-pointer shadow-sm active:scale-95"
                   >
                     Add Item
                   </button>
@@ -936,15 +939,15 @@ export default function UtilitiesPage() {
             </div>
 
             {/* Bottom Input Stocks Table Card */}
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
               <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                <h2 className="text-white font-bold text-base tracking-wide">Input Stocks</h2>
+                <h2 className="text-white font-semibold text-base tracking-tight">Input Stocks</h2>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                       {[
                         "DATE",
                         "ITEM ID",
@@ -957,28 +960,28 @@ export default function UtilitiesPage() {
                         <th key={col} className="py-3 px-6">
                           <div className="flex items-center justify-between">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                           </div>
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200/70 text-[12px] text-slate-700">
+                  <tbody className="divide-y divide-[#3C3C43]/10 text-[12px] text-[#1C1C1E]">
                     {inputStocks.map((st) => (
-                      <tr key={st.id}>
-                        <td className="py-3 px-6">{st.date}</td>
-                        <td className="py-3 px-6">{st.item_id}</td>
-                        <td className="py-3 px-6">{st.item_name}</td>
-                        <td className="py-3 px-6">{st.item_type}</td>
-                        <td className="py-3 px-6">{st.store}</td>
-                        <td className="py-3 px-6 font-semibold">{st.quantity}</td>
-                        <td className="py-3 px-6">
+                      <tr key={st.id} className="hover:bg-[#F2F2F7]/50">
+                        <td className="py-3.5 px-6">{st.date}</td>
+                        <td className="py-3.5 px-6 font-mono text-[#8E8E93]">{st.item_id}</td>
+                        <td className="py-3.5 px-6 font-medium">{st.item_name}</td>
+                        <td className="py-3.5 px-6">{st.item_type}</td>
+                        <td className="py-3.5 px-6">{st.store}</td>
+                        <td className="py-3.5 px-6 font-bold">{st.quantity}</td>
+                        <td className="py-3.5 px-6">
                           <button
                             type="button"
                             onClick={() =>
                               setInputStocks((prev) => prev.filter((x) => x.id !== st.id))
                             }
-                            className="px-2.5 py-1 rounded bg-[#E05D38] text-white text-[11px] font-semibold"
+                            className="px-3 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-[11px] font-semibold transition active:scale-95"
                           >
                             Remove
                           </button>
@@ -987,7 +990,7 @@ export default function UtilitiesPage() {
                     ))}
                     {inputStocks.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="py-6 text-center text-slate-400 text-xs">
+                        <td colSpan={7} className="py-6 text-center text-[#8E8E93] text-xs">
                           Showing 0 to 0 of 0 entries
                         </td>
                       </tr>
@@ -1001,16 +1004,16 @@ export default function UtilitiesPage() {
 
         {/* 4. ADD NEW ITEM SUB-VIEW (add new item.png) */}
         {subView === "add_item" && (
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
             <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-bold text-base tracking-wide">
+              <h2 className="text-white font-semibold text-base tracking-tight">
                 Add / Update Product
               </h2>
             </div>
 
             <form onSubmit={handleSaveNewProduct} className="p-8 space-y-4 max-w-5xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                   Product ID
                 </label>
                 <div className="md:col-span-9">
@@ -1021,13 +1024,13 @@ export default function UtilitiesPage() {
                     onChange={(e) =>
                       setNewItemForm({ ...newItemForm, product_id: e.target.value })
                     }
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                   Product Name
                 </label>
                 <div className="md:col-span-9">
@@ -1036,28 +1039,28 @@ export default function UtilitiesPage() {
                     placeholder="Enter Product Name"
                     value={newItemForm.item}
                     onChange={(e) => setNewItemForm({ ...newItemForm, item: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                   Price
                 </label>
                 <div className="md:col-span-9">
                   <input
                     type="text"
-                    placeholder="Enter Product Description"
+                    placeholder="Enter Product Price"
                     value={newItemForm.price}
                     onChange={(e) => setNewItemForm({ ...newItemForm, price: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                   Description
                 </label>
                 <div className="md:col-span-9">
@@ -1068,13 +1071,13 @@ export default function UtilitiesPage() {
                     onChange={(e) =>
                       setNewItemForm({ ...newItemForm, description: e.target.value })
                     }
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                   Priority
                 </label>
                 <div className="md:col-span-9">
@@ -1083,7 +1086,7 @@ export default function UtilitiesPage() {
                     onChange={(e) =>
                       setNewItemForm({ ...newItemForm, priority: e.target.value })
                     }
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   >
                     <option value="Primary">Primary</option>
                     <option value="Secondary">Secondary</option>
@@ -1092,14 +1095,14 @@ export default function UtilitiesPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                   Asset
                 </label>
                 <div className="md:col-span-9">
                   <select
                     value={newItemForm.asset}
                     onChange={(e) => setNewItemForm({ ...newItemForm, asset: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   >
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
@@ -1110,7 +1113,7 @@ export default function UtilitiesPage() {
               <div className="flex justify-end gap-2 pt-3">
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
+                  className="px-5 py-2 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold transition cursor-pointer shadow-sm active:scale-95"
                 >
                   Save Product
                 </button>
@@ -1123,38 +1126,38 @@ export default function UtilitiesPage() {
         {subView === "view_item" && selectedItem && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs">
-                <div className="text-[11px] font-bold text-slate-400 uppercase">CURRENT STOCK</div>
-                <div className="text-2xl font-bold text-[#48BB78] mt-1">
+              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+                <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">CURRENT STOCK</div>
+                <div className="text-2xl font-bold text-[#34C759] mt-1 tracking-tight">
                   {selectedItem.current_stock === "N/A" ? 0 : selectedItem.current_stock}
                 </div>
               </div>
-              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs">
-                <div className="text-[11px] font-bold text-slate-400 uppercase">OLD STOCK</div>
-                <div className="text-2xl font-bold text-slate-700 mt-1">0</div>
+              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+                <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">OLD STOCK</div>
+                <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">0</div>
               </div>
-              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs">
-                <div className="text-[11px] font-bold text-slate-400 uppercase">DAMAGED STOCK</div>
-                <div className="text-2xl font-bold text-rose-500 mt-1">0</div>
+              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+                <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">DAMAGED STOCK</div>
+                <div className="text-2xl font-bold text-[#FF3B30] mt-1 tracking-tight">0</div>
               </div>
-              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs">
-                <div className="text-[11px] font-bold text-slate-400 uppercase">
+              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+                <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                   DISCARDED STOCK
                 </div>
-                <div className="text-2xl font-bold text-amber-500 mt-1">0</div>
+                <div className="text-2xl font-bold text-[#FF9500] mt-1 tracking-tight">0</div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
               <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                <h2 className="text-white font-bold text-base tracking-wide">
+                <h2 className="text-white font-semibold text-base tracking-tight">
                   Stock Transaction History - {selectedItem.item} ({selectedItem.product_id})
                 </h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                       {["DATE", "STORE", "ITEM", "ITEM TYPE", "QUANTITY", "UPDATED BY"].map(
                         (col) => (
                           <th key={col} className="py-3 px-6">
@@ -1164,16 +1167,16 @@ export default function UtilitiesPage() {
                       )}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200/70 text-xs text-slate-700">
-                    <tr>
-                      <td className="py-3.5 px-6">08/09/2026</td>
+                  <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
+                    <tr className="hover:bg-[#F2F2F7]/50">
+                      <td className="py-3.5 px-6">{selectedItem.last_updated || "08/09/2026"}</td>
                       <td className="py-3.5 px-6">Al Ain</td>
-                      <td className="py-3.5 px-6 font-medium">{selectedItem.item}</td>
+                      <td className="py-3.5 px-6 font-semibold">{selectedItem.item}</td>
                       <td className="py-3.5 px-6">New</td>
-                      <td className="py-3.5 px-6 font-semibold">
+                      <td className="py-3.5 px-6 font-bold">
                         {selectedItem.current_stock === "N/A" ? 0 : selectedItem.current_stock}
                       </td>
-                      <td className="py-3.5 px-6">IRSHAD (STORE KEEPER)</td>
+                      <td className="py-3.5 px-6 text-[#8E8E93]">IRSHAD (STORE KEEPER)</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1184,14 +1187,14 @@ export default function UtilitiesPage() {
 
         {/* 6. ADD NEW TRUCK SUB-VIEW (add-new truck.png) */}
         {subView === "add_truck" && (
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
             <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-bold text-base tracking-wide">Add New Truck</h2>
+              <h2 className="text-white font-semibold text-base tracking-tight">Add New Truck</h2>
             </div>
 
             <form onSubmit={handleAddNewTruck} className="p-8 space-y-5 max-w-5xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                   Truck ID
                 </label>
                 <div className="md:col-span-9">
@@ -1202,20 +1205,20 @@ export default function UtilitiesPage() {
                     onChange={(e) =>
                       setNewTruckForm({ ...newTruckForm, truck_id: e.target.value })
                     }
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                   City
                 </label>
                 <div className="md:col-span-9">
                   <select
                     value={newTruckForm.city}
                     onChange={(e) => setNewTruckForm({ ...newTruckForm, city: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   >
                     <option value="">Select City</option>
                     <option value="AL_AIN">AL_AIN</option>
@@ -1225,14 +1228,14 @@ export default function UtilitiesPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                   Assigned Routes
                 </label>
                 <div className="md:col-span-9">
                   <select
                     value={newTruckForm.route}
                     onChange={(e) => setNewTruckForm({ ...newTruckForm, route: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   >
                     <option value="">Select Assigned Route</option>
                     <option value="6335">6335</option>
@@ -1244,19 +1247,19 @@ export default function UtilitiesPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3">
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
-                >
-                  Add Truck
-                </button>
+              <div className="flex justify-end gap-2.5 pt-3">
                 <button
                   type="button"
                   onClick={() => setSubView("list")}
-                  className="px-4 py-1.5 rounded bg-[#E53E6A] hover:bg-[#d12c57] text-white text-xs font-semibold transition cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-[#8E8E93]/20 hover:bg-[#8E8E93]/30 text-[#1C1C1E] text-xs font-semibold transition cursor-pointer active:scale-95"
                 >
                   Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold transition cursor-pointer shadow-sm active:scale-95"
+                >
+                  Add Truck
                 </button>
               </div>
             </form>
@@ -1265,15 +1268,15 @@ export default function UtilitiesPage() {
 
         {/* 7. MANAGE TRUCK STOCK SUB-VIEW (truck-manage.png) */}
         {subView === "manage_truck" && selectedTruck && (
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
             <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-bold text-base tracking-wide">Manage Truck Stock</h2>
+              <h2 className="text-white font-semibold text-base tracking-tight">Manage Truck Stock</h2>
             </div>
 
             <div className="p-8 space-y-6">
               <form onSubmit={handleAddTruckRecord} className="space-y-4 max-w-5xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                     Truck ID
                   </label>
                   <div className="md:col-span-9">
@@ -1281,13 +1284,13 @@ export default function UtilitiesPage() {
                       type="text"
                       disabled
                       value={selectedTruck.truck_id}
-                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-500 bg-[#EDF2F7]"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#8E8E93] bg-[#F2F2F7]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                     Product
                   </label>
                   <div className="md:col-span-9">
@@ -1296,7 +1299,7 @@ export default function UtilitiesPage() {
                       onChange={(e) =>
                         setManageTruckForm({ ...manageTruckForm, product: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     >
                       <option value="">Select Product</option>
                       <option value="5 gal water">5 gal water</option>
@@ -1309,7 +1312,7 @@ export default function UtilitiesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                     Store
                   </label>
                   <div className="md:col-span-9">
@@ -1318,7 +1321,7 @@ export default function UtilitiesPage() {
                       onChange={(e) =>
                         setManageTruckForm({ ...manageTruckForm, store: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     >
                       <option value="Al Ain">Al Ain</option>
                       <option value="Abu Dhabi">Abu Dhabi</option>
@@ -1327,7 +1330,7 @@ export default function UtilitiesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                     Action
                   </label>
                   <div className="md:col-span-9">
@@ -1336,7 +1339,7 @@ export default function UtilitiesPage() {
                       onChange={(e) =>
                         setManageTruckForm({ ...manageTruckForm, action: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     >
                       <option value="Add to Truck">Add to Truck</option>
                       <option value="Return to Store">Return to Store</option>
@@ -1345,7 +1348,7 @@ export default function UtilitiesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                     Condition
                   </label>
                   <div className="md:col-span-9">
@@ -1354,7 +1357,7 @@ export default function UtilitiesPage() {
                       onChange={(e) =>
                         setManageTruckForm({ ...manageTruckForm, condition: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     >
                       <option value="New">New</option>
                       <option value="Used">Used</option>
@@ -1364,7 +1367,7 @@ export default function UtilitiesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  <label className="md:col-span-3 md:text-right text-xs font-semibold text-[#1C1C1E]">
                     Quantity
                   </label>
                   <div className="md:col-span-9">
@@ -1375,7 +1378,7 @@ export default function UtilitiesPage() {
                       onChange={(e) =>
                         setManageTruckForm({ ...manageTruckForm, quantity: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     />
                   </div>
                 </div>
@@ -1383,7 +1386,7 @@ export default function UtilitiesPage() {
                 <div className="flex justify-end pt-2">
                   <button
                     type="submit"
-                    className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
+                    className="px-5 py-2 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold transition cursor-pointer shadow-sm active:scale-95"
                   >
                     Add Record
                   </button>
@@ -1391,10 +1394,10 @@ export default function UtilitiesPage() {
               </form>
 
               {/* Truck Stock Table inside Manage Truck Stock */}
-              <div className="overflow-x-auto border-t border-slate-200 pt-4">
+              <div className="overflow-x-auto border-t border-[#3C3C43]/10 pt-4">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7]/60 border-y border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                       {[
                         "PRODUCT",
                         "ADDED",
@@ -1410,15 +1413,15 @@ export default function UtilitiesPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200/70 text-xs text-slate-700">
+                  <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
                     {selectedTruck.stocks.map((st, idx) => (
-                      <tr key={idx}>
-                        <td className="py-3 px-4 font-medium">{st.item}</td>
+                      <tr key={idx} className="hover:bg-[#F2F2F7]/50">
+                        <td className="py-3 px-4 font-semibold">{st.item}</td>
                         <td className="py-3 px-4">{st.added}</td>
                         <td className="py-3 px-4">{st.delivered}</td>
                         <td className="py-3 px-4">{st.used}</td>
                         <td className="py-3 px-4">{st.damaged}</td>
-                        <td className="py-3 px-4">{st.balance}</td>
+                        <td className="py-3 px-4 font-bold">{st.balance}</td>
                         <td className="py-3 px-4">{st.returned}</td>
                       </tr>
                     ))}
@@ -1433,7 +1436,7 @@ export default function UtilitiesPage() {
                     addToast(`Closed stock session for ${selectedTruck.truck_id}`, "info");
                     setSubView("list");
                   }}
-                  className="px-4 py-1.5 rounded bg-[#E53E6A] hover:bg-[#d12c57] text-white text-xs font-semibold transition cursor-pointer"
+                  className="px-5 py-2 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-xs font-semibold transition cursor-pointer active:scale-95"
                 >
                   Close Stock
                 </button>
@@ -1445,37 +1448,37 @@ export default function UtilitiesPage() {
 
       {/* 8. TRUCK STOCK DETAILS MODAL (truck view.png) */}
       {truckModalOpen && selectedTruck && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-800">Truck Stock Details</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
+              <h3 className="text-base font-semibold text-[#1C1C1E]">Truck Stock Details</h3>
               <button
                 type="button"
                 onClick={() => setTruckModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+                className="w-8 h-8 rounded-full bg-[#F2F2F7] flex items-center justify-center text-[#8E8E93] hover:text-[#1C1C1E] cursor-pointer transition"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="flex flex-wrap items-center justify-between text-xs text-slate-700 gap-4">
+              <div className="flex flex-wrap items-center justify-between text-xs text-[#1C1C1E] gap-4 bg-[#F2F2F7]/50 p-4 rounded-2xl">
                 <div>
-                  <span className="font-bold">Truck ID:</span> {selectedTruck.truck_id}
+                  <span className="font-semibold text-[#8E8E93]">Truck ID:</span> {selectedTruck.truck_id}
                 </div>
                 <div>
-                  <span className="font-bold">In-Charge:</span> {selectedTruck.in_charge}
+                  <span className="font-semibold text-[#8E8E93]">In-Charge:</span> {selectedTruck.in_charge}
                 </div>
                 <div>
-                  <span className="font-bold">Last Updated:</span>{" "}
+                  <span className="font-semibold text-[#8E8E93]">Last Updated:</span>{" "}
                   {selectedTruck.last_updated_full}
                 </div>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full text-left border-collapse border-t border-[#3C3C43]/10">
                   <thead>
-                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
+                    <tr className="bg-[#F2F2F7]/60 border-b border-[#3C3C43]/10 text-[10px] font-semibold text-[#8E8E93] uppercase">
                       {[
                         "ITEM",
                         "ADDED",
@@ -1491,15 +1494,15 @@ export default function UtilitiesPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200/70 text-xs text-slate-700">
+                  <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
                     {selectedTruck.stocks.map((st, idx) => (
-                      <tr key={idx}>
-                        <td className="py-3 px-3">{st.item}</td>
+                      <tr key={idx} className="hover:bg-[#F2F2F7]/50">
+                        <td className="py-3 px-3 font-medium">{st.item}</td>
                         <td className="py-3 px-3">{st.added}</td>
                         <td className="py-3 px-3">{st.delivered}</td>
                         <td className="py-3 px-3">{st.used}</td>
                         <td className="py-3 px-3">{st.damaged}</td>
-                        <td className="py-3 px-3">{st.balance}</td>
+                        <td className="py-3 px-3 font-bold">{st.balance}</td>
                         <td className="py-3 px-3">{st.returned}</td>
                       </tr>
                     ))}
@@ -1508,18 +1511,18 @@ export default function UtilitiesPage() {
               </div>
             </div>
 
-            <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+            <div className="px-6 py-4 bg-[#F2F2F7]/50 border-t border-[#3C3C43]/10 flex items-center justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => setTruckModalOpen(false)}
-                className="px-3.5 py-1.5 rounded border border-slate-300 bg-white text-slate-700 text-xs font-medium hover:bg-slate-50 cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[#8E8E93]/20 hover:bg-[#8E8E93]/30 text-[#1C1C1E] text-xs font-semibold cursor-pointer active:scale-95 transition"
               >
                 Close
               </button>
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="px-3.5 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold cursor-pointer inline-flex items-center gap-1"
+                className="px-4 py-2 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold cursor-pointer inline-flex items-center gap-1.5 shadow-sm active:scale-95 transition"
               >
                 <Printer className="w-3.5 h-3.5" />
                 Print
@@ -1531,55 +1534,55 @@ export default function UtilitiesPage() {
 
       {/* 9. TOTAL PRODUCT DELIVERY SUMMARY RIGHT-HAND DRAWER (product-summary.png) */}
       {productSummaryDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/30">
-          <div className="bg-white w-full max-w-xs h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200">
-            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="text-xs font-bold text-slate-700">
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs">
+          <div className="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200 border-l border-[#3C3C43]/10">
+            <div className="px-6 py-5 border-b border-[#3C3C43]/10 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-[#1C1C1E]">
                 Total Product Delivery Summary
               </h3>
               <button
                 type="button"
                 onClick={() => setProductSummaryDrawerOpen(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="w-8 h-8 rounded-full bg-[#F2F2F7] flex items-center justify-center text-[#8E8E93] hover:text-[#1C1C1E] cursor-pointer transition"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-4 border-b border-slate-100">
+            <div className="p-5 border-b border-[#3C3C43]/10">
               <div className="relative">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-3.5 h-3.5 text-[#8E8E93] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search Product..."
                   value={summarySearch}
                   onChange={(e) => setSummarySearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 border border-slate-200 rounded text-xs focus:outline-none focus:border-[#5948DB]"
+                  className="w-full pl-9 pr-3.5 py-2 bg-[#F2F2F7] border border-[#3C3C43]/15 rounded-full text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                 />
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div className="flex-1 overflow-y-auto p-5 space-y-3.5">
               {filteredProductSummary.map((item, idx) => (
                 <div
                   key={idx}
-                  className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs"
+                  className="border border-[#3C3C43]/10 rounded-2xl p-4 bg-white shadow-xs"
                 >
-                  <div className="text-xs font-semibold text-slate-600 mb-2">{item.name}</div>
+                  <div className="text-xs font-semibold text-[#1C1C1E] mb-3">{item.name}</div>
                   <div className="grid grid-cols-3 text-center gap-2">
-                    <div>
-                      <div className="text-sm font-bold text-[#5948DB]">{item.loaded}</div>
-                      <div className="text-[9px] font-bold text-slate-400 uppercase">LOADED</div>
+                    <div className="bg-[#007AFF]/10 p-2 rounded-xl">
+                      <div className="text-sm font-bold text-[#007AFF]">{item.loaded}</div>
+                      <div className="text-[9.5px] font-semibold text-[#007AFF] uppercase mt-0.5">LOADED</div>
                     </div>
-                    <div>
-                      <div className="text-sm font-bold text-[#48BB78]">{item.delivered}</div>
-                      <div className="text-[9px] font-bold text-slate-400 uppercase">
+                    <div className="bg-[#34C759]/10 p-2 rounded-xl">
+                      <div className="text-sm font-bold text-[#34C759]">{item.delivered}</div>
+                      <div className="text-[9.5px] font-semibold text-[#34C759] uppercase mt-0.5">
                         DELIVERED
                       </div>
                     </div>
-                    <div>
-                      <div className="text-sm font-bold text-[#E05D38]">{item.returned}</div>
-                      <div className="text-[9px] font-bold text-slate-400 uppercase">RETURNED</div>
+                    <div className="bg-[#FF9500]/10 p-2 rounded-xl">
+                      <div className="text-sm font-bold text-[#FF9500]">{item.returned}</div>
+                      <div className="text-[9.5px] font-semibold text-[#FF9500] uppercase mt-0.5">RETURNED</div>
                     </div>
                   </div>
                 </div>

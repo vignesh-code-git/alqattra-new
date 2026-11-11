@@ -171,61 +171,61 @@ export default function DashboardPage() {
     <div className="flex-1 flex flex-col">
       <Header title="Dashboard Overview" subtitle="Dashboard" />
 
-      {/* Figma Black Top Banner (Dashboard.png & dashboard-filter.png) */}
-      <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+      {/* iOS Top Hero Navigation Bar */}
+      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-3.5 flex items-center justify-between sticky top-16 z-20">
         <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight">Default</span>
-          <span className="text-slate-300 text-xs">- Dashboard - ALL</span>
+          <span className="font-bold text-base tracking-tight text-[#1C1C1E]">Dashboard</span>
+          <span className="text-[#8E8E93] text-xs">/ Overview</span>
         </div>
         <button
           type="button"
           onClick={() => setShowFilters(true)}
-          className="px-3.5 py-1.5 rounded bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold transition cursor-pointer shadow-xs"
+          className="px-4 py-1.5 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition cursor-pointer shadow-2xs"
         >
           Filters
         </button>
       </div>
 
       <main className="p-5 space-y-5 flex-1 overflow-y-auto">
-        {/* Figma Dashboard Filters Modal (dashboard-filter.png) */}
+        {/* iOS Dashboard Filters Modal */}
         {showFilters && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-                <h3 className="text-sm font-bold text-slate-800">Dashboard Filters</h3>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4">
+            <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-[#3C3C43]/10">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
+                <h3 className="text-sm font-bold text-[#1C1C1E]">Dashboard Filters</h3>
                 <button
                   type="button"
                   onClick={() => setShowFilters(false)}
-                  className="text-slate-400 hover:text-slate-700 text-base font-bold cursor-pointer"
+                  className="w-7 h-7 rounded-full bg-[#E5E5EA] flex items-center justify-center text-[#8E8E93] hover:text-[#1C1C1E] cursor-pointer"
                 >
                   ×
                 </button>
               </div>
-              <div className="p-5 space-y-4 text-xs text-slate-700">
+              <div className="p-6 space-y-4 text-xs text-[#3C3C43]">
                 <div>
-                  <label className="block font-semibold text-slate-600 mb-1">From Date</label>
+                  <label className="block font-semibold text-[#8E8E93] mb-1">From Date</label>
                   <input
                     type="date"
                     value={filterFromDate || "2026-09-07"}
                     onChange={(e) => setFilterFromDate(e.target.value)}
-                    className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700"
+                    className="w-full px-3 py-2 text-xs text-[#1C1C1E]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-600 mb-1">To Date</label>
+                  <label className="block font-semibold text-[#8E8E93] mb-1">To Date</label>
                   <input
                     type="date"
                     value={filterToDate || "2026-09-07"}
                     onChange={(e) => setFilterToDate(e.target.value)}
-                    className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700"
+                    className="w-full px-3 py-2 text-xs text-[#1C1C1E]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-600 mb-1">Filter By</label>
+                  <label className="block font-semibold text-[#8E8E93] mb-1">Filter By</label>
                   <select
                     value={filterTerritory}
                     onChange={(e) => setFilterTerritory(e.target.value)}
-                    className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700 bg-white"
+                    className="w-full px-3 py-2 text-xs text-[#1C1C1E] bg-white"
                   >
                     <option value="Daily">Daily</option>
                     <option value="Weekly">Weekly</option>
@@ -234,11 +234,11 @@ export default function DashboardPage() {
                   </select>
                 </div>
               </div>
-              <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+              <div className="px-6 py-3.5 bg-[#F9F9FB] border-t border-[#3C3C43]/10 flex items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowFilters(false)}
-                  className="px-3.5 py-1.5 rounded border border-slate-200 bg-white text-slate-600 text-xs font-semibold hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-1.5 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold cursor-pointer"
                 >
                   Close
                 </button>
@@ -248,7 +248,7 @@ export default function DashboardPage() {
                     setShowFilters(false);
                     addToast("Dashboard filters applied", "success");
                   }}
-                  className="px-4 py-1.5 rounded bg-[#5948DB] hover:bg-[#4938c7] text-white text-xs font-semibold cursor-pointer"
+                  className="px-5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold shadow-sm shadow-[#007AFF]/25 cursor-pointer"
                 >
                   Apply
                 </button>
@@ -257,7 +257,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* KPI Grid - 8 Cards with crisp enterprise borders and reduced border radius */}
+        {/* KPI Grid - iOS Metric Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
           <KpiCard
             title="Deliveries Today"
@@ -309,10 +309,10 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Charts Row: Revenue & Collections By Payment Method */}
+        {/* Charts Row: iOS Card Container */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Revenue Chart */}
-          <div className="bg-white rounded-md border border-slate-200 p-4 shadow-2xs">
+          <div className="bg-white rounded-3xl border border-[#3C3C43]/10 p-5 shadow-sm">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
               <div>
                 <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">
@@ -349,7 +349,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Collections Chart */}
-          <div className="bg-white rounded-md border border-slate-200 p-4 shadow-2xs">
+          <div className="bg-white rounded-3xl border border-[#3C3C43]/10 p-5 shadow-sm">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
               <div>
                 <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">
@@ -389,15 +389,15 @@ export default function DashboardPage() {
         {/* Lower Row: Top Products Sales (With Vertical Column Divider Lines) & Performance Trend */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Top Products Table with Column Divider Lines */}
-          <div className="bg-white rounded-md border border-slate-200 shadow-2xs overflow-hidden flex flex-col justify-between">
+          <div className="bg-white rounded-3xl border border-[#3C3C43]/10 shadow-sm overflow-hidden flex flex-col justify-between">
             <div>
-              <div className="px-4 py-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between">
-                <h3 className="text-xs font-bold text-slate-800 tracking-wide uppercase">
+              <div className="px-5 py-4 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex items-center justify-between">
+                <h3 className="text-xs font-bold text-[#1C1C1E] tracking-tight uppercase">
                   Top Products Sales
                 </h3>
                 <Link
                   href="/utilities"
-                  className="text-[11px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                  className="text-[11px] font-semibold text-[#007AFF] hover:underline flex items-center gap-1"
                 >
                   <span>See all</span>
                   <ArrowRight className="w-3 h-3" />
@@ -406,27 +406,27 @@ export default function DashboardPage() {
 
               <div className="overflow-x-auto touch-pan-x">
                 <table className="w-full text-left text-xs border-collapse min-w-[500px]">
-                  <thead className="bg-[#5948DB] text-xs text-white tracking-normal border-b border-[#4A3AC9] font-semibold">
+                  <thead className="bg-[#F2F2F7] text-xs text-[#8E8E93] border-b border-[#3C3C43]/10 font-semibold uppercase">
                     <tr>
-                      <th className="px-4 py-3 font-semibold border-r border-[#7161F0]/70 text-white">PRODUCT</th>
-                      <th className="px-4 py-3 font-semibold text-center border-r border-[#7161F0]/70 text-white">LAST MONTH</th>
-                      <th className="px-4 py-3 font-semibold text-center border-r border-[#7161F0]/70 text-white">THIS MONTH</th>
-                      <th className="px-4 py-3 font-semibold text-right text-white">CHANGE</th>
+                      <th className="px-4 py-3 font-semibold">PRODUCT</th>
+                      <th className="px-4 py-3 font-semibold text-center">LAST MONTH</th>
+                      <th className="px-4 py-3 font-semibold text-center">THIS MONTH</th>
+                      <th className="px-4 py-3 font-semibold text-right">CHANGE</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200 font-medium">
+                  <tbody className="divide-y divide-[#3C3C43]/10 font-medium">
                     {data.top_products.map((p, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-4 py-3 text-slate-900 font-semibold border-r border-slate-200">
+                      <tr key={idx} className="hover:bg-[#F2F2F7]/50 transition-colors">
+                        <td className="px-4 py-3 text-[#1C1C1E] font-semibold">
                           {p.name}
                         </td>
-                        <td className="px-4 py-3 text-center text-slate-500 font-mono border-r border-slate-200">
+                        <td className="px-4 py-3 text-center text-[#8E8E93] font-mono">
                           {p.last_month}
                         </td>
-                        <td className="px-4 py-3 text-center text-slate-800 font-bold font-mono border-r border-slate-200">
+                        <td className="px-4 py-3 text-center text-[#1C1C1E] font-bold font-mono">
                           {p.this_month}
                         </td>
-                        <td className="px-4 py-3 text-right font-bold text-emerald-600 font-mono">
+                        <td className="px-4 py-3 text-right font-bold text-[#34C759] font-mono">
                           {p.change}
                         </td>
                       </tr>
@@ -436,13 +436,13 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="p-3 bg-slate-50 border-t border-slate-200 text-right text-[11px] text-slate-500">
+            <div className="p-3 bg-[#F9F9FB] border-t border-[#3C3C43]/10 text-right text-[11px] text-[#8E8E93]">
               Showing top 4 high-demand water SKUs
             </div>
           </div>
 
           {/* Performance Trend */}
-          <div className="bg-white rounded-md border border-slate-200 p-4 shadow-2xs flex flex-col justify-between">
+          <div className="bg-white rounded-3xl border border-[#3C3C43]/10 p-5 shadow-sm flex flex-col justify-between">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-2">
               <div>
                 <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">
@@ -487,16 +487,16 @@ function KpiCard({ title, value, icon: Icon, color }) {
   };
 
   return (
-    <div className="bg-white rounded-md border border-slate-200 p-3 flex flex-col justify-between shadow-2xs hover:border-slate-300 transition-all">
+    <div className="bg-white rounded-2xl border border-[#3C3C43]/10 p-3.5 flex flex-col justify-between shadow-xs hover:shadow-md transition-all">
       <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[9px] font-bold text-slate-400 tracking-wider uppercase leading-tight line-clamp-1">
+        <span className="text-[10px] font-semibold text-[#8E8E93] tracking-wide uppercase leading-tight line-clamp-1">
           {title}
         </span>
-        <div className={`w-4.5 h-4.5 rounded-xs flex items-center justify-center border ${colorMap[color] || colorMap.slate}`}>
+        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${colorMap[color] || colorMap.slate}`}>
           <Icon className="w-2.5 h-2.5" />
         </div>
       </div>
-      <div className="text-sm font-extrabold text-slate-900 tracking-tight truncate font-mono">
+      <div className="text-[13.5px] font-bold text-[#1C1C1E] tracking-tight truncate font-mono">
         {value}
       </div>
     </div>

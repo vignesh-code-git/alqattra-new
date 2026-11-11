@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
-import { Home, ArrowUpDown, Download } from "lucide-react";
+import { ArrowUpDown, Download } from "lucide-react";
 
 const SALESMAN_REPORT_ROWS = [
   {
@@ -377,16 +377,15 @@ export default function ReportsPage() {
   const [activeTab, setActiveTab] = useState("salesman"); // "salesman" | "customer" | "truck" | "commission"
 
   return (
-    <div className="min-h-screen bg-[#F4F6F9] flex flex-col">
+    <div className="min-h-screen bg-[#F2F2F7] flex flex-col font-sans pb-12">
       <Header title="Reports" subtitle="Analytics & Reports" />
 
-      {/* Figma Black Top Banner */}
-      <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+      {/* iOS Translucent Glass Top Hero Bar */}
+      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-4 flex items-center justify-between sticky top-0 z-20 transition-all">
         <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight">Reports</span>
-          <Home className="w-3.5 h-3.5 text-slate-300" />
-          <span className="text-slate-300 text-xs">
-            -{" "}
+          <span className="font-semibold text-base text-[#1C1C1E] tracking-tight">Reports</span>
+          <span className="text-[#8E8E93] text-xs">/</span>
+          <span className="text-[#8E8E93] text-xs font-medium">
             {activeTab === "salesman"
               ? "Salesman Collection"
               : activeTab === "customer"
@@ -394,99 +393,110 @@ export default function ReportsPage() {
               : activeTab === "truck"
               ? "Truck Report"
               : "Commission Report"}{" "}
-            - ALL
+            • ALL
           </span>
         </div>
       </div>
 
-      {/* 4 Report Sub-tabs */}
-      <div className="px-6 pt-5 pb-1 flex flex-wrap items-center gap-2">
-        {[
-          { id: "salesman", label: "Salesman Collection" },
-          { id: "customer", label: "Customer Report" },
-          { id: "truck", label: "Truck Report" },
-          { id: "commission", label: "Commission Report" },
-        ].map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setActiveTab(t.id)}
-            className={`px-4 py-2 rounded text-xs font-semibold transition cursor-pointer ${
-              activeTab === t.id
-                ? "bg-white text-slate-800 shadow-xs border border-slate-200"
-                : "bg-slate-200/70 text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+      {/* iOS Segmented Sub-tabs */}
+      <div className="px-6 pt-5 pb-1 flex">
+        <div className="bg-[#E5E5EA]/80 p-1 rounded-full border border-[#3C3C43]/5 inline-flex gap-1 backdrop-blur-md">
+          {[
+            { id: "salesman", label: "Salesman Collection" },
+            { id: "customer", label: "Customer Report" },
+            { id: "truck", label: "Truck Report" },
+            { id: "commission", label: "Commission Report" },
+          ].map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setActiveTab(t.id)}
+              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === t.id
+                  ? "bg-white text-[#1C1C1E] shadow-sm"
+                  : "text-[#8E8E93] hover:text-[#1C1C1E]"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="p-6 flex-1 space-y-6">
         {/* TAB 1: SALESMAN COLLECTION REPORT (reposrts-salesman.png) */}
         {activeTab === "salesman" && (
           <>
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 p-5">
+            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-6 space-y-4">
+              <h3 className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wider">
+                Filter Parameters
+              </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     From
                   </label>
-                  <input type="date" className="w-full border border-slate-200 rounded px-2.5 py-1.5" />
+                  <input
+                    type="date"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                  />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     To
                   </label>
-                  <input type="date" className="w-full border border-slate-200 rounded px-2.5 py-1.5" />
+                  <input
+                    type="date"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                  />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     Salesman
                   </label>
-                  <select className="w-full border border-slate-200 rounded px-2.5 py-1.5 bg-white">
+                  <select className="w-full border border-[#3C3C43]/15 bg-white rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all">
                     <option value="">All Salesmen</option>
                     <option value="56 - ANAS">56 - ANAS</option>
                     <option value="32 - NOOR">32 - NOOR</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     Route
                   </label>
-                  <select className="w-full border border-slate-200 rounded px-2.5 py-1.5 bg-white">
+                  <select className="w-full border border-[#3C3C43]/15 bg-white rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all">
                     <option value="">All Routes</option>
                     <option value="6350">6350</option>
                     <option value="6335">6335</option>
                   </select>
                 </div>
               </div>
-              <div className="flex justify-end gap-2 mt-4">
+              <div className="flex justify-end gap-2.5 pt-2">
                 <button
                   type="button"
-                  onClick={() => addToast("Report filters applied", "info")}
-                  className="px-4 py-1.5 rounded bg-[#5948DB] text-white text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
                 >
-                  Apply
+                  Reset
                 </button>
                 <button
                   type="button"
-                  className="px-4 py-1.5 rounded border border-slate-200 text-slate-600 text-xs font-semibold cursor-pointer"
+                  onClick={() => addToast("Report filters applied", "info")}
+                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
                 >
-                  Reset
+                  Apply
                 </button>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
-              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4 flex items-center justify-between">
-                <h2 className="text-white font-bold text-base tracking-wide">
+            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
+              <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4 flex items-center justify-between">
+                <h2 className="text-white font-semibold text-base tracking-tight">
                   Salesman Collection Report
                 </h2>
                 <button
                   type="button"
                   onClick={() => addToast("Exported Salesman Report CSV", "success")}
-                  className="px-3.5 py-1.5 rounded bg-[#48BB78] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Export
@@ -495,7 +505,7 @@ export default function ReportsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
+                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                       {[
                         "SALESMAN",
                         "ROUTE",
@@ -514,21 +524,21 @@ export default function ReportsPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200 text-xs text-slate-700">
+                  <tbody className="divide-y divide-[#E5E5EA] text-xs text-[#1C1C1E]">
                     {SALESMAN_REPORT_ROWS.map((r) => (
-                      <tr key={r.id} className="hover:bg-slate-50/80">
-                        <td className="py-3.5 pl-6 pr-4 font-medium">{r.salesman}</td>
-                        <td className="py-3.5 px-4">{r.route}</td>
-                        <td className="py-3.5 px-4">{r.orders}</td>
+                      <tr key={r.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
+                        <td className="py-3.5 pl-6 pr-4 font-semibold text-[#1C1C1E]">{r.salesman}</td>
+                        <td className="py-3.5 px-4 font-mono text-xs">{r.route}</td>
+                        <td className="py-3.5 px-4 font-medium">{r.orders}</td>
                         <td className="py-3.5 px-4">AED {r.cash}</td>
                         <td className="py-3.5 px-4">AED {r.card}</td>
                         <td className="py-3.5 px-4">AED {r.wallet}</td>
                         <td className="py-3.5 px-4">AED {r.credit}</td>
-                        <td className="py-3.5 px-4 font-semibold">AED {r.total}</td>
-                        <td className="py-3.5 px-4 text-emerald-600 font-semibold">
+                        <td className="py-3.5 px-4 font-bold text-[#1C1C1E]">AED {r.total}</td>
+                        <td className="py-3.5 px-4 text-[#34C759] font-bold">
                           AED {r.collected}
                         </td>
-                        <td className="py-3.5 pl-4 pr-6 text-rose-600 font-semibold">
+                        <td className="py-3.5 pl-4 pr-6 text-[#FF3B30] font-bold">
                           AED {r.pending}
                         </td>
                       </tr>
@@ -543,88 +553,103 @@ export default function ReportsPage() {
         {/* TAB 2: CUSTOMER REPORT (customer report.png) */}
         {activeTab === "customer" && (
           <>
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 p-5">
+            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-6 space-y-4">
+              <h3 className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wider">
+                Filter Parameters
+              </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     FROM DATE
                   </label>
-                  <input type="date" className="w-full border border-slate-200 rounded px-2.5 py-1.5" />
+                  <input
+                    type="date"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                  />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     TO DATE
                   </label>
-                  <input type="date" className="w-full border border-slate-200 rounded px-2.5 py-1.5" />
+                  <input
+                    type="date"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                  />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     SALESMAN ID
                   </label>
                   <input
                     type="text"
                     placeholder="Select Salesman"
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     ROUTE
                   </label>
                   <input
                     type="text"
                     placeholder="Select Route"
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     TRUCK
                   </label>
                   <input
                     type="text"
                     placeholder="Select Truck"
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     ZONE
                   </label>
                   <input
                     type="text"
                     placeholder="Select Zone"
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     PRODUCTS
                   </label>
                   <input
                     type="text"
                     placeholder="Select Products"
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <button className="px-4 py-1.5 rounded bg-[#5948DB] text-white text-xs font-semibold">
-                  Apply
-                </button>
-                <button className="px-4 py-1.5 rounded border border-slate-200 text-slate-600 text-xs font-semibold">
+              <div className="flex justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
+                >
                   Reset
+                </button>
+                <button
+                  type="button"
+                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
+                >
+                  Apply
                 </button>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
-              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4 flex items-center justify-between">
-                <h2 className="text-white font-bold text-base tracking-wide">Customer Report</h2>
+            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
+              <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4 flex items-center justify-between">
+                <h2 className="text-white font-semibold text-base tracking-tight">Customer Report</h2>
                 <button
                   type="button"
                   onClick={() => addToast("Exported Customer Report", "success")}
-                  className="px-3.5 py-1.5 rounded bg-[#48BB78] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Export
@@ -633,7 +658,7 @@ export default function ReportsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
+                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                       {[
                         "ID",
                         "NAME",
@@ -647,23 +672,23 @@ export default function ReportsPage() {
                         <th key={c} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{c}</span>
-                            <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                           </div>
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200 text-xs text-slate-700">
+                  <tbody className="divide-y divide-[#E5E5EA] text-xs text-[#1C1C1E]">
                     {CUSTOMER_REPORT_ROWS.map((r) => (
-                      <tr key={r.id} className="hover:bg-slate-50/80">
-                        <td className="py-3.5 pl-6 pr-4 font-medium">{r.id}</td>
-                        <td className="py-3.5 px-4 font-medium text-slate-800">{r.name}</td>
-                        <td className="py-3.5 px-4">{r.recent_delivery}</td>
-                        <td className="py-3.5 px-4">{r.total_orders}</td>
-                        <td className="py-3.5 px-4">{r.order_revenue}</td>
+                      <tr key={r.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
+                        <td className="py-3.5 pl-6 pr-4 font-mono text-[11px] font-medium">{r.id}</td>
+                        <td className="py-3.5 px-4 font-semibold text-[#1C1C1E]">{r.name}</td>
+                        <td className="py-3.5 px-4 text-[#8E8E93]">{r.recent_delivery}</td>
+                        <td className="py-3.5 px-4 font-medium">{r.total_orders}</td>
+                        <td className="py-3.5 px-4 font-medium">{r.order_revenue}</td>
                         <td className="py-3.5 px-4">{r.security_deposit}</td>
-                        <td className="py-3.5 px-4">{r.wallet_recharge}</td>
-                        <td className="py-3.5 pl-4 pr-6">{r.pending_payment}</td>
+                        <td className="py-3.5 px-4 text-[#007AFF] font-medium">{r.wallet_recharge}</td>
+                        <td className="py-3.5 pl-4 pr-6 text-[#FF3B30] font-semibold">{r.pending_payment}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -676,69 +701,84 @@ export default function ReportsPage() {
         {/* TAB 3: TRUCK REPORT (truck reposrt.png) */}
         {activeTab === "truck" && (
           <>
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 p-5">
+            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-6 space-y-4">
+              <h3 className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wider">
+                Filter Parameters
+              </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 text-xs">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     From
                   </label>
-                  <input type="date" className="w-full border border-slate-200 rounded px-2.5 py-1.5" />
+                  <input
+                    type="date"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                  />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     To
                   </label>
-                  <input type="date" className="w-full border border-slate-200 rounded px-2.5 py-1.5" />
+                  <input
+                    type="date"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                  />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     Salesman ID
                   </label>
                   <input
                     type="text"
                     placeholder="Salesman ID"
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     Route
                   </label>
                   <input
                     type="text"
                     placeholder="Route"
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
-                    Select Products to Report On
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                    Select Products
                   </label>
                   <input
                     type="text"
                     placeholder="All Products"
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <button className="px-4 py-1.5 rounded bg-[#5948DB] text-white text-xs font-semibold">
-                  Apply
-                </button>
-                <button className="px-4 py-1.5 rounded border border-slate-200 text-slate-600 text-xs font-semibold">
+              <div className="flex justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
+                >
                   Reset
+                </button>
+                <button
+                  type="button"
+                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
+                >
+                  Apply
                 </button>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
-              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                <h2 className="text-white font-bold text-base tracking-wide">Truck Report</h2>
+            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
+              <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4 flex items-center justify-between">
+                <h2 className="text-white font-semibold text-base tracking-tight">Truck Report</h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
+                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                       {[
                         "TRUCK ID",
                         "SALESMAN",
@@ -752,22 +792,22 @@ export default function ReportsPage() {
                         <th key={c} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{c}</span>
-                            <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                           </div>
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200 text-xs text-slate-700">
+                  <tbody className="divide-y divide-[#E5E5EA] text-xs text-[#1C1C1E]">
                     {TRUCK_REPORT_ROWS.map((r) => (
-                      <tr key={r.truck_id} className="hover:bg-slate-50/80">
-                        <td className="py-3.5 pl-6 pr-4 font-medium">{r.truck_id}</td>
-                        <td className="py-3.5 px-4">{r.salesman}</td>
-                        <td className="py-3.5 px-4">{r.route}</td>
-                        <td className="py-3.5 px-4">{r.date}</td>
-                        <td className="py-3.5 px-4">{r.loaded}</td>
-                        <td className="py-3.5 px-4">{r.delivered}</td>
-                        <td className="py-3.5 px-4">{r.returned}</td>
+                      <tr key={r.truck_id} className="hover:bg-[#F2F2F7]/50 transition-colors">
+                        <td className="py-3.5 pl-6 pr-4 font-mono text-[11px] font-medium">{r.truck_id}</td>
+                        <td className="py-3.5 px-4 font-semibold">{r.salesman}</td>
+                        <td className="py-3.5 px-4 font-mono text-xs">{r.route}</td>
+                        <td className="py-3.5 px-4 text-[#8E8E93]">{r.date}</td>
+                        <td className="py-3.5 px-4 font-semibold text-[#007AFF]">{r.loaded}</td>
+                        <td className="py-3.5 px-4 font-semibold text-[#34C759]">{r.delivered}</td>
+                        <td className="py-3.5 px-4 font-semibold text-[#FF9500]">{r.returned}</td>
                         <td className="py-3.5 pl-4 pr-6">{r.messages}</td>
                       </tr>
                     ))}
@@ -781,51 +821,66 @@ export default function ReportsPage() {
         {/* TAB 4: COMMISSION REPORT (commission repo.png) */}
         {activeTab === "commission" && (
           <>
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 p-5">
+            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-6 space-y-4">
+              <h3 className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wider">
+                Filter Parameters
+              </h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     From
                   </label>
-                  <input type="date" className="w-full border border-slate-200 rounded px-2.5 py-1.5" />
+                  <input
+                    type="date"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                  />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     To
                   </label>
-                  <input type="date" className="w-full border border-slate-200 rounded px-2.5 py-1.5" />
+                  <input
+                    type="date"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                  />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     Salesman
                   </label>
                   <input
                     type="text"
                     placeholder="Select Salesman"
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <button className="px-4 py-1.5 rounded bg-[#5948DB] text-white text-xs font-semibold">
-                  Apply
-                </button>
-                <button className="px-4 py-1.5 rounded border border-slate-200 text-slate-600 text-xs font-semibold">
+              <div className="flex justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
+                >
                   Reset
+                </button>
+                <button
+                  type="button"
+                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
+                >
+                  Apply
                 </button>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
-              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-                <h2 className="text-white font-bold text-base tracking-wide">
+            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
+              <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4">
+                <h2 className="text-white font-semibold text-base tracking-tight">
                   Commission Report
                 </h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
+                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                       {[
                         "SALESMAN",
                         "CITY",
@@ -839,35 +894,39 @@ export default function ReportsPage() {
                         <th key={c} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{c}</span>
-                            <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
                           </div>
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200 text-xs text-slate-700">
+                  <tbody className="divide-y divide-[#E5E5EA] text-xs text-[#1C1C1E]">
                     {COMMISSION_REPORT_ROWS.map((r, i) => (
-                      <tr key={i} className="hover:bg-slate-50/80">
-                        <td className="py-3.5 pl-6 pr-4 font-medium text-slate-800">
+                      <tr key={i} className="hover:bg-[#F2F2F7]/50 transition-colors">
+                        <td className="py-3.5 pl-6 pr-4 font-semibold text-[#1C1C1E]">
                           {r.salesman}
                         </td>
-                        <td className="py-3.5 px-4">{r.city}</td>
-                        <td className="py-3.5 px-4">{r.schemes}</td>
-                        <td className="py-3.5 px-4">{r.total_sales}</td>
+                        <td className="py-3.5 px-4 text-[#8E8E93]">{r.city}</td>
+                        <td className="py-3.5 px-4">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#E5E5EA] text-[#1C1C1E]">
+                            {r.schemes}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 font-semibold">{r.total_sales}</td>
                         <td className="py-3.5 px-4">{r.fixed_comm}</td>
                         <td className="py-3.5 px-4">{r.pct_comm}</td>
-                        <td className="py-3.5 px-4">{r.total_comm}</td>
-                        <td className="py-3.5 pl-4 pr-6 text-slate-400">-</td>
+                        <td className="py-3.5 px-4 font-bold text-[#007AFF]">{r.total_comm}</td>
+                        <td className="py-3.5 pl-4 pr-6 text-[#8E8E93]">-</td>
                       </tr>
                     ))}
-                    <tr className="bg-slate-50 font-bold text-slate-800">
+                    <tr className="bg-[#F2F2F7]/70 font-bold text-[#1C1C1E]">
                       <td colSpan={3} className="py-3.5 pl-6 pr-4">
                         Total:
                       </td>
-                      <td className="py-3.5 px-4">181059.66</td>
+                      <td className="py-3.5 px-4 font-bold text-[#1C1C1E]">181,059.66</td>
                       <td className="py-3.5 px-4">0.00</td>
                       <td className="py-3.5 px-4">0.00</td>
-                      <td className="py-3.5 px-4">0.00</td>
+                      <td className="py-3.5 px-4 text-[#007AFF]">0.00</td>
                       <td className="py-3.5 pl-4 pr-6" />
                     </tr>
                   </tbody>

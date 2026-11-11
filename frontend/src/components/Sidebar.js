@@ -52,34 +52,34 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Backdrop Overlay */}
+      {/* Mobile Backdrop Overlay with iOS Frosted Glass */}
       {isMobileOpen && (
         <div
           onClick={closeMobileSidebar}
-          className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-40 lg:hidden animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/30 backdrop-blur-md z-40 lg:hidden animate-in fade-in duration-200"
           aria-hidden="true"
         />
       )}
 
-      {/* Responsive Original Sidebar */}
+      {/* iOS Translucent Sidebar */}
       <aside
-        className={`w-64 bg-white border-r border-slate-200 flex flex-col h-screen fixed left-0 top-0 z-50 select-none shadow-xl lg:shadow-xs transition-transform duration-300 ease-in-out ${
+        className={`w-64 bg-white/85 backdrop-blur-2xl border-r border-[#3C3C43]/10 flex flex-col h-screen fixed left-0 top-0 z-50 select-none shadow-xl lg:shadow-xs transition-transform duration-300 ease-out ${
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        {/* Brand Header with Bluish Water Drop Icon and Typography */}
-        <div className="h-16 flex items-center justify-between px-5 border-b border-slate-100 bg-white shrink-0">
+        {/* Brand Header */}
+        <div className="h-16 flex items-center justify-between px-5 border-b border-[#3C3C43]/10 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#5948DB] to-[#3B82F6] flex items-center justify-center text-white shadow-sm shadow-[#5948DB]/30 shrink-0">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#007AFF] to-[#5856D6] flex items-center justify-center text-white shadow-sm shadow-[#007AFF]/30 shrink-0">
               <Droplets className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="text-slate-900 font-semibold text-sm tracking-tight leading-tight flex items-center gap-1.5">
+              <div className="text-[#1C1C1E] font-semibold text-sm tracking-tight leading-tight flex items-center gap-1.5">
                 <span>القطارة</span>
-                <span className="text-[#5948DB] font-bold tracking-wide text-xs">AL QATTARA</span>
+                <span className="text-[#007AFF] font-bold tracking-wide text-xs">AL QATTARA</span>
               </div>
-              <div className="text-[10px] text-slate-400 font-normal tracking-wider uppercase">
-                Pure Drinking Water CRM
+              <div className="text-[10px] text-[#8E8E93] font-medium tracking-wider uppercase">
+                Water Delivery CRM
               </div>
             </div>
           </div>
@@ -87,14 +87,14 @@ export default function Sidebar() {
           {/* Close button on mobile */}
           <button
             onClick={closeMobileSidebar}
-            className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 lg:hidden transition-colors"
+            className="w-7 h-7 rounded-full bg-[#E5E5EA] flex items-center justify-center text-[#8E8E93] hover:text-[#1C1C1E] lg:hidden transition-colors"
             aria-label="Close sidebar"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Navigation Links: Vertical list layout with #5948DB styling */}
+        {/* Navigation Links with iOS Pill & Highlight States */}
         <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
           {navigationItems.map((item) => {
             const Icon = item.icon;
@@ -104,15 +104,15 @@ export default function Sidebar() {
                 key={item.name}
                 href={item.href}
                 onClick={closeMobileSidebar}
-                className={`flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-medium border transition-colors duration-150 outline-none focus:outline-none select-none group ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-[12.5px] font-medium transition-all duration-150 outline-none select-none group ${
                   isActive
-                    ? "bg-[#5948DB]/10 text-[#5948DB] font-semibold shadow-2xs border-[#5948DB]/20"
-                    : "border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+                    ? "bg-[#007AFF] text-white font-semibold shadow-sm shadow-[#007AFF]/25"
+                    : "text-[#3C3C43] hover:text-[#1C1C1E] hover:bg-[#F2F2F7]"
                 }`}
               >
                 <Icon
-                  className={`w-4 h-4 transition-colors shrink-0 ${
-                    isActive ? "text-[#5948DB]" : "text-slate-400 group-hover:text-slate-600"
+                  className={`w-4 h-4 shrink-0 transition-colors ${
+                    isActive ? "text-white" : "text-[#8E8E93] group-hover:text-[#1C1C1E]"
                   }`}
                 />
                 <span className="truncate">{item.name}</span>
@@ -121,16 +121,16 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* Professional Sidebar Logout Button */}
-        <div className="p-3 border-t border-slate-100 bg-slate-50/60 shrink-0">
+        {/* iOS Sidebar Logout Button */}
+        <div className="p-3 border-t border-[#3C3C43]/10 bg-white/40 shrink-0">
           <button
             type="button"
             onClick={handleLogout}
             title="Log out from system"
-            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white border border-slate-200/90 hover:bg-rose-50 hover:border-rose-200 text-slate-600 hover:text-rose-600 text-xs font-semibold transition-colors duration-150 shadow-2xs cursor-pointer outline-none focus:outline-none select-none group"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl bg-[#F2F2F7] hover:bg-[#FF3B30]/10 text-[#3C3C43] hover:text-[#FF3B30] text-xs font-semibold transition-all duration-150 cursor-pointer outline-none group"
           >
-            <Power className="w-3.5 h-3.5 text-slate-400 group-hover:text-rose-500 transition-colors" />
-            <span>Log Out</span>
+            <Power className="w-3.5 h-3.5 text-[#8E8E93] group-hover:text-[#FF3B30] transition-colors" />
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>

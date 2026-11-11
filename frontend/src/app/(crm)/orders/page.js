@@ -418,24 +418,23 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F6F9] flex flex-col">
+    <div className="min-h-screen bg-[#F2F2F7] flex flex-col">
       <Header title="Order Dashboard" subtitle="Manage Orders" />
 
-      {/* Figma Black Top Banner */}
-      <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+      {/* iOS Top Hero Navigation Bar */}
+      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-3.5 flex items-center justify-between sticky top-16 z-20">
         <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight">
+          <span className="font-bold text-base tracking-tight text-[#1C1C1E]">
             {viewMode === "list" ? "Order Dashboard" : "Orders"}
           </span>
-          <Home className="w-3.5 h-3.5 text-slate-300" />
-          <span className="text-slate-300 text-xs">
-            -{" "}
+          <Home className="w-3.5 h-3.5 text-[#8E8E93]" />
+          <span className="text-[#8E8E93] text-xs">
+            /{" "}
             {viewMode === "new"
               ? "Create Order"
               : viewMode === "edit"
               ? "Update Order"
-              : "Manage Orders"}{" "}
-            - ALL
+              : "Manage Orders"}
           </span>
         </div>
 
@@ -444,14 +443,14 @@ export default function OrdersPage() {
             <button
               type="button"
               onClick={openNewOrderView}
-              className="px-3.5 py-1.5 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+              className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#007AFF]/20"
             >
               + New Order
             </button>
             <button
               type="button"
               onClick={() => setSummaryDrawerOpen(true)}
-              className="px-3.5 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+              className="px-4 py-1.5 rounded-full bg-[#34C759] hover:bg-[#2FB34F] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#34C759]/20"
             >
               Order Summary
             </button>
@@ -460,46 +459,46 @@ export default function OrdersPage() {
           <button
             type="button"
             onClick={() => setViewMode("list")}
-            className="px-3.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition cursor-pointer"
+            className="px-4 py-1.5 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition cursor-pointer"
           >
             Back to Orders
           </button>
         )}
       </div>
 
-      <div className="p-6 flex-1 space-y-6">
+      <div className="p-6 flex-1 space-y-6 max-w-7xl w-full mx-auto">
         {viewMode === "list" && (
           <>
-            {/* Filter Orders Card */}
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 p-5">
-              <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-4">
+            {/* Filter Orders iOS Card */}
+            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5">
+              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider mb-4">
                 Filter Orders
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     From
                   </label>
                   <input
                     type="date"
                     value={filters.from}
                     onChange={(e) => setFilters({ ...filters, from: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700"
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     To
                   </label>
                   <input
                     type="date"
                     value={filters.to}
                     onChange={(e) => setFilters({ ...filters, to: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700"
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Customer
                   </label>
                   <input
@@ -507,17 +506,17 @@ export default function OrdersPage() {
                     placeholder="Customer Name / ID"
                     value={filters.customer}
                     onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700"
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Salesman
                   </label>
                   <select
                     value={filters.salesman}
                     onChange={(e) => setFilters({ ...filters, salesman: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700 bg-white"
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
                   >
                     <option value="">All Salesmen</option>
                     <option value="56 - ANAS">56 - ANAS</option>
@@ -526,13 +525,13 @@ export default function OrdersPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Route
                   </label>
                   <select
                     value={filters.route}
                     onChange={(e) => setFilters({ ...filters, route: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700 bg-white"
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
                   >
                     <option value="">All Routes</option>
                     <option value="6350">6350</option>
@@ -542,13 +541,13 @@ export default function OrdersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Zone
                   </label>
                   <select
                     value={filters.zone}
                     onChange={(e) => setFilters({ ...filters, zone: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700 bg-white"
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
                   >
                     <option value="">All Zones</option>
                     <option value="MANAZIF">MANAZIF</option>
@@ -557,13 +556,13 @@ export default function OrdersPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Truck
                   </label>
                   <select
                     value={filters.truck}
                     onChange={(e) => setFilters({ ...filters, truck: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700 bg-white"
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
                   >
                     <option value="">All Trucks</option>
                     <option value="T6350">T6350</option>
@@ -572,13 +571,13 @@ export default function OrdersPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Status
                   </label>
                   <select
                     value={filters.status}
                     onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700 bg-white"
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
                   >
                     <option value="">All Status</option>
                     <option value="Delivered">Delivered</option>
@@ -586,13 +585,13 @@ export default function OrdersPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Payment Method
                   </label>
                   <select
                     value={filters.paymentMethod}
                     onChange={(e) => setFilters({ ...filters, paymentMethod: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700 bg-white"
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
                   >
                     <option value="">All Methods</option>
                     <option value="Cash">Cash</option>
@@ -601,13 +600,13 @@ export default function OrdersPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Payment Status
                   </label>
                   <select
                     value={filters.paymentStatus}
                     onChange={(e) => setFilters({ ...filters, paymentStatus: e.target.value })}
-                    className="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700 bg-white"
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
                   >
                     <option value="">All Payment Status</option>
                     <option value="PAID">Paid</option>
@@ -616,14 +615,7 @@ export default function OrdersPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  onClick={() => addToast("Filters applied", "info")}
-                  className="px-4 py-1.5 rounded bg-[#5948DB] hover:bg-[#4938c7] text-white text-xs font-semibold cursor-pointer"
-                >
-                  Apply
-                </button>
+              <div className="flex items-center justify-end gap-2.5 mt-4">
                 <button
                   type="button"
                   onClick={() =>
@@ -641,87 +633,97 @@ export default function OrdersPage() {
                       product: "",
                     })
                   }
-                  className="px-4 py-1.5 rounded border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50 cursor-pointer"
+                  className="px-4 py-1.5 rounded-full bg-[#E5E5EA] text-[#1C1C1E] text-xs font-semibold hover:bg-[#D1D1D6] cursor-pointer"
                 >
                   Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => addToast("Filters applied", "info")}
+                  className="px-5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm shadow-[#007AFF]/25"
+                >
+                  Apply
                 </button>
               </div>
             </div>
 
-            {/* 4 KPI Cards */}
+            {/* 4 iOS KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-sm flex items-center justify-between">
                 <div>
-                  <div className="text-[10.5px] font-bold text-slate-400 uppercase">
+                  <div className="text-[10px] font-semibold text-[#8E8E93] uppercase">
                     TOTAL ORDERS
                   </div>
-                  <div className="text-xl font-bold text-slate-800 mt-1">
+                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono">
                     {filteredOrders.length}
                   </div>
-                  <div className="text-[11px] text-emerald-500 mt-0.5">Orders found</div>
+                  <div className="text-[11px] text-[#34C759] mt-0.5">Orders found</div>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-[#E05D38] text-white flex items-center justify-center">
-                  <ShoppingCart className="w-4 h-4" />
+                <div className="w-10 h-10 rounded-2xl bg-[#007AFF]/10 text-[#007AFF] flex items-center justify-center">
+                  <ShoppingCart className="w-5 h-5" />
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-sm flex items-center justify-between">
                 <div>
-                  <div className="text-[10.5px] font-bold text-slate-400 uppercase">DELIVERED</div>
-                  <div className="text-xl font-bold text-slate-800 mt-1">
+                  <div className="text-[10px] font-semibold text-[#8E8E93] uppercase">DELIVERED</div>
+                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono">
                     {filteredOrders.length}
                   </div>
-                  <div className="text-[11px] text-emerald-500 mt-0.5">Completed orders</div>
+                  <div className="text-[11px] text-[#34C759] mt-0.5">Completed orders</div>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-[#48BB78] text-white flex items-center justify-center">
-                  <CheckCircle2 className="w-4 h-4" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
-                <div>
-                  <div className="text-[10.5px] font-bold text-slate-400 uppercase">PENDING</div>
-                  <div className="text-xl font-bold text-slate-800 mt-1">0</div>
-                  <div className="text-[11px] text-amber-500 mt-0.5">Awaiting delivery</div>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-[#ECC94B] text-white flex items-center justify-center">
-                  <Clock className="w-4 h-4" />
+                <div className="w-10 h-10 rounded-2xl bg-[#34C759]/10 text-[#34C759] flex items-center justify-center">
+                  <CheckCircle2 className="w-5 h-5" />
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-sm flex items-center justify-between">
                 <div>
-                  <div className="text-[10.5px] font-bold text-slate-400 uppercase">REVENUE</div>
-                  <div className="text-xl font-bold text-slate-800 mt-1">AED 351.75</div>
-                  <div className="text-[11px] text-indigo-500 mt-0.5">Total order value</div>
+                  <div className="text-[10px] font-semibold text-[#8E8E93] uppercase">PENDING</div>
+                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono">0</div>
+                  <div className="text-[11px] text-[#FF9500] mt-0.5">Awaiting delivery</div>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-[#5948DB] text-white flex items-center justify-center">
-                  <DollarSign className="w-4 h-4" />
+                <div className="w-10 h-10 rounded-2xl bg-[#FF9500]/10 text-[#FF9500] flex items-center justify-center">
+                  <Clock className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-sm flex items-center justify-between">
+                <div>
+                  <div className="text-[10px] font-semibold text-[#8E8E93] uppercase">REVENUE</div>
+                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono">AED 351.75</div>
+                  <div className="text-[11px] text-[#007AFF] mt-0.5">Total order value</div>
+                </div>
+                <div className="w-10 h-10 rounded-2xl bg-[#5856D6]/10 text-[#5856D6] flex items-center justify-center">
+                  <DollarSign className="w-5 h-5" />
                 </div>
               </div>
             </div>
 
-            {/* Orders Management Table Card */}
-            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
-              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4 flex items-center justify-between">
-                <h2 className="text-white font-bold text-base tracking-wide">Orders Management</h2>
+            {/* Orders Management iOS Table Card */}
+            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
+              <div className="bg-gradient-to-r from-[#1C1C1E] to-[#2C2C2E] px-6 py-4 flex items-center justify-between">
+                <div>
+                  <h2 className="text-white font-bold text-[15px] tracking-tight">Orders Management</h2>
+                  <p className="text-white/60 text-[11px] mt-0.5">Live delivery records, billing and status</p>
+                </div>
                 <button
                   type="button"
                   onClick={handleExportCSV}
-                  className="px-3.5 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-1.5 rounded-full bg-[#34C759] hover:bg-[#2FB34F] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-sm shadow-[#34C759]/20"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Download
                 </button>
               </div>
 
-              <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
+              <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
                 <div className="flex items-center gap-2">
                   <span>Show</span>
                   <select
                     value={entriesPerPage}
                     onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                    className="border border-slate-300 rounded px-2 py-1 bg-white text-slate-700"
+                    className="rounded-xl px-2.5 py-1 bg-white text-[#1C1C1E] focus:outline-none"
                   >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
@@ -730,20 +732,21 @@ export default function OrdersPage() {
                   <span>entries</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span>Search:</span>
+                  <span className="text-[#8E8E93]">Search:</span>
                   <input
                     type="text"
+                    placeholder="Search orders..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="border border-slate-300 rounded px-2.5 py-1 w-44 focus:outline-none focus:border-[#5948DB]"
+                    className="rounded-xl px-3 py-1.5 w-52 bg-white focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full text-left">
                   <thead>
-                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    <tr className="bg-[#F2F2F7] border-b border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] tracking-wider uppercase">
                       {[
                         "DELIVERY NOTE",
                         "INVOICE NO.",
@@ -760,61 +763,61 @@ export default function OrdersPage() {
                         <th key={col} className="py-3 px-3.5 first:pl-6 last:pr-6 whitespace-nowrap">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-slate-400 shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
                           </div>
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200/70 text-[11.5px] text-slate-700">
+                  <tbody className="divide-y divide-[#3C3C43]/10 text-[12px] text-[#1C1C1E]">
                     {filteredOrders.slice(0, entriesPerPage).map((row) => (
-                      <tr key={row.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="py-3.5 pl-6 pr-3.5 font-medium text-slate-800 whitespace-nowrap">
+                      <tr key={row.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
+                        <td className="py-3.5 pl-6 pr-3.5 font-semibold text-[#1C1C1E] whitespace-nowrap">
                           {row.delivery_note}
                         </td>
-                        <td className="py-3.5 px-3.5 text-slate-600 whitespace-nowrap">
+                        <td className="py-3.5 px-3.5 text-[#8E8E93] font-mono whitespace-nowrap">
                           {row.invoice_no}
                         </td>
-                        <td className="py-3.5 px-3.5 font-medium text-slate-800">
+                        <td className="py-3.5 px-3.5 font-medium text-[#1C1C1E]">
                           {row.customer_name}
                         </td>
-                        <td className="py-3.5 px-3.5 text-slate-600">{row.customer_id}</td>
-                        <td className="py-3.5 px-3.5 text-slate-600 whitespace-nowrap">
+                        <td className="py-3.5 px-3.5 text-[#8E8E93] font-mono">{row.customer_id}</td>
+                        <td className="py-3.5 px-3.5 text-[#3C3C43] whitespace-nowrap">
                           {row.salesman_name}
                         </td>
-                        <td className="py-3.5 px-3.5 text-slate-600 whitespace-nowrap">
+                        <td className="py-3.5 px-3.5 text-[#8E8E93] whitespace-nowrap">
                           {row.order_date}
                         </td>
-                        <td className="py-3.5 px-3.5 text-slate-600">{row.truck}</td>
+                        <td className="py-3.5 px-3.5 font-mono text-[#007AFF] font-medium">{row.truck}</td>
                         <td className="py-3.5 px-3.5">
-                          <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 text-[10.5px] font-semibold">
+                          <span className="px-2.5 py-0.5 rounded-full bg-[#34C759]/15 text-[#248A3D] text-[10.5px] font-semibold">
                             {row.status}
                           </span>
                         </td>
-                        <td className="py-3.5 px-3.5 font-semibold text-slate-800">
+                        <td className="py-3.5 px-3.5 font-bold text-[#1C1C1E] font-mono">
                           {row.total_amount}
                         </td>
-                        <td className="py-3.5 px-3.5 text-slate-600">{row.balance}</td>
+                        <td className="py-3.5 px-3.5 text-[#8E8E93] font-mono">{row.balance}</td>
                         <td className="py-3.5 pl-3.5 pr-6 whitespace-nowrap">
                           <div className="flex items-center gap-1.5">
                             <button
                               type="button"
                               onClick={() => setViewModalOrder(row)}
-                              className="px-2.5 py-1 rounded bg-[#4A90E2] hover:bg-[#357ABD] text-white text-[10.5px] font-semibold cursor-pointer"
+                              className="px-3 py-1 rounded-full bg-[#007AFF]/10 hover:bg-[#007AFF] text-[#007AFF] hover:text-white text-[10.5px] font-semibold transition cursor-pointer"
                             >
                               View
                             </button>
                             <button
                               type="button"
                               onClick={() => openEditOrderView(row)}
-                              className="px-2.5 py-1 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-[10.5px] font-semibold cursor-pointer"
+                              className="px-3 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[10.5px] font-semibold transition cursor-pointer"
                             >
                               Edit
                             </button>
                             <button
                               type="button"
                               onClick={() => handleDeleteOrder(row)}
-                              className="px-2.5 py-1 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-[10.5px] font-semibold cursor-pointer"
+                              className="px-3 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-[10.5px] font-semibold transition cursor-pointer"
                             >
                               Delete
                             </button>
@@ -826,13 +829,13 @@ export default function OrdersPage() {
                 </table>
               </div>
 
-              <div className="px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+              <div className="px-6 py-3.5 bg-[#F9F9FB] border-t border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
                 <div>
                   Showing 1 to {Math.min(entriesPerPage, filteredOrders.length)} of{" "}
                   {filteredOrders.length} entries
                 </div>
-                <div className="flex items-center gap-1">
-                  <button className="w-6 h-6 rounded-full bg-[#5948DB] text-white text-[11px] font-semibold flex items-center justify-center">
+                <div className="flex items-center gap-1.5">
+                  <button className="w-7 h-7 rounded-full bg-[#007AFF] text-white text-xs font-semibold flex items-center justify-center">
                     1
                   </button>
                 </div>
@@ -843,17 +846,17 @@ export default function OrdersPage() {
 
         {/* NEW ORDER SUB-VIEW (new orders.png) */}
         {viewMode === "new" && (
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
             <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-bold text-base tracking-wide">Order Information</h2>
+              <h2 className="text-white font-semibold text-base tracking-tight">Order Information</h2>
             </div>
 
             <div className="p-8 space-y-6">
               <div>
-                <h3 className="text-xs font-bold text-slate-600 mb-4">Customer Information</h3>
+                <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-4">Customer Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                       Customer Name
                     </label>
                     <input
@@ -863,11 +866,11 @@ export default function OrdersPage() {
                       onChange={(e) =>
                         setNewOrderForm({ ...newOrderForm, customer_name: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                       Customer Code
                     </label>
                     <input
@@ -877,11 +880,11 @@ export default function OrdersPage() {
                       onChange={(e) =>
                         setNewOrderForm({ ...newOrderForm, customer_code: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                       Truck ID
                     </label>
                     <select
@@ -889,7 +892,7 @@ export default function OrdersPage() {
                       onChange={(e) =>
                         setNewOrderForm({ ...newOrderForm, truck_id: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700 bg-white"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     >
                       <option value="">Select Truck</option>
                       <option value="T6350">T6350</option>
@@ -899,7 +902,7 @@ export default function OrdersPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                       Delivery Zone
                     </label>
                     <select
@@ -907,7 +910,7 @@ export default function OrdersPage() {
                       onChange={(e) =>
                         setNewOrderForm({ ...newOrderForm, delivery_zone: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700 bg-white"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     >
                       <option value="">Select Zone</option>
                       <option value="MANAZIF">MANAZIF</option>
@@ -921,11 +924,11 @@ export default function OrdersPage() {
 
               {/* Order Items */}
               <div>
-                <h3 className="text-xs font-bold text-slate-600 mb-3">Order Items</h3>
-                <div className="overflow-x-auto border border-slate-200 rounded">
+                <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-3">Order Items</h3>
+                <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#F8FAFC] border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
+                      <tr className="bg-[#F2F2F7]/60 border-b border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase">
                         <th className="py-2.5 px-4">PRODUCT</th>
                         <th className="py-2.5 px-4">QUANTITY</th>
                         <th className="py-2.5 px-4">TYPE</th>
@@ -933,9 +936,9 @@ export default function OrdersPage() {
                         <th className="py-2.5 px-4 w-16 text-center">ACTION</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 text-xs">
+                    <tbody className="divide-y divide-[#3C3C43]/10 text-xs">
                       {newOrderForm.items.map((item, idx) => (
-                        <tr key={item.id}>
+                        <tr key={item.id} className="hover:bg-[#F2F2F7]/50">
                           <td className="py-2.5 px-4">
                             <select
                               value={item.product}
@@ -944,7 +947,7 @@ export default function OrdersPage() {
                                 updated[idx].product = e.target.value;
                                 setNewOrderForm({ ...newOrderForm, items: updated });
                               }}
-                              className="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs bg-white"
+                              className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-1.5 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                             >
                               <option value="">Select Product</option>
                               <option value="5 gal water">5 gal water</option>
@@ -964,7 +967,7 @@ export default function OrdersPage() {
                                 updated[idx].quantity = e.target.value;
                                 setNewOrderForm({ ...newOrderForm, items: updated });
                               }}
-                              className="w-28 border border-slate-200 rounded px-2.5 py-1.5 text-xs"
+                              className="w-28 border border-[#3C3C43]/15 rounded-xl px-3 py-1.5 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                             />
                           </td>
                           <td className="py-2.5 px-4">
@@ -975,7 +978,7 @@ export default function OrdersPage() {
                                 updated[idx].type = e.target.value;
                                 setNewOrderForm({ ...newOrderForm, items: updated });
                               }}
-                              className="w-32 border border-slate-200 rounded px-2.5 py-1.5 text-xs bg-white"
+                              className="w-32 border border-[#3C3C43]/15 rounded-xl px-3 py-1.5 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                             >
                               <option value="Sold">Sold</option>
                               <option value="Custody">Custody</option>
@@ -983,8 +986,8 @@ export default function OrdersPage() {
                             </select>
                           </td>
                           <td className="py-2.5 px-4">
-                            <div className="flex items-center border border-slate-200 rounded overflow-hidden w-40">
-                              <span className="bg-slate-100 px-2.5 py-1.5 text-[11px] text-slate-500 border-r border-slate-200">
+                            <div className="flex items-center border border-[#3C3C43]/15 rounded-xl overflow-hidden w-40 bg-white">
+                              <span className="bg-[#F2F2F7] px-2.5 py-1.5 text-[11px] text-[#8E8E93] font-semibold border-r border-[#3C3C43]/15">
                                 AED
                               </span>
                               <input
@@ -1010,7 +1013,7 @@ export default function OrdersPage() {
                                   items: newOrderForm.items.filter((x) => x.id !== item.id),
                                 });
                               }}
-                              className="w-6 h-6 rounded bg-[#E53E6A] text-white inline-flex items-center justify-center text-xs font-bold cursor-pointer"
+                              className="w-7 h-7 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white inline-flex items-center justify-center text-xs font-bold cursor-pointer transition active:scale-95"
                             >
                               ×
                             </button>
@@ -1032,7 +1035,7 @@ export default function OrdersPage() {
                       ],
                     })
                   }
-                  className="mt-3 px-3.5 py-1.5 rounded bg-black hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer"
+                  className="mt-3 px-4 py-2 rounded-full bg-[#007AFF]/10 hover:bg-[#007AFF] text-[#007AFF] hover:text-white text-xs font-semibold cursor-pointer transition active:scale-95"
                 >
                   + Add Product
                 </button>
@@ -1040,8 +1043,8 @@ export default function OrdersPage() {
 
               {/* Additional Information */}
               <div>
-                <h3 className="text-xs font-bold text-slate-600 mb-2">Additional Information</h3>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-2">Additional Information</h3>
+                <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                   Delivery Notes
                 </label>
                 <textarea
@@ -1049,7 +1052,7 @@ export default function OrdersPage() {
                   placeholder="Enter any special delivery instructions or notes here..."
                   value={newOrderForm.notes}
                   onChange={(e) => setNewOrderForm({ ...newOrderForm, notes: e.target.value })}
-                  className="w-full border border-slate-200 rounded p-3 text-xs text-slate-700"
+                  className="w-full border border-[#3C3C43]/15 rounded-2xl p-3.5 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                 />
               </div>
 
@@ -1058,16 +1061,16 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => handleCreateOrder(false)}
-                  className="px-4 py-2 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-bold uppercase tracking-wider cursor-pointer"
+                  className="px-5 py-2.5 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
                 >
-                  CREATE ORDER
+                  Create Order
                 </button>
                 <button
                   type="button"
                   onClick={() => handleCreateOrder(true)}
-                  className="px-4 py-2 rounded bg-[#4A90E2] hover:bg-[#357ABD] text-white text-xs font-bold uppercase tracking-wider cursor-pointer"
+                  className="px-5 py-2.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
                 >
-                  CREATE ORDER AND SEND SMS
+                  Create Order and Send SMS
                 </button>
               </div>
             </div>
@@ -1076,19 +1079,19 @@ export default function OrdersPage() {
 
         {/* EDIT ORDER SUB-VIEW (edit orders.png) */}
         {viewMode === "edit" && editingOrder && (
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
             <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-bold text-base tracking-wide">
+              <h2 className="text-white font-semibold text-base tracking-tight">
                 Update Order #{editingOrder.delivery_note}
               </h2>
             </div>
 
             <div className="p-8 space-y-6">
               <div>
-                <h3 className="text-xs font-bold text-slate-600 mb-4">Customer Information</h3>
+                <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-4">Customer Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                       Customer Name
                     </label>
                     <input
@@ -1097,11 +1100,11 @@ export default function OrdersPage() {
                       onChange={(e) =>
                         setEditingOrder({ ...editingOrder, customer_name: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700 bg-[#EDF2F7]"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                       Customer Code
                     </label>
                     <input
@@ -1110,11 +1113,11 @@ export default function OrdersPage() {
                       onChange={(e) =>
                         setEditingOrder({ ...editingOrder, customer_id: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700 bg-[#EDF2F7]"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                       Truck ID
                     </label>
                     <input
@@ -1123,11 +1126,11 @@ export default function OrdersPage() {
                       onChange={(e) =>
                         setEditingOrder({ ...editingOrder, truck: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                       Delivery Zone
                     </label>
                     <input
@@ -1136,11 +1139,11 @@ export default function OrdersPage() {
                       onChange={(e) =>
                         setEditingOrder({ ...editingOrder, zone: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                       Order Status
                     </label>
                     <select
@@ -1148,7 +1151,7 @@ export default function OrdersPage() {
                       onChange={(e) =>
                         setEditingOrder({ ...editingOrder, status: e.target.value })
                       }
-                      className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700 bg-[#EDF2F7]"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                     >
                       <option value="DELIVERED">DELIVERED</option>
                       <option value="PENDING">PENDING</option>
@@ -1159,14 +1162,14 @@ export default function OrdersPage() {
 
               {/* Tabs: Products | Payments */}
               <div>
-                <div className="flex items-center gap-2 border-b border-slate-200 pb-3 mb-4">
+                <div className="flex items-center gap-1.5 bg-[#E5E5EA]/80 p-1 rounded-full w-fit mb-4">
                   <button
                     type="button"
                     onClick={() => setEditTab("products")}
-                    className={`px-3.5 py-1.5 rounded text-xs font-semibold cursor-pointer ${
+                    className={`px-4 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition ${
                       editTab === "products"
-                        ? "bg-white border border-slate-200 text-slate-800 shadow-2xs"
-                        : "text-slate-500 hover:text-slate-800"
+                        ? "bg-white text-[#1C1C1E] shadow-sm"
+                        : "text-[#8E8E93] hover:text-[#1C1C1E]"
                     }`}
                   >
                     Products
@@ -1174,10 +1177,10 @@ export default function OrdersPage() {
                   <button
                     type="button"
                     onClick={() => setEditTab("payments")}
-                    className={`px-3.5 py-1.5 rounded text-xs font-semibold cursor-pointer ${
+                    className={`px-4 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition ${
                       editTab === "payments"
-                        ? "bg-white border border-slate-200 text-slate-800 shadow-2xs"
-                        : "text-slate-500 hover:text-slate-800"
+                        ? "bg-white text-[#1C1C1E] shadow-sm"
+                        : "text-[#8E8E93] hover:text-[#1C1C1E]"
                     }`}
                   >
                     Payments
@@ -1202,15 +1205,15 @@ export default function OrdersPage() {
                       ],
                     })
                   }
-                  className="mb-3 px-3.5 py-1.5 rounded bg-black text-white text-xs font-semibold cursor-pointer"
+                  className="mb-3 px-4 py-1.5 rounded-full bg-[#007AFF] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
                 >
                   + Add Product
                 </button>
 
-                <div className="overflow-x-auto border border-slate-200 rounded">
+                <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#F8FAFC] border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
+                      <tr className="bg-[#F2F2F7]/60 border-b border-[#3C3C43]/10 text-[10.5px] font-semibold text-[#8E8E93] uppercase">
                         <th className="py-2.5 px-4">PRODUCT NAME</th>
                         <th className="py-2.5 px-4">QUANTITY</th>
                         <th className="py-2.5 px-4">LEND/RETURN</th>
@@ -1220,10 +1223,10 @@ export default function OrdersPage() {
                         <th className="py-2.5 px-4">ACTION</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 text-xs">
+                    <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
                       {editingOrder.items.map((it, idx) => (
-                        <tr key={it.id || idx}>
-                          <td className="py-2.5 px-4">{it.product}</td>
+                        <tr key={it.id || idx} className="hover:bg-[#F2F2F7]/50">
+                          <td className="py-2.5 px-4 font-medium">{it.product}</td>
                           <td className="py-2.5 px-4">
                             <input
                               type="number"
@@ -1233,13 +1236,13 @@ export default function OrdersPage() {
                                 updated[idx].quantity = Number(e.target.value);
                                 setEditingOrder({ ...editingOrder, items: updated });
                               }}
-                              className="w-20 border border-slate-200 rounded px-2 py-1 text-xs"
+                              className="w-20 border border-[#3C3C43]/15 rounded-xl px-2.5 py-1 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                             />
                           </td>
-                          <td className="py-2.5 px-4">{it.lend_type}</td>
+                          <td className="py-2.5 px-4 text-[#8E8E93]">{it.lend_type}</td>
                           <td className="py-2.5 px-4">{Number(it.unit_price).toFixed(2)}</td>
-                          <td className="py-2.5 px-4">{it.coupon_qty || 0}</td>
-                          <td className="py-2.5 px-4 font-semibold">
+                          <td className="py-2.5 px-4 text-[#8E8E93]">{it.coupon_qty || 0}</td>
+                          <td className="py-2.5 px-4 font-bold">
                             {(Number(it.quantity) * Number(it.unit_price)).toFixed(2)}
                           </td>
                           <td className="py-2.5 px-4">
@@ -1251,7 +1254,7 @@ export default function OrdersPage() {
                                   items: editingOrder.items.filter((_, i) => i !== idx),
                                 })
                               }
-                              className="px-2.5 py-1 rounded bg-[#E05D38] text-white text-[11px] font-semibold"
+                              className="px-3 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-[11px] font-semibold transition active:scale-95"
                             >
                               Remove
                             </button>
@@ -1264,41 +1267,42 @@ export default function OrdersPage() {
               </div>
 
               {/* Order Summary Box */}
-              <div className="bg-slate-50 rounded p-4 border border-slate-200/80 space-y-1.5 text-xs">
-                <div className="font-bold text-slate-700 mb-2">Order Summary</div>
-                <div className="flex justify-between text-slate-600">
+              <div className="bg-[#F2F2F7]/60 rounded-2xl p-5 border border-[#3C3C43]/10 space-y-2 text-xs">
+                <div className="font-semibold text-[#1C1C1E] mb-2 text-xs">Order Summary</div>
+                <div className="flex justify-between text-[#8E8E93]">
                   <span>Subtotal:</span>
-                  <span>
+                  <span className="font-semibold text-[#1C1C1E]">
+                    AED{" "}
                     {editingOrder.items
                       .reduce((s, i) => s + Number(i.quantity) * Number(i.unit_price), 0)
                       .toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between text-slate-600">
+                <div className="flex justify-between text-[#8E8E93]">
                   <span>Amount Paid:</span>
-                  <span>0.00</span>
+                  <span className="font-semibold text-[#1C1C1E]">AED 0.00</span>
                 </div>
-                <div className="flex justify-between font-bold text-slate-800 pt-1 border-t border-slate-200">
+                <div className="flex justify-between font-bold text-[#1C1C1E] pt-2 border-t border-[#3C3C43]/10 text-sm">
                   <span>Total Balance:</span>
-                  <span>0.00</span>
+                  <span>AED 0.00</span>
                 </div>
               </div>
 
               {/* Bottom 3 Buttons */}
-              <div className="flex items-center justify-end gap-2 pt-2">
+              <div className="flex items-center justify-end gap-2.5 pt-2">
                 <button
                   type="button"
                   onClick={() => handleDeleteOrder(editingOrder)}
-                  className="px-4 py-2 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-xs font-bold uppercase cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-xs font-semibold cursor-pointer active:scale-95 transition"
                 >
-                  DELETE ORDER
+                  Delete Order
                 </button>
                 <button
                   type="button"
                   onClick={handleUpdateOrder}
-                  className="px-4 py-2 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-bold uppercase cursor-pointer"
+                  className="px-5 py-2 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
                 >
-                  UPDATE ORDER
+                  Update Order
                 </button>
                 <button
                   type="button"
@@ -1306,7 +1310,7 @@ export default function OrdersPage() {
                     addToast(`Order ${editingOrder.delivery_note} marked as delivered`, "success");
                     setViewMode("list");
                   }}
-                  className="px-4 py-2 rounded bg-[#4A5568] hover:bg-[#2D3748] text-white text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
                 >
                   Mark Delivery
                 </button>
@@ -1318,53 +1322,53 @@ export default function OrdersPage() {
 
       {/* VIEW ORDER DETAILS MODAL (view orders.png) */}
       {viewModalOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
+              <h3 className="text-base font-semibold text-[#1C1C1E]">
                 Order Details - {viewModalOrder.delivery_note}
               </h3>
               <button
                 type="button"
                 onClick={() => setViewModalOrder(null)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="w-8 h-8 rounded-full bg-[#F2F2F7] flex items-center justify-center text-[#8E8E93] hover:text-[#1C1C1E] transition cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-6 space-y-5 text-xs text-slate-700">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="p-6 space-y-5 text-xs text-[#1C1C1E]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-[#F2F2F7]/50 p-4 rounded-2xl">
                 <div className="space-y-1.5">
-                  <div className="font-bold text-slate-800 mb-2">Customer Information</div>
+                  <div className="font-semibold text-[#1C1C1E] mb-2 text-xs">Customer Information</div>
                   <div>
-                    <span className="font-bold">Name:</span> {viewModalOrder.customer_name}
+                    <span className="font-semibold text-[#8E8E93]">Name:</span> {viewModalOrder.customer_name}
                   </div>
                   <div>
-                    <span className="font-bold">Customer Code:</span> {viewModalOrder.customer_id}
+                    <span className="font-semibold text-[#8E8E93]">Customer Code:</span> {viewModalOrder.customer_id}
                   </div>
                   <div>
-                    <span className="font-bold">Zone:</span> {viewModalOrder.zone || "MANAZIF"}
+                    <span className="font-semibold text-[#8E8E93]">Zone:</span> {viewModalOrder.zone || "MANAZIF"}
                   </div>
                   <div>
-                    <span className="font-bold">Salesman:</span> {viewModalOrder.salesman_name}
+                    <span className="font-semibold text-[#8E8E93]">Salesman:</span> {viewModalOrder.salesman_name}
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="font-bold text-slate-800 mb-2">Order Information</div>
+                  <div className="font-semibold text-[#1C1C1E] mb-2 text-xs">Order Information</div>
                   <div>
-                    <span className="font-bold">Order ID:</span> {viewModalOrder.delivery_note}
+                    <span className="font-semibold text-[#8E8E93]">Order ID:</span> {viewModalOrder.delivery_note}
                   </div>
                   <div>
-                    <span className="font-bold">Truck ID:</span> {viewModalOrder.truck}
+                    <span className="font-semibold text-[#8E8E93]">Truck ID:</span> {viewModalOrder.truck}
                   </div>
                   <div>
-                    <span className="font-bold">Date:</span> {viewModalOrder.order_date}
+                    <span className="font-semibold text-[#8E8E93]">Date:</span> {viewModalOrder.order_date}
                   </div>
                   <div>
-                    <span className="font-bold">Status:</span>{" "}
-                    <span className="px-2 py-0.5 rounded bg-[#48BB78] text-white text-[10px] font-bold uppercase">
+                    <span className="font-semibold text-[#8E8E93]">Status:</span>{" "}
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#34C759]/15 text-[#34C759] text-[10.5px] font-semibold">
                       DELIVERED
                     </span>
                   </div>
@@ -1372,98 +1376,98 @@ export default function OrdersPage() {
               </div>
 
               <div>
-                <div className="font-bold text-slate-800 mb-2">Order Items</div>
-                <table className="w-full text-left border-collapse border-t border-slate-200">
+                <div className="font-semibold text-[#1C1C1E] mb-2 text-xs">Order Items</div>
+                <table className="w-full text-left border-collapse border-t border-[#3C3C43]/10">
                   <thead>
-                    <tr className="bg-[#F8FAFC] border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
-                      <th className="py-2 px-3">PRODUCT</th>
-                      <th className="py-2 px-3">LEND TYPE</th>
-                      <th className="py-2 px-3">QUANTITY</th>
-                      <th className="py-2 px-3">UNIT PRICE</th>
-                      <th className="py-2 px-3">TOTAL</th>
+                    <tr className="bg-[#F2F2F7]/60 border-b border-[#3C3C43]/10 text-[10px] font-semibold text-[#8E8E93] uppercase">
+                      <th className="py-2.5 px-3">PRODUCT</th>
+                      <th className="py-2.5 px-3">LEND TYPE</th>
+                      <th className="py-2.5 px-3">QUANTITY</th>
+                      <th className="py-2.5 px-3">UNIT PRICE</th>
+                      <th className="py-2.5 px-3">TOTAL</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200">
+                  <tbody className="divide-y divide-[#3C3C43]/10">
                     {(viewModalOrder.items || []).map((it, idx) => (
                       <tr key={idx}>
-                        <td className="py-2 px-3">{it.product}</td>
-                        <td className="py-2 px-3">{it.lend_type}</td>
-                        <td className="py-2 px-3">{it.quantity}</td>
-                        <td className="py-2 px-3">AED {Number(it.unit_price).toFixed(2)}</td>
-                        <td className="py-2 px-3">
+                        <td className="py-2.5 px-3 font-medium">{it.product}</td>
+                        <td className="py-2.5 px-3 text-[#8E8E93]">{it.lend_type}</td>
+                        <td className="py-2.5 px-3">{it.quantity}</td>
+                        <td className="py-2.5 px-3">AED {Number(it.unit_price).toFixed(2)}</td>
+                        <td className="py-2.5 px-3 font-semibold">
                           AED {(Number(it.quantity) * Number(it.unit_price)).toFixed(2)}
                         </td>
                       </tr>
                     ))}
                     <tr>
-                      <td colSpan={4} className="py-2 px-3 text-right font-bold">
+                      <td colSpan={4} className="py-2.5 px-3 text-right font-semibold text-[#8E8E93]">
                         Subtotal
                       </td>
-                      <td className="py-2 px-3 font-bold">AED {viewModalOrder.total_amount}</td>
+                      <td className="py-2.5 px-3 font-bold text-[#1C1C1E]">AED {viewModalOrder.total_amount}</td>
                     </tr>
                     <tr>
-                      <td colSpan={4} className="py-2 px-3 text-right font-bold">
+                      <td colSpan={4} className="py-2.5 px-3 text-right font-semibold text-[#8E8E93]">
                         Amount Paid
                       </td>
-                      <td className="py-2 px-3">AED {viewModalOrder.total_amount}</td>
+                      <td className="py-2.5 px-3 font-semibold text-[#1C1C1E]">AED {viewModalOrder.total_amount}</td>
                     </tr>
                     <tr>
-                      <td colSpan={4} className="py-2 px-3 text-right font-bold">
+                      <td colSpan={4} className="py-2.5 px-3 text-right font-semibold text-[#8E8E93]">
                         Balance
                       </td>
-                      <td className="py-2 px-3">AED {viewModalOrder.balance}</td>
+                      <td className="py-2.5 px-3 font-bold text-[#FF3B30]">AED {viewModalOrder.balance}</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
               <div>
-                <div className="font-bold text-slate-800 mb-1">Delivery Notes</div>
-                <div className="text-slate-500">No special instructions</div>
+                <div className="font-semibold text-[#1C1C1E] mb-1 text-xs">Delivery Notes</div>
+                <div className="text-[#8E8E93]">No special instructions</div>
               </div>
 
               <div>
-                <div className="font-bold text-slate-800 mb-1">Payment Information</div>
+                <div className="font-semibold text-[#1C1C1E] mb-1 text-xs">Payment Information</div>
                 <div className="space-y-1">
                   <div>
-                    <span className="font-bold">Status:</span>{" "}
-                    <span className="px-2 py-0.5 rounded bg-[#48BB78] text-white text-[10px] font-bold uppercase">
+                    <span className="font-semibold text-[#8E8E93]">Status:</span>{" "}
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#34C759]/15 text-[#34C759] text-[10.5px] font-semibold">
                       PAID
                     </span>
                   </div>
                   <div>
-                    <span className="font-bold">Method:</span> {viewModalOrder.payment_method}
+                    <span className="font-semibold text-[#8E8E93]">Method:</span> {viewModalOrder.payment_method}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-end gap-2">
+            <div className="px-6 py-4 bg-[#F2F2F7]/50 border-t border-[#3C3C43]/10 flex flex-wrap items-center justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => setViewModalOrder(null)}
-                className="px-3.5 py-1.5 rounded bg-slate-500 hover:bg-slate-600 text-white text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[#8E8E93]/20 hover:bg-[#8E8E93]/30 text-[#1C1C1E] text-xs font-semibold cursor-pointer active:scale-95 transition"
               >
                 Close
               </button>
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="px-3.5 py-1.5 rounded bg-[#4A90E2] hover:bg-[#357ABD] text-white text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
               >
                 Print Invoice
               </button>
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="px-3.5 py-1.5 rounded bg-[#4A90E2] hover:bg-[#357ABD] text-white text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[#007AFF]/10 hover:bg-[#007AFF]/20 text-[#007AFF] text-xs font-semibold cursor-pointer active:scale-95 transition"
               >
                 Print Item Receipt
               </button>
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="px-3.5 py-1.5 rounded bg-[#4A90E2] hover:bg-[#357ABD] text-white text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[#007AFF]/10 hover:bg-[#007AFF]/20 text-[#007AFF] text-xs font-semibold cursor-pointer active:scale-95 transition"
               >
                 Print Delivery Note
               </button>
@@ -1474,53 +1478,53 @@ export default function OrdersPage() {
 
       {/* ORDER SUMMARY RIGHT-HAND SLIDE-OVER DRAWER (order summary.png) */}
       {summaryDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/30">
-          <div className="bg-white w-full max-w-xs h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200">
-            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="text-xs font-bold text-slate-700">Product Delivery Details</h3>
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs">
+          <div className="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200 border-l border-[#3C3C43]/10">
+            <div className="px-6 py-5 border-b border-[#3C3C43]/10 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-[#1C1C1E]">Product Delivery Details</h3>
               <button
                 type="button"
                 onClick={() => setSummaryDrawerOpen(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="w-8 h-8 rounded-full bg-[#F2F2F7] flex items-center justify-center text-[#8E8E93] hover:text-[#1C1C1E] cursor-pointer transition"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-4 border-b border-slate-100">
+            <div className="p-5 border-b border-[#3C3C43]/10">
               <div className="relative">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-3.5 h-3.5 text-[#8E8E93] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search Product..."
                   value={summarySearch}
                   onChange={(e) => setSummarySearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 border border-slate-200 rounded text-xs focus:outline-none focus:border-[#5948DB]"
+                  className="w-full pl-9 pr-3.5 py-2 bg-[#F2F2F7] border border-[#3C3C43]/15 rounded-full text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                 />
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div className="flex-1 overflow-y-auto p-5 space-y-3.5">
               {filteredSummaryProducts.map((item, idx) => (
                 <div
                   key={idx}
-                  className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs"
+                  className="border border-[#3C3C43]/10 rounded-2xl p-4 bg-white shadow-xs"
                 >
-                  <div className="text-xs font-semibold text-slate-600 mb-2">{item.name}</div>
+                  <div className="text-xs font-semibold text-[#1C1C1E] mb-3">{item.name}</div>
                   <div className="grid grid-cols-3 text-center gap-2">
-                    <div>
-                      <div className="text-sm font-bold text-[#5948DB]">{item.ordered}</div>
-                      <div className="text-[9px] font-bold text-slate-400 uppercase">ORDERED</div>
+                    <div className="bg-[#007AFF]/10 p-2 rounded-xl">
+                      <div className="text-sm font-bold text-[#007AFF]">{item.ordered}</div>
+                      <div className="text-[9.5px] font-semibold text-[#007AFF] uppercase mt-0.5">ORDERED</div>
                     </div>
-                    <div>
-                      <div className="text-sm font-bold text-[#48BB78]">{item.delivered}</div>
-                      <div className="text-[9px] font-bold text-slate-400 uppercase">
+                    <div className="bg-[#34C759]/10 p-2 rounded-xl">
+                      <div className="text-sm font-bold text-[#34C759]">{item.delivered}</div>
+                      <div className="text-[9.5px] font-semibold text-[#34C759] uppercase mt-0.5">
                         DELIVERED
                       </div>
                     </div>
-                    <div>
-                      <div className="text-sm font-bold text-[#E05D38]">{item.pending}</div>
-                      <div className="text-[9px] font-bold text-slate-400 uppercase">PENDING</div>
+                    <div className="bg-[#FF9500]/10 p-2 rounded-xl">
+                      <div className="text-sm font-bold text-[#FF9500]">{item.pending}</div>
+                      <div className="text-[9.5px] font-semibold text-[#FF9500] uppercase mt-0.5">PENDING</div>
                     </div>
                   </div>
                 </div>

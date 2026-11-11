@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
-import { Home, ArrowUpDown, X } from "lucide-react";
+import { ArrowUpDown, X } from "lucide-react";
 
 const INITIAL_WALLETS = [
   {
@@ -205,21 +205,24 @@ export default function WalletPage() {
       updated_on: "08/09/2026",
     };
     setWallets((prev) => [newEntry, ...prev]);
-    addToast(`Wallet recharged (${newEntry.recharge_id}) for customer ${newEntry.customer_id}`, "success");
+    addToast(
+      `Wallet recharged (${newEntry.recharge_id}) for customer ${newEntry.customer_id}`,
+      "success"
+    );
     setViewMode("list");
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F6F9] flex flex-col">
+    <div className="min-h-screen bg-[#F2F2F7] flex flex-col font-sans pb-12">
       <Header title="Wallet" subtitle="Manage Wallet" />
 
-      {/* Figma Black Top Banner */}
-      <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+      {/* iOS Translucent Glass Top Hero Bar */}
+      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-4 flex items-center justify-between sticky top-0 z-20 transition-all">
         <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight">Wallet</span>
-          <Home className="w-3.5 h-3.5 text-slate-300" />
-          <span className="text-slate-300 text-xs">
-            - {viewMode === "recharge" ? "Recharge Wallet" : "Manage Wallet"} - ALL
+          <span className="font-semibold text-base text-[#1C1C1E] tracking-tight">Wallet</span>
+          <span className="text-[#8E8E93] text-xs">/</span>
+          <span className="text-[#8E8E93] text-xs font-medium">
+            {viewMode === "recharge" ? "Recharge Wallet" : "Manage Wallet"} • ALL
           </span>
         </div>
 
@@ -227,7 +230,7 @@ export default function WalletPage() {
           <button
             type="button"
             onClick={() => setViewMode("recharge")}
-            className="px-3.5 py-1.5 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-xs font-semibold cursor-pointer shadow-xs"
+            className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
           >
             Wallet Recharge
           </button>
@@ -235,7 +238,7 @@ export default function WalletPage() {
           <button
             type="button"
             onClick={() => setViewMode("list")}
-            className="px-3.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold cursor-pointer"
+            className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-all cursor-pointer"
           >
             Back to Wallet
           </button>
@@ -245,18 +248,20 @@ export default function WalletPage() {
       <div className="p-6 flex-1">
         {viewMode === "list" ? (
           /* Main Wallet Table Card (wallets.png) */
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-bold text-base tracking-wide">Wallet Management</h2>
+          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
+            <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4">
+              <h2 className="text-white font-semibold text-base tracking-tight">
+                Wallet Management
+              </h2>
             </div>
 
-            <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
+            <div className="px-6 py-3.5 bg-[#F2F2F7]/50 border-b border-[#E5E5EA] flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
               <div className="flex items-center gap-2">
                 <span>Show</span>
                 <select
                   value={entriesPerPage}
                   onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                  className="border border-slate-300 rounded px-2 py-1 bg-white text-slate-700"
+                  className="border border-[#3C3C43]/15 rounded-xl px-2.5 py-1 bg-white text-[#1C1C1E] focus:outline-none"
                 >
                   <option value={10}>10</option>
                   <option value={25}>25</option>
@@ -269,7 +274,8 @@ export default function WalletPage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border border-slate-300 rounded px-2.5 py-1 w-44 focus:outline-none focus:border-[#5948DB]"
+                  placeholder="Search wallet..."
+                  className="border border-[#3C3C43]/15 bg-white rounded-full px-3.5 py-1.5 w-48 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
                 />
               </div>
             </div>
@@ -277,9 +283,9 @@ export default function WalletPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                     {[
-                      "REACHARGE ID",
+                      "RECHARGE ID",
                       "CUSTOMER ID",
                       "COUPON",
                       "QUANTITY",
@@ -294,32 +300,36 @@ export default function WalletPage() {
                       <th key={col} className="py-3 px-4 first:pl-6 last:pr-6 whitespace-nowrap">
                         <div className="flex items-center justify-between gap-1">
                           <span>{col}</span>
-                          <ArrowUpDown className="w-3 h-3 text-slate-400 shrink-0" />
+                          <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
                         </div>
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200/70 text-[12px] text-slate-700">
+                <tbody className="divide-y divide-[#E5E5EA] text-xs text-[#1C1C1E]">
                   {filteredWallets.slice(0, entriesPerPage).map((row) => (
-                    <tr key={row.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 pl-6 pr-4 font-medium text-slate-800">
+                    <tr key={row.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
+                      <td className="py-3.5 pl-6 pr-4 font-mono text-[11px] font-semibold text-[#007AFF]">
                         {row.recharge_id}
                       </td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.customer_id}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.coupon}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.quantity}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.amount}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.salesman}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.used_coupons}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.remaining}</td>
-                      <td className="py-3.5 px-4 font-semibold text-slate-800">{row.balance}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.updated_on}</td>
+                      <td className="py-3.5 px-4 font-mono text-xs">{row.customer_id}</td>
+                      <td className="py-3.5 px-4">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#E5E5EA] text-[#1C1C1E]">
+                          {row.coupon}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 font-medium">{row.quantity}</td>
+                      <td className="py-3.5 px-4">AED {row.amount}</td>
+                      <td className="py-3.5 px-4">{row.salesman}</td>
+                      <td className="py-3.5 px-4">{row.used_coupons}</td>
+                      <td className="py-3.5 px-4 font-semibold text-[#34C759]">{row.remaining}</td>
+                      <td className="py-3.5 px-4 font-bold text-[#1C1C1E]">AED {row.balance}</td>
+                      <td className="py-3.5 px-4 text-[#8E8E93]">{row.updated_on}</td>
                       <td className="py-3.5 pl-4 pr-6 whitespace-nowrap">
                         <button
                           type="button"
                           onClick={() => setCouponModalRow(row)}
-                          className="px-3 py-1 rounded bg-[#4A90E2] hover:bg-[#357ABD] text-white text-[11px] font-semibold cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-[11px] font-semibold shadow-[0_2px_6px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
                         >
                           View Coupons
                         </button>
@@ -330,14 +340,16 @@ export default function WalletPage() {
               </table>
             </div>
 
-            <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+            <div className="px-6 py-4 border-t border-[#E5E5EA] bg-[#F2F2F7]/40 flex items-center justify-between text-xs text-[#8E8E93]">
               <div>Showing 1 to 10 of 1,420 entries</div>
               <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((p) => (
                   <button
                     key={p}
-                    className={`w-6 h-6 rounded-full text-[11px] flex items-center justify-center ${
-                      p === 1 ? "bg-[#5948DB] text-white font-semibold" : "text-slate-500"
+                    className={`w-7 h-7 rounded-full text-[11px] font-medium flex items-center justify-center transition-all cursor-pointer ${
+                      p === 1
+                        ? "bg-[#007AFF] text-white shadow-xs font-semibold"
+                        : "text-[#8E8E93] hover:text-[#1C1C1E] hover:bg-[#E5E5EA]"
                     }`}
                   >
                     {p}
@@ -348,14 +360,16 @@ export default function WalletPage() {
           </div>
         ) : (
           /* WALLET RECHARGE SUB-VIEW (wallet recharge.png) */
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
-            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
-              <h2 className="text-white font-bold text-base tracking-wide">Create Orders</h2>
+          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden max-w-4xl mx-auto">
+            <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4">
+              <h2 className="text-white font-semibold text-base tracking-tight">
+                Create Wallet Recharge Order
+              </h2>
             </div>
 
-            <form onSubmit={handleRechargeSubmit} className="p-8 space-y-4 max-w-5xl mx-auto">
+            <form onSubmit={handleRechargeSubmit} className="p-8 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                   Customer Name
                 </label>
                 <div className="md:col-span-9">
@@ -366,13 +380,13 @@ export default function WalletPage() {
                     onChange={(e) =>
                       setRechargeForm({ ...rechargeForm, customer_name: e.target.value })
                     }
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                   Customer Code
                 </label>
                 <div className="md:col-span-9">
@@ -383,13 +397,13 @@ export default function WalletPage() {
                     onChange={(e) =>
                       setRechargeForm({ ...rechargeForm, customer_code: e.target.value })
                     }
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                   Salesman ID
                 </label>
                 <div className="md:col-span-9">
@@ -398,7 +412,7 @@ export default function WalletPage() {
                     onChange={(e) =>
                       setRechargeForm({ ...rechargeForm, salesman_id: e.target.value })
                     }
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    className="w-full border border-[#3C3C43]/15 bg-white rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   >
                     <option value="">Select Salesman</option>
                     <option value="56">56 - ANAS</option>
@@ -410,7 +424,7 @@ export default function WalletPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                   Wallet Recharge
                 </label>
                 <div className="md:col-span-9">
@@ -419,7 +433,7 @@ export default function WalletPage() {
                     onChange={(e) =>
                       setRechargeForm({ ...rechargeForm, coupon_code: e.target.value })
                     }
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    className="w-full border border-[#3C3C43]/15 bg-white rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   >
                     <option value="BOOK-20">BOOK-20 (20 Coupons - AED 100)</option>
                     <option value="BOOK-50">BOOK-50 (50 Coupons - AED 250)</option>
@@ -429,7 +443,7 @@ export default function WalletPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                   Book Count
                 </label>
                 <div className="md:col-span-9">
@@ -440,13 +454,13 @@ export default function WalletPage() {
                     onChange={(e) =>
                       setRechargeForm({ ...rechargeForm, book_count: e.target.value })
                     }
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                   Amount Collectable
                 </label>
                 <div className="md:col-span-9">
@@ -455,16 +469,16 @@ export default function WalletPage() {
                     disabled
                     value={
                       rechargeForm.coupon_code === "FREE-10"
-                        ? "0"
-                        : String((Number(rechargeForm.book_count) || 1) * 100)
+                        ? "AED 0"
+                        : `AED ${(Number(rechargeForm.book_count) || 1) * 100}`
                     }
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-500 bg-[#EDF2F7]"
+                    className="w-full border border-[#3C3C43]/10 rounded-xl px-3.5 py-2 text-xs text-[#8E8E93] bg-[#F2F2F7] font-semibold"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                <label className="md:col-span-3 md:text-right text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                   Payment Method
                 </label>
                 <div className="md:col-span-9">
@@ -473,7 +487,7 @@ export default function WalletPage() {
                     onChange={(e) =>
                       setRechargeForm({ ...rechargeForm, payment_method: e.target.value })
                     }
-                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    className="w-full border border-[#3C3C43]/15 bg-white rounded-xl px-3.5 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   >
                     <option value="Cash">Cash</option>
                     <option value="Card">Card</option>
@@ -481,10 +495,10 @@ export default function WalletPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end pt-3">
+              <div className="flex justify-end pt-4">
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold cursor-pointer"
+                  className="px-6 py-2.5 rounded-full bg-[#34C759] hover:bg-[#2EB04F] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(52,199,89,0.25)] transition-all cursor-pointer"
                 >
                   Update Wallet
                 </button>
@@ -496,14 +510,14 @@ export default function WalletPage() {
 
       {/* COUPON DETAILS MODAL (view coupons.png & view coupons-1.png) */}
       {couponModalRow && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-800">Coupon Details</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
+            <div className="px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
+              <h3 className="text-[15px] font-semibold text-[#1C1C1E]">Coupon Details</h3>
               <button
                 type="button"
                 onClick={() => setCouponModalRow(null)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="w-8 h-8 rounded-full bg-[#F2F2F7] flex items-center justify-center text-[#8E8E93] hover:text-[#1C1C1E] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -512,62 +526,68 @@ export default function WalletPage() {
             <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
               {/* Top 3 Pills */}
               <div className="grid grid-cols-3 gap-3 text-center text-xs">
-                <div className="bg-slate-50 border border-slate-200 rounded p-2.5">
-                  <span className="text-slate-400 block text-[10px]">Customer ID</span>
-                  <span className="font-bold text-slate-800">{couponModalRow.customer_id}</span>
+                <div className="bg-[#F2F2F7]/70 border border-[#3C3C43]/10 rounded-2xl p-3">
+                  <span className="text-[#8E8E93] block text-[10px] font-semibold uppercase tracking-wider">
+                    Customer ID
+                  </span>
+                  <span className="font-bold text-[#1C1C1E] mt-0.5 block">{couponModalRow.customer_id}</span>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded p-2.5">
-                  <span className="text-slate-400 block text-[10px]">Total Amount</span>
-                  <span className="font-bold text-slate-800">{couponModalRow.amount}</span>
+                <div className="bg-[#F2F2F7]/70 border border-[#3C3C43]/10 rounded-2xl p-3">
+                  <span className="text-[#8E8E93] block text-[10px] font-semibold uppercase tracking-wider">
+                    Total Amount
+                  </span>
+                  <span className="font-bold text-[#007AFF] mt-0.5 block">AED {couponModalRow.amount}</span>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded p-2.5">
-                  <span className="text-slate-400 block text-[10px]">Total Coupons</span>
-                  <span className="font-bold text-slate-800">{couponModalRow.quantity}</span>
+                <div className="bg-[#F2F2F7]/70 border border-[#3C3C43]/10 rounded-2xl p-3">
+                  <span className="text-[#8E8E93] block text-[10px] font-semibold uppercase tracking-wider">
+                    Total Coupons
+                  </span>
+                  <span className="font-bold text-[#34C759] mt-0.5 block">{couponModalRow.quantity}</span>
                 </div>
               </div>
 
               {/* 2 Gradient Cards: Paid Coupons & Free Coupons */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-lg p-4 bg-linear-to-r from-[#5948DB] to-[#7F6DF2] text-white">
-                  <div className="text-xs opacity-90">Paid Coupons</div>
-                  <div className="text-2xl font-bold mt-1">{couponModalRow.quantity}</div>
-                  <div className="text-[11px] opacity-80 mt-0.5">Active: {couponModalRow.remaining}</div>
+                <div className="rounded-2xl p-5 bg-gradient-to-r from-[#007AFF] to-[#5856D6] text-white shadow-[0_4px_14px_rgba(0,122,255,0.25)]">
+                  <div className="text-xs font-medium opacity-90">Paid Coupons</div>
+                  <div className="text-3xl font-bold tracking-tight mt-1">{couponModalRow.quantity}</div>
+                  <div className="text-[11px] opacity-80 mt-1">Active: {couponModalRow.remaining}</div>
                 </div>
-                <div className="rounded-lg p-4 bg-linear-to-r from-[#EC4899] to-[#F43F5E] text-white">
-                  <div className="text-xs opacity-90">Free Coupons</div>
-                  <div className="text-2xl font-bold mt-1">0</div>
-                  <div className="text-[11px] opacity-80 mt-0.5">Active: 0</div>
+                <div className="rounded-2xl p-5 bg-gradient-to-r from-[#FF2D55] to-[#FF375F] text-white shadow-[0_4px_14px_rgba(255,45,85,0.25)]">
+                  <div className="text-xs font-medium opacity-90">Free Coupons</div>
+                  <div className="text-3xl font-bold tracking-tight mt-1">0</div>
+                  <div className="text-[11px] opacity-80 mt-1">Active: 0</div>
                 </div>
               </div>
 
               {/* Coupon List Table */}
-              <div className="overflow-x-auto">
+              <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
-                      <th className="py-2.5 px-3">COUPON ID</th>
-                      <th className="py-2.5 px-3">AMOUNT</th>
-                      <th className="py-2.5 px-3">TYPE</th>
-                      <th className="py-2.5 px-3">STATUS</th>
-                      <th className="py-2.5 px-3">CREATED</th>
+                    <tr className="bg-[#F2F2F7] border-b border-[#E5E5EA] text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
+                      <th className="py-2.5 px-3.5">COUPON ID</th>
+                      <th className="py-2.5 px-3.5">AMOUNT</th>
+                      <th className="py-2.5 px-3.5">TYPE</th>
+                      <th className="py-2.5 px-3.5">STATUS</th>
+                      <th className="py-2.5 px-3.5">CREATED</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200 text-xs text-slate-700">
+                  <tbody className="divide-y divide-[#E5E5EA] text-xs text-[#1C1C1E]">
                     {COUPON_UUID_LIST.map((uuid) => (
-                      <tr key={uuid}>
-                        <td className="py-2.5 px-3 font-mono text-[11px]">{uuid}</td>
-                        <td className="py-2.5 px-3">5</td>
-                        <td className="py-2.5 px-3">
-                          <span className="px-2 py-0.5 rounded bg-indigo-50 text-[#5948DB] text-[10px] font-bold">
+                      <tr key={uuid} className="hover:bg-[#F2F2F7]/50 transition-colors">
+                        <td className="py-2.5 px-3.5 font-mono text-[11px] text-[#1C1C1E]">{uuid}</td>
+                        <td className="py-2.5 px-3.5 font-semibold text-[#1C1C1E]">5</td>
+                        <td className="py-2.5 px-3.5">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#007AFF]/10 text-[#007AFF] border border-[#007AFF]/20">
                             PAID
                           </span>
                         </td>
-                        <td className="py-2.5 px-3">
-                          <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 text-[10px] font-bold">
+                        <td className="py-2.5 px-3.5">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#34C759]/10 text-[#34C759] border border-[#34C759]/20">
                             ACTIVE
                           </span>
                         </td>
-                        <td className="py-2.5 px-3">9/8/2026, 10:20:43 AM</td>
+                        <td className="py-2.5 px-3.5 text-[#8E8E93]">9/8/2026, 10:20:43 AM</td>
                       </tr>
                     ))}
                   </tbody>
@@ -575,18 +595,18 @@ export default function WalletPage() {
               </div>
             </div>
 
-            <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+            <div className="px-6 py-4 bg-[#F2F2F7]/50 border-t border-[#E5E5EA] flex items-center justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => setCouponModalRow(null)}
-                className="px-3.5 py-1.5 rounded bg-slate-500 hover:bg-slate-600 text-white text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
               >
                 Close
               </button>
               <button
                 type="button"
                 onClick={() => addToast("Exported coupons list", "success")}
-                className="px-3.5 py-1.5 rounded bg-[#4A90E2] hover:bg-[#357ABD] text-white text-xs font-semibold cursor-pointer"
+                className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
               >
                 Export Coupons
               </button>
