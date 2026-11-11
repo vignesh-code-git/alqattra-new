@@ -15,6 +15,7 @@ import {
   Wallet,
   CheckCircle2,
   Clock,
+  Filter,
 } from "lucide-react";
 
 const INITIAL_CUSTOMERS = [
@@ -697,82 +698,6 @@ export default function CustomersPage() {
         {/* 1. MAIN CUSTOMERS LIST (customers.png) */}
         {viewMode === "list" && (
           <>
-            {/* Filter Customers iOS Card */}
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-5">
-              <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-4">
-                Filter Customers
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 text-xs">
-                <div>
-                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    From
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    To
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Customer
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Search name or ID..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    City
-                  </label>
-                  <select className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
-                    <option value="">All Cities</option>
-                    <option value="AL_AIN">AL_AIN</option>
-                    <option value="ABU_DHABI">ABU_DHABI</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Zone
-                  </label>
-                  <select className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]">
-                    <option value="">All Zones</option>
-                    <option value="SCHOOL AREA">SCHOOL AREA</option>
-                    <option value="KHABISI">KHABISI</option>
-                    <option value="MANAZIF">MANAZIF</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2.5 mt-4">
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="px-4 py-2 rounded-full bg-[#8E8E93]/20 hover:bg-[#8E8E93]/30 text-[#1C1C1E] text-xs font-semibold cursor-pointer active:scale-95 transition"
-                >
-                  Reset
-                </button>
-                <button
-                  type="button"
-                  onClick={() => addToast("Customer filters applied", "info")}
-                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-
             {/* Customer Management Table Card */}
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
               <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
@@ -792,6 +717,85 @@ export default function CustomersPage() {
                   <Download className="w-3.5 h-3.5" />
                   Export
                 </button>
+              </div>
+
+              {/* Integrated Filters Inside Table Card */}
+              <div className="p-5 bg-[#F8F9FA] border-b border-[#3C3C43]/10">
+                <div className="flex items-center justify-between mb-3.5">
+                  <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider flex items-center gap-1.5">
+                    <Filter className="w-3.5 h-3.5 text-[#007AFF]" />
+                    <span>Filter Customers</span>
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("")}
+                      className="px-3.5 py-1.5 rounded-full bg-[#E5E5EA] text-[#1C1C1E] text-xs font-semibold hover:bg-[#D1D1D6] cursor-pointer active:scale-95 transition"
+                    >
+                      Reset
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addToast("Customer filters applied", "info")}
+                      className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm shadow-[#007AFF]/25 active:scale-95 transition"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 text-xs">
+                  <div>
+                    <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      From
+                    </label>
+                    <input
+                      type="date"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      To
+                    </label>
+                    <input
+                      type="date"
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      Customer
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Search name or ID..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      City
+                    </label>
+                    <select className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]">
+                      <option value="">All Cities</option>
+                      <option value="AL_AIN">AL_AIN</option>
+                      <option value="ABU_DHABI">ABU_DHABI</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      Zone
+                    </label>
+                    <select className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]">
+                      <option value="">All Zones</option>
+                      <option value="SCHOOL AREA">SCHOOL AREA</option>
+                      <option value="KHABISI">KHABISI</option>
+                      <option value="MANAZIF">MANAZIF</option>
+                    </select>
+                  </div>
+                </div>
               </div>
 
               <div className="px-6 py-4 bg-[#F2F2F7]/50 border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
@@ -822,7 +826,7 @@ export default function CustomersPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                       {[
                         "CUSTOMER NAME",
                         "CUSTOMER ID",
@@ -836,7 +840,7 @@ export default function CustomersPage() {
                         <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70 shrink-0" />
                           </div>
                         </th>
                       ))}
@@ -942,7 +946,7 @@ export default function CustomersPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                  <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                     {[
                       "CUSTOMER NAME",
                       "CUSTOMER ID",
@@ -959,7 +963,7 @@ export default function CustomersPage() {
                       <th key={col} className="py-3 px-3.5 first:pl-6 last:pr-6 whitespace-nowrap">
                         <div className="flex items-center justify-between gap-1">
                           <span>{col}</span>
-                          <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
+                          <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70 shrink-0" />
                         </div>
                       </th>
                     ))}
@@ -1480,7 +1484,7 @@ export default function CustomersPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                        <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                           {[
                             "CREATED AT",
                             "ASSET TYPE",
@@ -1612,7 +1616,7 @@ export default function CustomersPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                        <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                           {[
                             "CREATED AT",
                             "TRUCK ID",
@@ -1698,7 +1702,7 @@ export default function CustomersPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                        <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                           {[
                             "ORDER ID",
                             "DATE",
@@ -1772,7 +1776,7 @@ export default function CustomersPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                        <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                           {[
                             "UPDATED AT",
                             "RECHARGE CODE",
@@ -2150,7 +2154,7 @@ export default function CustomersPage() {
               <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                       <th className="py-2.5 px-3.5">PRODUCT</th>
                       <th className="py-2.5 px-3.5">LEND TYPE</th>
                       <th className="py-2.5 px-3.5">QUANTITY</th>
@@ -2225,7 +2229,7 @@ export default function CustomersPage() {
               <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                       <th className="py-3 px-3.5">COUPON CODE</th>
                       <th className="py-3 px-3.5">PRODUCT</th>
                       <th className="py-3 px-3.5">TYPE</th>

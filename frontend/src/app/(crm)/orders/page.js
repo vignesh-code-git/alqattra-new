@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Clock,
   DollarSign,
+  Filter,
 } from "lucide-react";
 
 const INITIAL_ORDERS = [
@@ -469,184 +470,6 @@ export default function OrdersPage() {
       <div className="p-6 flex-1 space-y-6 max-w-7xl w-full mx-auto">
         {viewMode === "list" && (
           <>
-            {/* Filter Orders iOS Card */}
-            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5">
-              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider mb-4">
-                Filter Orders
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    From
-                  </label>
-                  <input
-                    type="date"
-                    value={filters.from}
-                    onChange={(e) => setFilters({ ...filters, from: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    To
-                  </label>
-                  <input
-                    type="date"
-                    value={filters.to}
-                    onChange={(e) => setFilters({ ...filters, to: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Customer
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Customer Name / ID"
-                    value={filters.customer}
-                    onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Salesman
-                  </label>
-                  <select
-                    value={filters.salesman}
-                    onChange={(e) => setFilters({ ...filters, salesman: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
-                  >
-                    <option value="">All Salesmen</option>
-                    <option value="56 - ANAS">56 - ANAS</option>
-                    <option value="32 - NOOR">32 - NOOR</option>
-                    <option value="38 - NISAR">38 - NISAR</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Route
-                  </label>
-                  <select
-                    value={filters.route}
-                    onChange={(e) => setFilters({ ...filters, route: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
-                  >
-                    <option value="">All Routes</option>
-                    <option value="6350">6350</option>
-                    <option value="6335">6335</option>
-                    <option value="6354">6354</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Zone
-                  </label>
-                  <select
-                    value={filters.zone}
-                    onChange={(e) => setFilters({ ...filters, zone: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
-                  >
-                    <option value="">All Zones</option>
-                    <option value="MANAZIF">MANAZIF</option>
-                    <option value="HILI INDUSTRIAL">HILI INDUSTRIAL</option>
-                    <option value="KHABISI">KHABISI</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Truck
-                  </label>
-                  <select
-                    value={filters.truck}
-                    onChange={(e) => setFilters({ ...filters, truck: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
-                  >
-                    <option value="">All Trucks</option>
-                    <option value="T6350">T6350</option>
-                    <option value="T6335">T6335</option>
-                    <option value="T6356">T6356</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Status
-                  </label>
-                  <select
-                    value={filters.status}
-                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
-                  >
-                    <option value="">All Status</option>
-                    <option value="Delivered">Delivered</option>
-                    <option value="Pending">Pending</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Payment Method
-                  </label>
-                  <select
-                    value={filters.paymentMethod}
-                    onChange={(e) => setFilters({ ...filters, paymentMethod: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
-                  >
-                    <option value="">All Methods</option>
-                    <option value="Cash">Cash</option>
-                    <option value="Card">Card</option>
-                    <option value="Wallet">Wallet</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Payment Status
-                  </label>
-                  <select
-                    value={filters.paymentStatus}
-                    onChange={(e) => setFilters({ ...filters, paymentStatus: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white"
-                  >
-                    <option value="">All Payment Status</option>
-                    <option value="PAID">Paid</option>
-                    <option value="PENDING">Pending</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-2.5 mt-4">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setFilters({
-                      from: "",
-                      to: "",
-                      customer: "",
-                      salesman: "",
-                      route: "",
-                      zone: "",
-                      truck: "",
-                      status: "",
-                      paymentMethod: "",
-                      paymentStatus: "",
-                      product: "",
-                    })
-                  }
-                  className="px-4 py-1.5 rounded-full bg-[#E5E5EA] text-[#1C1C1E] text-xs font-semibold hover:bg-[#D1D1D6] cursor-pointer"
-                >
-                  Reset
-                </button>
-                <button
-                  type="button"
-                  onClick={() => addToast("Filters applied", "info")}
-                  className="px-5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm shadow-[#007AFF]/25"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-
             {/* 4 iOS KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-sm flex items-center justify-between">
@@ -717,6 +540,186 @@ export default function OrdersPage() {
                 </button>
               </div>
 
+              {/* Integrated Filters Inside Table Card */}
+              <div className="p-5 bg-[#F8F9FA] border-b border-[#3C3C43]/10">
+                <div className="flex items-center justify-between mb-3.5">
+                  <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider flex items-center gap-1.5">
+                    <Filter className="w-3.5 h-3.5 text-[#007AFF]" />
+                    <span>Filter Orders</span>
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFilters({
+                          from: "",
+                          to: "",
+                          customer: "",
+                          salesman: "",
+                          route: "",
+                          zone: "",
+                          truck: "",
+                          status: "",
+                          paymentMethod: "",
+                          paymentStatus: "",
+                          product: "",
+                        })
+                      }
+                      className="px-3.5 py-1.5 rounded-full bg-[#E5E5EA] text-[#1C1C1E] text-xs font-semibold hover:bg-[#D1D1D6] cursor-pointer transition active:scale-95"
+                    >
+                      Reset
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addToast("Filters applied", "info")}
+                      className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm shadow-[#007AFF]/25 transition active:scale-95"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      From
+                    </label>
+                    <input
+                      type="date"
+                      value={filters.from}
+                      onChange={(e) => setFilters({ ...filters, from: e.target.value })}
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      To
+                    </label>
+                    <input
+                      type="date"
+                      value={filters.to}
+                      onChange={(e) => setFilters({ ...filters, to: e.target.value })}
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      Customer
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Customer Name / ID"
+                      value={filters.customer}
+                      onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      Salesman
+                    </label>
+                    <select
+                      value={filters.salesman}
+                      onChange={(e) => setFilters({ ...filters, salesman: e.target.value })}
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    >
+                      <option value="">All Salesmen</option>
+                      <option value="56 - ANAS">56 - ANAS</option>
+                      <option value="32 - NOOR">32 - NOOR</option>
+                      <option value="38 - NISAR">38 - NISAR</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      Route
+                    </label>
+                    <select
+                      value={filters.route}
+                      onChange={(e) => setFilters({ ...filters, route: e.target.value })}
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    >
+                      <option value="">All Routes</option>
+                      <option value="6350">6350</option>
+                      <option value="6335">6335</option>
+                      <option value="6354">6354</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      Zone
+                    </label>
+                    <select
+                      value={filters.zone}
+                      onChange={(e) => setFilters({ ...filters, zone: e.target.value })}
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    >
+                      <option value="">All Zones</option>
+                      <option value="MANAZIF">MANAZIF</option>
+                      <option value="HILI INDUSTRIAL">HILI INDUSTRIAL</option>
+                      <option value="KHABISI">KHABISI</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      Truck
+                    </label>
+                    <select
+                      value={filters.truck}
+                      onChange={(e) => setFilters({ ...filters, truck: e.target.value })}
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    >
+                      <option value="">All Trucks</option>
+                      <option value="T6350">T6350</option>
+                      <option value="T6335">T6335</option>
+                      <option value="T6356">T6356</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      Status
+                    </label>
+                    <select
+                      value={filters.status}
+                      onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    >
+                      <option value="">All Status</option>
+                      <option value="Delivered">Delivered</option>
+                      <option value="Pending">Pending</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      Payment Method
+                    </label>
+                    <select
+                      value={filters.paymentMethod}
+                      onChange={(e) => setFilters({ ...filters, paymentMethod: e.target.value })}
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    >
+                      <option value="">All Methods</option>
+                      <option value="Cash">Cash</option>
+                      <option value="Card">Card</option>
+                      <option value="Wallet">Wallet</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                      Payment Status
+                    </label>
+                    <select
+                      value={filters.paymentStatus}
+                      onChange={(e) => setFilters({ ...filters, paymentStatus: e.target.value })}
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    >
+                      <option value="">All Payment Status</option>
+                      <option value="PAID">Paid</option>
+                      <option value="PENDING">Pending</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
               <div className="px-6 py-3.5 bg-[#F2F2F7] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
                 <div className="flex items-center gap-2">
                   <span>Show</span>
@@ -746,7 +749,7 @@ export default function OrdersPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] tracking-wider uppercase">
+                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] tracking-wider uppercase">
                       {[
                         "DELIVERY NOTE",
                         "INVOICE NO.",
@@ -763,7 +766,7 @@ export default function OrdersPage() {
                         <th key={col} className="py-3 px-3.5 first:pl-6 last:pr-6 whitespace-nowrap">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70 shrink-0" />
                           </div>
                         </th>
                       ))}
@@ -928,7 +931,7 @@ export default function OrdersPage() {
                 <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                      <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                         <th className="py-2.5 px-4">PRODUCT</th>
                         <th className="py-2.5 px-4">QUANTITY</th>
                         <th className="py-2.5 px-4">TYPE</th>
@@ -1213,7 +1216,7 @@ export default function OrdersPage() {
                 <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                      <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                         <th className="py-2.5 px-4">PRODUCT NAME</th>
                         <th className="py-2.5 px-4">QUANTITY</th>
                         <th className="py-2.5 px-4">LEND/RETURN</th>
@@ -1380,7 +1383,7 @@ export default function OrdersPage() {
                 <div className="border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[10px] font-semibold text-[#636366] uppercase tracking-wider">
+                      <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[10px] font-bold text-[#007AFF] uppercase tracking-wider">
                         <th className="py-2.5 px-3">PRODUCT</th>
                         <th className="py-2.5 px-3">LEND TYPE</th>
                         <th className="py-2.5 px-3">QUANTITY</th>

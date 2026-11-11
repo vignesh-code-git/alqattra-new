@@ -354,7 +354,7 @@ export default function InvoicesPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                       {[
                         "INVOICE NO.",
                         "CUSTOMER NAME",
@@ -369,7 +369,7 @@ export default function InvoicesPage() {
                         <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#8E8E93] shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70 shrink-0" />
                           </div>
                         </th>
                       ))}
@@ -529,7 +529,7 @@ export default function InvoicesPage() {
                 <div className="overflow-x-auto border-x border-b border-[#3C3C43]/10 rounded-b-2xl">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[11px] font-semibold text-[#636366] uppercase tracking-wider">
+                      <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
                         {[
                           "CUSTOMER NAME",
                           "CUSTOMER ID",
@@ -542,7 +542,7 @@ export default function InvoicesPage() {
                           <th key={c} className="py-3 px-4">
                             <div className="flex items-center justify-between">
                               <span>{c}</span>
-                              <ArrowUpDown className="w-3 h-3 text-[#8E8E93]" />
+                              <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70" />
                             </div>
                           </th>
                         ))}
@@ -657,7 +657,7 @@ export default function InvoicesPage() {
                 <div className="border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#F2F2F7] border-y border-[#3C3C43]/15 text-[10px] font-semibold text-[#636366] uppercase tracking-wider">
+                      <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[10px] font-bold text-[#007AFF] uppercase tracking-wider">
                         <th className="py-2.5 px-3">PRODUCT</th>
                         <th className="py-2.5 px-3">LEND TYPE</th>
                         <th className="py-2.5 px-3">QUANTITY</th>

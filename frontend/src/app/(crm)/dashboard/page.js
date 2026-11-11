@@ -406,7 +406,7 @@ export default function DashboardPage() {
 
               <div className="overflow-x-auto touch-pan-x">
                 <table className="w-full text-left text-xs border-collapse min-w-[500px]">
-                  <thead className="bg-[#F2F2F7] text-xs text-[#8E8E93] border-b border-[#3C3C43]/10 font-semibold uppercase">
+                  <thead className="bg-[#007AFF]/10 text-[11px] text-[#007AFF] border-y border-[#007AFF]/20 font-bold uppercase tracking-wider">
                     <tr>
                       <th className="px-4 py-3 font-semibold">PRODUCT</th>
                       <th className="px-4 py-3 font-semibold text-center">LAST MONTH</th>

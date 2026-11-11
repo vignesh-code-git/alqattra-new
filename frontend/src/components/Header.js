@@ -286,7 +286,7 @@ export default function Header({
   return (
     <>
       <header className="h-16 bg-white/85 backdrop-blur-xl border-b border-[#3C3C43]/10 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 transition-colors">
-        {/* Left: Brand Heading moved from Sidebar + Page Title & Breadcrumbs */}
+        {/* Left: CRM Icon with Blue Border (no blue filled container, no text) + Page Title & Breadcrumbs */}
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <button
             type="button"
@@ -297,27 +297,14 @@ export default function Header({
             <Menu className="w-5 h-5" />
           </button>
 
-          {/* Sidebar Top Heading moved to Header */}
-          <div className="flex items-center gap-2.5 shrink-0">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#007AFF] to-[#5856D6] flex items-center justify-center text-white shadow-sm shadow-[#007AFF]/30 shrink-0">
-              <Droplets className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <div className="text-[#1C1C1E] font-bold text-sm tracking-tight leading-tight flex items-center gap-1.5">
-                <span>القطارة</span>
-                <span className="text-[#007AFF] font-bold tracking-wide text-xs">AL QATTARA</span>
-              </div>
-              <div className="text-[9.5px] text-[#8E8E93] font-semibold tracking-wider uppercase">
-                Water Delivery CRM
-              </div>
-            </div>
+          {/* CRM icon only with blue border (no text, no blue filled container) */}
+          <div className="w-9 h-9 rounded-2xl border-2 border-[#007AFF] bg-white flex items-center justify-center text-[#007AFF] shadow-2xs shrink-0">
+            <Droplets className="w-5 h-5 text-[#007AFF]" />
           </div>
-
-          <div className="hidden sm:block h-7 w-px bg-[#3C3C43]/15 mx-1" />
 
           {/* Page Title & Breadcrumbs */}
           <div className="min-w-0">
-            <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-[#8E8E93] font-normal">
+            <div className="flex items-center gap-1.5 text-[11px] text-[#8E8E93] font-normal">
               <span className="text-[#007AFF] font-medium">CRM</span>
               <ChevronRight className="w-3 h-3 text-[#8E8E93]" />
               <span className="text-[#3C3C43] truncate">{subtitle}</span>
@@ -326,62 +313,6 @@ export default function Header({
               {title}
             </h1>
           </div>
-        </div>
-
-        {/* Center: iOS Segmented Control for Territory */}
-        <div className="hidden md:flex items-center bg-[#E5E5EA]/80 p-0.5 rounded-full border border-black/5 shadow-2xs">
-          <div className="flex items-center gap-1 pl-2.5 pr-1.5 text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-            <MapPin className="w-3 h-3 text-[#007AFF]" />
-            <span>Region</span>
-          </div>
-          {["ALL", "AL AIN", "ABU DHABI"].map((city) => (
-            <button
-              key={city}
-              type="button"
-              onClick={() => handleTerritoryChange(city)}
-              className={`px-3 py-1 rounded-full text-xs transition-all whitespace-nowrap ${
-                territory === city
-                  ? "bg-white text-[#1C1C1E] shadow-sm font-semibold"
-                  : "text-[#8E8E93] hover:text-[#1C1C1E]"
-              }`}
-            >
-              {city}
-            </button>
-          ))}
-        </div>
-
-        {/* Mobile Territory Dropdown Selector */}
-        <div className="relative md:hidden">
-          <button
-            type="button"
-            onClick={() => setShowMobileTerritory(!showMobileTerritory)}
-            className="flex items-center gap-1 px-2.5 py-1 bg-white border border-[#3C3C43]/15 text-[#007AFF] rounded-full text-[11px] font-semibold shadow-2xs"
-          >
-            <MapPin className="w-3 h-3 text-[#007AFF]" />
-            <span>{territory}</span>
-            <ChevronDown className="w-3 h-3 text-[#007AFF]" />
-          </button>
-
-          {showMobileTerritory && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowMobileTerritory(false)} />
-              <div className="absolute right-0 mt-1.5 w-36 bg-white/90 backdrop-blur-xl border border-[#3C3C43]/10 rounded-2xl shadow-xl py-1 z-50 animate-in fade-in zoom-in-95 text-xs">
-                {["ALL", "AL AIN", "ABU DHABI"].map((city) => (
-                  <button
-                    key={city}
-                    type="button"
-                    onClick={() => handleTerritoryChange(city)}
-                    className={`w-full px-3 py-1.5 text-left font-medium flex items-center justify-between ${
-                      territory === city ? "bg-[#007AFF]/10 text-[#007AFF] font-semibold" : "text-slate-700 hover:bg-slate-50"
-                    }`}
-                  >
-                    <span>{city}</span>
-                    {territory === city && <Check className="w-3.5 h-3.5 text-[#007AFF]" />}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
         </div>
 
         {/* Right Controls: Developer Bug Tracker + Notifications + Profile Icon */}
