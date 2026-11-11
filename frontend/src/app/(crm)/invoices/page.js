@@ -154,6 +154,14 @@ export default function InvoicesPage() {
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [viewModalInvoice, setViewModalInvoice] = useState(null);
 
+  const [invoiceFilters, setInvoiceFilters] = useState({
+    customer: "",
+    salesman: "",
+    truck: "",
+    fromDate: "",
+    toDate: "",
+  });
+
   const [billingFilter, setBillingFilter] = useState({
     customer_code: "",
     truck_id: "",
@@ -163,16 +171,63 @@ export default function InvoicesPage() {
   const [nonBilledList, setNonBilledList] = useState([]);
 
   const filteredInvoices = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return invoices;
-    return invoices.filter(
-      (inv) =>
-        inv.invoice_no.toLowerCase().includes(q) ||
-        inv.customer_name.toLowerCase().includes(q) ||
-        inv.customer_id.toLowerCase().includes(q) ||
-        inv.truck.toLowerCase().includes(q)
-    );
-  }, [invoices, searchQuery]);
+    return invoices.filter((inv) => {
+      // Search query
+      if (searchQuery.trim()) {
+        const q = searchQuery.trim().toLowerCase();
+        const match =
+          inv.invoice_no.toLowerCase().includes(q) ||
+          inv.customer_name.toLowerCase().includes(q) ||
+          inv.customer_id.toLowerCase().includes(q) ||
+          inv.salesman_name.toLowerCase().includes(q) ||
+          inv.truck.toLowerCase().includes(q);
+        if (!match) return false;
+      }
+
+      // Customer
+      if (invoiceFilters.customer) {
+        const c = invoiceFilters.customer.toLowerCase();
+        if (
+          !inv.customer_name.toLowerCase().includes(c) &&
+          !inv.customer_id.toLowerCase().includes(c)
+        ) {
+          return false;
+        }
+      }
+
+      // Sales Rep
+      if (invoiceFilters.salesman) {
+        if (!inv.salesman_name.toLowerCase().includes(invoiceFilters.salesman.toLowerCase())) {
+          return false;
+        }
+      }
+
+      // Truck
+      if (invoiceFilters.truck) {
+        if (!inv.truck.toLowerCase().includes(invoiceFilters.truck.toLowerCase())) {
+          return false;
+        }
+      }
+
+      // Date range (inv.order_date format: DD/MM/YYYY)
+      if (invoiceFilters.fromDate || invoiceFilters.toDate) {
+        const parts = inv.order_date.split("/").map(Number);
+        if (parts.length === 3) {
+          const invDate = new Date(parts[2], parts[1] - 1, parts[0]);
+          if (invoiceFilters.fromDate) {
+            const fDate = new Date(invoiceFilters.fromDate);
+            if (invDate < fDate) return false;
+          }
+          if (invoiceFilters.toDate) {
+            const tDate = new Date(invoiceFilters.toDate);
+            if (invDate > tDate) return false;
+          }
+        }
+      }
+
+      return true;
+    });
+  }, [invoices, searchQuery, invoiceFilters]);
 
   const handleGetAllNonBilled = () => {
     setNonBilledList([
@@ -265,6 +320,121 @@ export default function InvoicesPage() {
       <div className="p-6 flex-1 space-y-6">
         {viewMode === "list" ? (
           <>
+            {/* Filter Invoices iOS Card (invoices.png) */}
+            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5">
+              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider mb-4">
+                Filter Invoices
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+                <div>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                    Customer
+                  </label>
+                  <input
+                    type="text"
+                    value={invoiceFilters.customer}
+                    onChange={(e) =>
+                      setInvoiceFilters({ ...invoiceFilters, customer: e.target.value })
+                    }
+                    placeholder="Customer Name / ID"
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-[#F2F2F7] rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                    Sales Rep
+                  </label>
+                  <select
+                    value={invoiceFilters.salesman}
+                    onChange={(e) =>
+                      setInvoiceFilters({ ...invoiceFilters, salesman: e.target.value })
+                    }
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-[#F2F2F7] rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                  >
+                    <option value="">All Sales Reps</option>
+                    <option value="56">56 - ANAS</option>
+                    <option value="38">38 - NISAR</option>
+                    <option value="32">32 - NOOR</option>
+                    <option value="53">53 - SHAFEEQ</option>
+                    <option value="47">47 - RAHMAN</option>
+                    <option value="48">48 - JASEEM</option>
+                    <option value="84">84 - MUNEEB</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                    Truck
+                  </label>
+                  <select
+                    value={invoiceFilters.truck}
+                    onChange={(e) =>
+                      setInvoiceFilters({ ...invoiceFilters, truck: e.target.value })
+                    }
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-[#F2F2F7] rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                  >
+                    <option value="">All Trucks</option>
+                    <option value="T6350">T6350</option>
+                    <option value="T6356">T6356</option>
+                    <option value="T6335">T6335</option>
+                    <option value="T6348">T6348</option>
+                    <option value="T6354">T6354</option>
+                    <option value="T6684">T6684</option>
+                    <option value="T6357">T6357</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                    From Date
+                  </label>
+                  <input
+                    type="date"
+                    value={invoiceFilters.fromDate}
+                    onChange={(e) =>
+                      setInvoiceFilters({ ...invoiceFilters, fromDate: e.target.value })
+                    }
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-[#F2F2F7] rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
+                    To Date
+                  </label>
+                  <input
+                    type="date"
+                    value={invoiceFilters.toDate}
+                    onChange={(e) =>
+                      setInvoiceFilters({ ...invoiceFilters, toDate: e.target.value })
+                    }
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-[#F2F2F7] rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2.5 pt-4 mt-2 border-t border-[#3C3C43]/5">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setInvoiceFilters({
+                      customer: "",
+                      salesman: "",
+                      truck: "",
+                      fromDate: "",
+                      toDate: "",
+                    })
+                  }
+                  className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => addToast("Applied invoice filters", "info")}
+                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+
             {/* 4 KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
@@ -309,7 +479,12 @@ export default function InvoicesPage() {
               <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
                 <div>
                   <div className="text-[11px] font-semibold tracking-wider text-[#8E8E93] uppercase">REVENUE</div>
-                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">AED 351.50</div>
+                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">
+                    AED{" "}
+                    {filteredInvoices
+                      .reduce((sum, inv) => sum + (Number(inv.total_amount) || 0), 0)
+                      .toFixed(2)}
+                  </div>
                   <div className="text-[11px] text-[#5856D6] font-medium mt-0.5">Total billed value</div>
                 </div>
                 <div className="w-11 h-11 rounded-2xl bg-[#5856D6]/15 text-[#5856D6] flex items-center justify-center">

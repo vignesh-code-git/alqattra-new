@@ -324,6 +324,14 @@ export default function CashierPage() {
   const [collectedPayments, setCollectedPayments] = useState(INITIAL_COLLECTED_PAYMENTS);
   const [customerCredits, setCustomerCredits] = useState(INITIAL_CUSTOMER_CREDITS);
 
+  const [paymentFilters, setPaymentFilters] = useState({
+    fromDate: "",
+    toDate: "",
+    salesman: "",
+    paymentMethod: "",
+    collectionFrom: "",
+  });
+
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
 
@@ -332,6 +340,54 @@ export default function CashierPage() {
   const [collectAmount, setCollectAmount] = useState("");
   const [collectMethod, setCollectMethod] = useState("Cash");
   const [collectNote, setCollectNote] = useState("");
+
+  const filteredCollectedPayments = useMemo(() => {
+    return collectedPayments.filter((p) => {
+      if (paymentFilters.salesman) {
+        if (!p.salesman_id.toLowerCase().includes(paymentFilters.salesman.toLowerCase())) {
+          return false;
+        }
+      }
+      if (paymentFilters.paymentMethod) {
+        if (p.method.toLowerCase() !== paymentFilters.paymentMethod.toLowerCase()) {
+          return false;
+        }
+      }
+      if (paymentFilters.collectionFrom) {
+        if (p.from.toLowerCase() !== paymentFilters.collectionFrom.toLowerCase()) {
+          return false;
+        }
+      }
+      if (paymentFilters.fromDate || paymentFilters.toDate) {
+        const parts = p.date.split("/").map(Number);
+        if (parts.length === 3) {
+          const pDate = new Date(parts[2], parts[1] - 1, parts[0]);
+          if (paymentFilters.fromDate && pDate < new Date(paymentFilters.fromDate)) return false;
+          if (paymentFilters.toDate && pDate > new Date(paymentFilters.toDate)) return false;
+        }
+      }
+      return true;
+    });
+  }, [collectedPayments, paymentFilters]);
+
+  const totalCollectedSum = useMemo(() => {
+    return filteredCollectedPayments.reduce((acc, p) => {
+      const val = parseFloat(p.amount.replace(/[^0-9.]/g, "")) || 0;
+      return acc + val;
+    }, 0);
+  }, [filteredCollectedPayments]);
+
+  const cashCollectedSum = useMemo(() => {
+    return filteredCollectedPayments
+      .filter((p) => p.method === "Cash")
+      .reduce((acc, p) => acc + (parseFloat(p.amount.replace(/[^0-9.]/g, "")) || 0), 0);
+  }, [filteredCollectedPayments]);
+
+  const cardCollectedSum = useMemo(() => {
+    return filteredCollectedPayments
+      .filter((p) => p.method === "Card")
+      .reduce((acc, p) => acc + (parseFloat(p.amount.replace(/[^0-9.]/g, "")) || 0), 0);
+  }, [filteredCollectedPayments]);
 
   const filteredSalesmen = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -477,70 +533,104 @@ export default function CashierPage() {
         {/* COLLECTED PAYMENTS SUB-VIEW (collected payments.png) */}
         {showCollectedView ? (
           <>
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-6 space-y-4">
-              <h3 className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wider">
+            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5 space-y-4">
+              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Payments
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 text-xs">
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     From
                   </label>
                   <input
                     type="date"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={paymentFilters.fromDate}
+                    onChange={(e) =>
+                      setPaymentFilters({ ...paymentFilters, fromDate: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     To
                   </label>
                   <input
                     type="date"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={paymentFilters.toDate}
+                    onChange={(e) =>
+                      setPaymentFilters({ ...paymentFilters, toDate: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Salesman
                   </label>
                   <input
                     type="text"
                     placeholder="Salesman ID"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={paymentFilters.salesman}
+                    onChange={(e) =>
+                      setPaymentFilters({ ...paymentFilters, salesman: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Payment Method
                   </label>
-                  <select className="w-full border border-[#3C3C43]/15 bg-white rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all">
+                  <select
+                    value={paymentFilters.paymentMethod}
+                    onChange={(e) =>
+                      setPaymentFilters({ ...paymentFilters, paymentMethod: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
+                  >
                     <option value="">All Methods</option>
                     <option value="Cash">Cash</option>
                     <option value="Card">Card</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Collection From
                   </label>
-                  <select className="w-full border border-[#3C3C43]/15 bg-white rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all">
+                  <select
+                    value={paymentFilters.collectionFrom}
+                    onChange={(e) =>
+                      setPaymentFilters({ ...paymentFilters, collectionFrom: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
+                  >
                     <option value="">All</option>
                     <option value="Salesman">Salesman</option>
                     <option value="Customer">Customer</option>
                   </select>
                 </div>
               </div>
-              <div className="flex justify-end gap-2.5 pt-2">
+              <div className="flex justify-end gap-2.5 pt-3 mt-1 border-t border-[#3C3C43]/5">
                 <button
                   type="button"
+                  onClick={() =>
+                    setPaymentFilters({
+                      fromDate: "",
+                      toDate: "",
+                      salesman: "",
+                      paymentMethod: "",
+                      collectionFrom: "",
+                    })
+                  }
                   className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Reset
                 </button>
                 <button
                   type="button"
-                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
+                  onClick={() => addToast("Payment filters applied", "info")}
+                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
                 >
                   Apply
                 </button>
@@ -553,7 +643,9 @@ export default function CashierPage() {
                   <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                     TOTAL COLLECTED
                   </div>
-                  <div className="text-2xl font-bold tracking-tight text-[#1C1C1E] mt-1">AED 572,970.07</div>
+                  <div className="text-2xl font-bold tracking-tight text-[#1C1C1E] mt-1">
+                    AED {totalCollectedSum.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
                 </div>
                 <div className="w-11 h-11 rounded-2xl bg-[#34C759]/10 text-[#34C759] flex items-center justify-center">
                   <DollarSign className="w-5 h-5" />
@@ -564,7 +656,9 @@ export default function CashierPage() {
                   <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                     CASH PAYMENTS
                   </div>
-                  <div className="text-2xl font-bold tracking-tight text-[#1C1C1E] mt-1">AED 572,960.07</div>
+                  <div className="text-2xl font-bold tracking-tight text-[#1C1C1E] mt-1">
+                    AED {cashCollectedSum.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
                 </div>
                 <div className="w-11 h-11 rounded-2xl bg-[#007AFF]/10 text-[#007AFF] flex items-center justify-center">
                   <DollarSign className="w-5 h-5" />
@@ -575,7 +669,9 @@ export default function CashierPage() {
                   <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                     CARD PAYMENTS
                   </div>
-                  <div className="text-2xl font-bold tracking-tight text-[#1C1C1E] mt-1">AED 10.00</div>
+                  <div className="text-2xl font-bold tracking-tight text-[#1C1C1E] mt-1">
+                    AED {cardCollectedSum.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
                 </div>
                 <div className="w-11 h-11 rounded-2xl bg-[#5856D6]/10 text-[#5856D6] flex items-center justify-center">
                   <CreditCard className="w-5 h-5" />
@@ -608,7 +704,7 @@ export default function CashierPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E5E5EA] text-xs text-[#1C1C1E]">
-                    {collectedPayments.map((p) => (
+                    {filteredCollectedPayments.map((p) => (
                       <tr key={p.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                         <td className="py-3.5 px-6 font-medium">{p.date}</td>
                         <td className="py-3.5 px-6">{p.salesman_id}</td>

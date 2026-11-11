@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
 import { ArrowUpDown, Download } from "lucide-react";
@@ -376,6 +376,102 @@ export default function ReportsPage() {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState("salesman"); // "salesman" | "customer" | "truck" | "commission"
 
+  // Tab 1: Salesman Filters
+  const [salesmanFilters, setSalesmanFilters] = useState({
+    from: "",
+    to: "",
+    salesman: "",
+    route: "",
+  });
+
+  // Tab 2: Customer Filters
+  const [customerFilters, setCustomerFilters] = useState({
+    from: "",
+    to: "",
+    salesmanId: "",
+    route: "",
+    truck: "",
+    zone: "",
+    product: "",
+  });
+
+  // Tab 3: Truck Filters
+  const [truckFilters, setTruckFilters] = useState({
+    from: "",
+    to: "",
+    salesmanId: "",
+    route: "",
+    product: "",
+  });
+
+  // Tab 4: Commission Filters
+  const [commissionFilters, setCommissionFilters] = useState({
+    from: "",
+    to: "",
+    salesman: "",
+  });
+
+  const filteredSalesmanReport = useMemo(() => {
+    return SALESMAN_REPORT_ROWS.filter((r) => {
+      if (
+        salesmanFilters.salesman &&
+        !r.salesman.toLowerCase().includes(salesmanFilters.salesman.toLowerCase())
+      ) {
+        return false;
+      }
+      if (
+        salesmanFilters.route &&
+        !r.route.toLowerCase().includes(salesmanFilters.route.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [salesmanFilters]);
+
+  const filteredCustomerReport = useMemo(() => {
+    return CUSTOMER_REPORT_ROWS.filter((r) => {
+      if (
+        customerFilters.salesmanId &&
+        !r.id.toLowerCase().includes(customerFilters.salesmanId.toLowerCase()) &&
+        !r.name.toLowerCase().includes(customerFilters.salesmanId.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [customerFilters]);
+
+  const filteredTruckReport = useMemo(() => {
+    return TRUCK_REPORT_ROWS.filter((r) => {
+      if (
+        truckFilters.salesmanId &&
+        !r.salesman.toLowerCase().includes(truckFilters.salesmanId.toLowerCase())
+      ) {
+        return false;
+      }
+      if (
+        truckFilters.route &&
+        !r.route.toLowerCase().includes(truckFilters.route.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [truckFilters]);
+
+  const filteredCommissionReport = useMemo(() => {
+    return COMMISSION_REPORT_ROWS.filter((r) => {
+      if (
+        commissionFilters.salesman &&
+        !r.salesman.toLowerCase().includes(commissionFilters.salesman.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [commissionFilters]);
+
   return (
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col font-sans pb-12">
       <Header title="Reports" subtitle="Analytics & Reports" />
@@ -427,53 +523,87 @@ export default function ReportsPage() {
         {/* TAB 1: SALESMAN COLLECTION REPORT (reposrts-salesman.png) */}
         {activeTab === "salesman" && (
           <>
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-6 space-y-4">
-              <h3 className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wider">
+            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5 space-y-4">
+              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     From
                   </label>
                   <input
                     type="date"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={salesmanFilters.from}
+                    onChange={(e) =>
+                      setSalesmanFilters({ ...salesmanFilters, from: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     To
                   </label>
                   <input
                     type="date"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={salesmanFilters.to}
+                    onChange={(e) =>
+                      setSalesmanFilters({ ...salesmanFilters, to: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Salesman
                   </label>
-                  <select className="w-full border border-[#3C3C43]/15 bg-white rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all">
+                  <select
+                    value={salesmanFilters.salesman}
+                    onChange={(e) =>
+                      setSalesmanFilters({ ...salesmanFilters, salesman: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
+                  >
                     <option value="">All Salesmen</option>
                     <option value="56 - ANAS">56 - ANAS</option>
+                    <option value="38 - NISAR">38 - NISAR</option>
                     <option value="32 - NOOR">32 - NOOR</option>
+                    <option value="47 - RAHMAN">47 - RAHMAN</option>
+                    <option value="53 - SHAFEEQ">53 - SHAFEEQ</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Route
                   </label>
-                  <select className="w-full border border-[#3C3C43]/15 bg-white rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all">
+                  <select
+                    value={salesmanFilters.route}
+                    onChange={(e) =>
+                      setSalesmanFilters({ ...salesmanFilters, route: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
+                  >
                     <option value="">All Routes</option>
                     <option value="6350">6350</option>
+                    <option value="6356">6356</option>
                     <option value="6335">6335</option>
+                    <option value="6354">6354</option>
+                    <option value="6348">6348</option>
                   </select>
                 </div>
               </div>
-              <div className="flex justify-end gap-2.5 pt-2">
+              <div className="flex justify-end gap-2.5 pt-3 mt-1 border-t border-[#3C3C43]/5">
                 <button
                   type="button"
+                  onClick={() =>
+                    setSalesmanFilters({
+                      from: "",
+                      to: "",
+                      salesman: "",
+                      route: "",
+                    })
+                  }
                   className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Reset
@@ -481,7 +611,7 @@ export default function ReportsPage() {
                 <button
                   type="button"
                   onClick={() => addToast("Report filters applied", "info")}
-                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
+                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
                 >
                   Apply
                 </button>
@@ -525,7 +655,7 @@ export default function ReportsPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E5E5EA] text-xs text-[#1C1C1E]">
-                    {SALESMAN_REPORT_ROWS.map((r) => (
+                    {filteredSalesmanReport.map((r) => (
                       <tr key={r.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                         <td className="py-3.5 pl-6 pr-4 font-semibold text-[#1C1C1E]">{r.salesman}</td>
                         <td className="py-3.5 px-4 font-mono text-xs">{r.route}</td>
@@ -553,90 +683,130 @@ export default function ReportsPage() {
         {/* TAB 2: CUSTOMER REPORT (customer report.png) */}
         {activeTab === "customer" && (
           <>
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-6 space-y-4">
-              <h3 className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wider">
+            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5 space-y-4">
+              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     FROM DATE
                   </label>
                   <input
                     type="date"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={customerFilters.from}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, from: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     TO DATE
                   </label>
                   <input
                     type="date"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={customerFilters.to}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, to: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     SALESMAN ID
                   </label>
                   <input
                     type="text"
                     placeholder="Select Salesman"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={customerFilters.salesmanId}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, salesmanId: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     ROUTE
                   </label>
                   <input
                     type="text"
                     placeholder="Select Route"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={customerFilters.route}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, route: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     TRUCK
                   </label>
                   <input
                     type="text"
                     placeholder="Select Truck"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={customerFilters.truck}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, truck: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     ZONE
                   </label>
                   <input
                     type="text"
                     placeholder="Select Zone"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={customerFilters.zone}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, zone: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     PRODUCTS
                   </label>
                   <input
                     type="text"
                     placeholder="Select Products"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={customerFilters.product}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, product: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-2.5 pt-2">
+              <div className="flex justify-end gap-2.5 pt-3 mt-1 border-t border-[#3C3C43]/5">
                 <button
                   type="button"
+                  onClick={() =>
+                    setCustomerFilters({
+                      from: "",
+                      to: "",
+                      salesmanId: "",
+                      route: "",
+                      truck: "",
+                      zone: "",
+                      product: "",
+                    })
+                  }
                   className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Reset
                 </button>
                 <button
                   type="button"
-                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
+                  onClick={() => addToast("Report filters applied", "info")}
+                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
                 >
                   Apply
                 </button>
@@ -672,14 +842,14 @@ export default function ReportsPage() {
                         <th key={c} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{c}</span>
-                            <ArrowUpDown className="w-3 h-3 text-white/70" />
+                            <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70" />
                           </div>
                         </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E5E5EA] text-xs text-[#1C1C1E]">
-                    {CUSTOMER_REPORT_ROWS.map((r) => (
+                    {filteredCustomerReport.map((r) => (
                       <tr key={r.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                         <td className="py-3.5 pl-6 pr-4 font-mono text-[11px] font-medium">{r.id}</td>
                         <td className="py-3.5 px-4 font-semibold text-[#1C1C1E]">{r.name}</td>
@@ -701,70 +871,100 @@ export default function ReportsPage() {
         {/* TAB 3: TRUCK REPORT (truck reposrt.png) */}
         {activeTab === "truck" && (
           <>
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-6 space-y-4">
-              <h3 className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wider">
+            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5 space-y-4">
+              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 text-xs">
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     From
                   </label>
                   <input
                     type="date"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={truckFilters.from}
+                    onChange={(e) =>
+                      setTruckFilters({ ...truckFilters, from: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     To
                   </label>
                   <input
                     type="date"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={truckFilters.to}
+                    onChange={(e) =>
+                      setTruckFilters({ ...truckFilters, to: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Salesman ID
                   </label>
                   <input
                     type="text"
                     placeholder="Salesman ID"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={truckFilters.salesmanId}
+                    onChange={(e) =>
+                      setTruckFilters({ ...truckFilters, salesmanId: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Route
                   </label>
                   <input
                     type="text"
                     placeholder="Route"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={truckFilters.route}
+                    onChange={(e) =>
+                      setTruckFilters({ ...truckFilters, route: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Select Products
                   </label>
                   <input
                     type="text"
                     placeholder="All Products"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={truckFilters.product}
+                    onChange={(e) =>
+                      setTruckFilters({ ...truckFilters, product: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-2.5 pt-2">
+              <div className="flex justify-end gap-2.5 pt-3 mt-1 border-t border-[#3C3C43]/5">
                 <button
                   type="button"
+                  onClick={() =>
+                    setTruckFilters({
+                      from: "",
+                      to: "",
+                      salesmanId: "",
+                      route: "",
+                      product: "",
+                    })
+                  }
                   className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Reset
                 </button>
                 <button
                   type="button"
-                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
+                  onClick={() => addToast("Report filters applied", "info")}
+                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
                 >
                   Apply
                 </button>
@@ -792,14 +992,14 @@ export default function ReportsPage() {
                         <th key={c} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{c}</span>
-                            <ArrowUpDown className="w-3 h-3 text-white/70" />
+                            <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70" />
                           </div>
                         </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E5E5EA] text-xs text-[#1C1C1E]">
-                    {TRUCK_REPORT_ROWS.map((r) => (
+                    {filteredTruckReport.map((r) => (
                       <tr key={r.truck_id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                         <td className="py-3.5 pl-6 pr-4 font-mono text-[11px] font-medium">{r.truck_id}</td>
                         <td className="py-3.5 px-4 font-semibold">{r.salesman}</td>
@@ -821,50 +1021,70 @@ export default function ReportsPage() {
         {/* TAB 4: COMMISSION REPORT (commission repo.png) */}
         {activeTab === "commission" && (
           <>
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-6 space-y-4">
-              <h3 className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wider">
+            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5 space-y-4">
+              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     From
                   </label>
                   <input
                     type="date"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={commissionFilters.from}
+                    onChange={(e) =>
+                      setCommissionFilters({ ...commissionFilters, from: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     To
                   </label>
                   <input
                     type="date"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={commissionFilters.to}
+                    onChange={(e) =>
+                      setCommissionFilters({ ...commissionFilters, to: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Salesman
                   </label>
                   <input
                     type="text"
                     placeholder="Select Salesman"
-                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
+                    value={commissionFilters.salesman}
+                    onChange={(e) =>
+                      setCommissionFilters({ ...commissionFilters, salesman: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7] rounded-xl px-2.5 py-1.5 text-xs text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF] transition-all"
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-2.5 pt-2">
+              <div className="flex justify-end gap-2.5 pt-3 mt-1 border-t border-[#3C3C43]/5">
                 <button
                   type="button"
+                  onClick={() =>
+                    setCommissionFilters({
+                      from: "",
+                      to: "",
+                      salesman: "",
+                    })
+                  }
                   className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Reset
                 </button>
                 <button
                   type="button"
-                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
+                  onClick={() => addToast("Report filters applied", "info")}
+                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
                 >
                   Apply
                 </button>
@@ -901,7 +1121,7 @@ export default function ReportsPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E5E5EA] text-xs text-[#1C1C1E]">
-                    {COMMISSION_REPORT_ROWS.map((r, i) => (
+                    {filteredCommissionReport.map((r, i) => (
                       <tr key={i} className="hover:bg-[#F2F2F7]/50 transition-colors">
                         <td className="py-3.5 pl-6 pr-4 font-semibold text-[#1C1C1E]">
                           {r.salesman}
