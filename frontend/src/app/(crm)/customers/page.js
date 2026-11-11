@@ -775,7 +775,7 @@ export default function CustomersPage() {
 
             {/* Customer Management Table Card */}
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
                 <div>
                   <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                     Customer Management
@@ -908,7 +908,7 @@ export default function CustomersPage() {
         {/* 2. DELETED CUSTOMERS SUB-VIEW (delt-customers.png) */}
         {viewMode === "deleted" && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
               <div>
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Deleted Customer Details
@@ -1018,7 +1018,7 @@ export default function CustomersPage() {
         {/* 3. NEW CUSTOMER & EDIT CUSTOMER SUB-VIEWS (new customer.png & edit customer.png) */}
         {(viewMode === "new" || viewMode === "edit") && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 {viewMode === "edit"
                   ? `Edit Customer - ${selectedCustomer?.name || ""}`
@@ -1472,7 +1472,7 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Asset History of {selectedCustomer.customer_id}
                     </h2>
@@ -1604,7 +1604,7 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Order History of {selectedCustomer.customer_id}
                     </h2>
@@ -1690,7 +1690,7 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Payment History of {selectedCustomer.customer_id}
                     </h2>
@@ -1764,7 +1764,7 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Wallet Recharge of {selectedCustomer.customer_id}
                     </h2>

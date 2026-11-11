@@ -164,7 +164,7 @@ export default function ZonesPage() {
           /* Main Zones iOS Table Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
             {/* Header Banner */}
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
               <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">Manage Delivery Zones</h2>
               <p className="text-[#8E8E93] text-[11px] mt-0.5">Route mapping and geographic distribution</p>
             </div>
@@ -303,7 +303,7 @@ export default function ZonesPage() {
         ) : (
           /* Add New Zone iOS Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden max-w-2xl mx-auto">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
               <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">Add New Zone</h2>
             </div>
 

@@ -489,7 +489,7 @@ export default function ReportsPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Salesman Collection Report
                 </h2>
@@ -644,7 +644,7 @@ export default function ReportsPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Customer Report</h2>
                 <button
                   type="button"
@@ -772,7 +772,7 @@ export default function ReportsPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Truck Report</h2>
               </div>
               <div className="overflow-x-auto">
@@ -872,7 +872,7 @@ export default function ReportsPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Commission Report
                 </h2>

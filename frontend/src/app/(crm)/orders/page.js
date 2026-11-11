@@ -702,7 +702,7 @@ export default function OrdersPage() {
 
             {/* Orders Management iOS Table Card */}
             <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/15 bg-[#E5E5EA] flex items-center justify-between">
                 <div>
                   <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Orders Management</h2>
                   <p className="text-[#8E8E93] text-xs mt-0.5">Live delivery records, billing and status</p>
@@ -717,7 +717,7 @@ export default function OrdersPage() {
                 </button>
               </div>
 
-              <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
+              <div className="px-6 py-3.5 bg-[#F2F2F7] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
                 <div className="flex items-center gap-2">
                   <span>Show</span>
                   <select
@@ -847,7 +847,7 @@ export default function OrdersPage() {
         {/* NEW ORDER SUB-VIEW (new orders.png) */}
         {viewMode === "new" && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Order Information</h2>
             </div>
 
@@ -1080,7 +1080,7 @@ export default function OrdersPage() {
         {/* EDIT ORDER SUB-VIEW (edit orders.png) */}
         {viewMode === "edit" && editingOrder && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Update Order #{editingOrder.delivery_note}
               </h2>

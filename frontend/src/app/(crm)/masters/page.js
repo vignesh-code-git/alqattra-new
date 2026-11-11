@@ -249,7 +249,7 @@ export default function MastersPage() {
           /* Main Table iOS Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
             {/* Header Banner */}
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
               <div>
                 <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">
                   Manage Master Data Records
@@ -401,7 +401,7 @@ export default function MastersPage() {
         ) : (
           /* Add New / Edit Employee Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden max-w-3xl mx-auto">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
               <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">
                 {viewMode === "edit" ? "Update Employee Record" : "Employee Registration"}
               </h2>

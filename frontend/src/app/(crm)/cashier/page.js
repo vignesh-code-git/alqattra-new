@@ -584,7 +584,7 @@ export default function CashierPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Payment Collection Details
                 </h2>
@@ -665,7 +665,7 @@ export default function CashierPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Pending Payments</h2>
               </div>
 
@@ -796,7 +796,7 @@ export default function CashierPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Customer Credits</h2>
               </div>
 

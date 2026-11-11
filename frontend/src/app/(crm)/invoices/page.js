@@ -320,7 +320,7 @@ export default function InvoicesPage() {
 
             {/* Invoices Management Table Card */}
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Invoices Management
                 </h2>
@@ -436,7 +436,7 @@ export default function InvoicesPage() {
         ) : (
           /* GENERATE INVOICE SUB-VIEW (generate-invoices.png) */
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-white/90 backdrop-blur-md">
+            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Billing Information</h2>
             </div>
 
