@@ -566,7 +566,7 @@ export default function UtilitiesPage() {
         {/* 1. STORE INVENTORY LIST VIEW */}
         {subView === "list" && activeTab === "store" && (
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Warehouse Inventory</h2>
               <p className="text-[#8E8E93] text-xs mt-0.5">Stock availability, damages, and replenishment</p>
             </div>
@@ -688,7 +688,7 @@ export default function UtilitiesPage() {
         {/* 2. CAR STOCK TRANSACTION LIST VIEW */}
         {subView === "list" && activeTab === "car" && (
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Truck Fleet & Vehicle Stock
               </h2>
@@ -829,7 +829,7 @@ export default function UtilitiesPage() {
         {subView === "update_inventory" && (
           <div className="space-y-6">
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Update Stock</h2>
               </div>
 
@@ -940,7 +940,7 @@ export default function UtilitiesPage() {
 
             {/* Bottom Input Stocks Table Card */}
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Input Stocks</h2>
               </div>
 
@@ -1005,7 +1005,7 @@ export default function UtilitiesPage() {
         {/* 4. ADD NEW ITEM SUB-VIEW (add new item.png) */}
         {subView === "add_item" && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Add / Update Product
               </h2>
@@ -1149,7 +1149,7 @@ export default function UtilitiesPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Stock Transaction History - {selectedItem.item} ({selectedItem.product_id})
                 </h2>
@@ -1188,7 +1188,7 @@ export default function UtilitiesPage() {
         {/* 6. ADD NEW TRUCK SUB-VIEW (add-new truck.png) */}
         {subView === "add_truck" && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Add New Truck</h2>
             </div>
 
@@ -1269,7 +1269,7 @@ export default function UtilitiesPage() {
         {/* 7. MANAGE TRUCK STOCK SUB-VIEW (truck-manage.png) */}
         {subView === "manage_truck" && selectedTruck && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Manage Truck Stock</h2>
             </div>
 

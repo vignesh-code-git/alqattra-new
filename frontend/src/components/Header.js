@@ -286,7 +286,7 @@ export default function Header({
   return (
     <>
       <header className="h-16 bg-white/85 backdrop-blur-xl border-b border-[#3C3C43]/10 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 transition-colors">
-        {/* Left: CRM Icon with Blue Border (no blue filled container, no text) + Page Title & Breadcrumbs */}
+        {/* Left: Mobile Sidebar Toggle + Page Title & Breadcrumbs */}
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <button
             type="button"
@@ -296,11 +296,6 @@ export default function Header({
           >
             <Menu className="w-5 h-5" />
           </button>
-
-          {/* CRM icon only with blue border (no text, no blue filled container) */}
-          <div className="w-9 h-9 rounded-2xl border-2 border-[#007AFF] bg-white flex items-center justify-center text-[#007AFF] shadow-2xs shrink-0">
-            <Droplets className="w-5 h-5 text-[#007AFF]" />
-          </div>
 
           {/* Page Title & Breadcrumbs */}
           <div className="min-w-0">
@@ -315,9 +310,9 @@ export default function Header({
           </div>
         </div>
 
-        {/* Right Controls: Developer Bug Tracker + Notifications + Profile Icon */}
+        {/* Right Controls: Developer Bug Tracker (Icon Only) + Notifications + Profile Icon */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Developer Bug Tracker & QA Review Report Button */}
+          {/* Developer Bug Tracker - Icon Only, No Border, No Text */}
           <button
             type="button"
             onClick={() => {
@@ -325,19 +320,13 @@ export default function Header({
               setShowNotifications(false);
               setShowProfileDropdown(false);
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FF9500]/10 hover:bg-[#FF9500]/20 border border-[#FF9500]/25 text-[#D77800] text-xs font-semibold transition-all duration-150 outline-none cursor-pointer"
-            title="Developer Bug Tracker & Checklist"
+            className="w-9 h-9 rounded-full bg-transparent hover:bg-[#FF9500]/10 text-[#FF9500] flex items-center justify-center transition-all duration-150 outline-none cursor-pointer active:scale-95 relative"
+            title="Developer Bug Tracker & QA Review"
+            aria-label="Developer Bug Tracker"
           >
-            <Bug className="w-3.5 h-3.5 text-[#FF9500] shrink-0" />
-            <span className="hidden sm:inline">Report</span>
-            {openBugsCount > 0 ? (
-              <span className="px-1.5 py-0.2 rounded-full bg-[#FF3B30] text-white text-[9px] font-bold font-mono">
-                {openBugsCount}
-              </span>
-            ) : (
-              <span className="px-1.5 py-0.2 rounded-full bg-[#34C759]/20 text-[#248A3D] text-[9px] font-bold font-mono">
-                All Clear
-              </span>
+            <Bug className="w-4.5 h-4.5 text-[#FF9500]" />
+            {openBugsCount > 0 && (
+              <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-[#FF3B30]" />
             )}
           </button>
 

@@ -470,17 +470,67 @@ export default function CustomersPage() {
     pricing: [{ product: "5 gal water", price: "5" }],
   });
 
+  const [customerFilters, setCustomerFilters] = useState({
+    from: "",
+    to: "",
+    customer: "",
+    city: "",
+    zone: "",
+  });
+
   const filteredCustomers = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return customers;
-    return customers.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.customer_id.toLowerCase().includes(q) ||
-        c.contact.toLowerCase().includes(q) ||
-        c.city.toLowerCase().includes(q)
-    );
-  }, [customers, searchQuery]);
+    const custQ = customerFilters.customer.trim().toLowerCase();
+    return customers.filter((c) => {
+      if (
+        q &&
+        !c.name.toLowerCase().includes(q) &&
+        !c.customer_id.toLowerCase().includes(q) &&
+        !c.contact.toLowerCase().includes(q) &&
+        !c.city.toLowerCase().includes(q)
+      ) {
+        return false;
+      }
+      if (
+        custQ &&
+        !c.name.toLowerCase().includes(custQ) &&
+        !c.customer_id.toLowerCase().includes(custQ)
+      ) {
+        return false;
+      }
+      if (
+        customerFilters.city &&
+        c.city.toLowerCase() !== customerFilters.city.toLowerCase() &&
+        c.city.replace("_", " ").toLowerCase() !== customerFilters.city.replace("_", " ").toLowerCase()
+      ) {
+        return false;
+      }
+      if (
+        customerFilters.zone &&
+        c.zone &&
+        !c.zone.toLowerCase().includes(customerFilters.zone.toLowerCase())
+      ) {
+        return false;
+      }
+      if (customerFilters.from && c.registered_on) {
+        const fromDate = new Date(customerFilters.from);
+        const parts = c.registered_on.split("/");
+        if (parts.length === 3) {
+          const cDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+          if (cDate < fromDate) return false;
+        }
+      }
+      if (customerFilters.to && c.registered_on) {
+        const toDate = new Date(customerFilters.to);
+        const parts = c.registered_on.split("/");
+        if (parts.length === 3) {
+          const cDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+          if (cDate > toDate) return false;
+        }
+      }
+      return true;
+    });
+  }, [customers, searchQuery, customerFilters]);
 
   const filteredDeleted = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -699,13 +749,13 @@ export default function CustomersPage() {
         {viewMode === "list" && (
           <>
             {/* Customer Management Table Card */}
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
+            <div className="bg-white rounded-3xl shadow-sm border border-[#007AFF]/25 overflow-hidden">
+              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
                 <div>
                   <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                     Customer Management
                   </h2>
-                  <p className="text-[#8E8E93] text-xs mt-0.5">
+                  <p className="text-[#007AFF]/80 text-xs mt-0.5">
                     Live customer directory, deliveries and transactions
                   </p>
                 </div>
@@ -720,23 +770,29 @@ export default function CustomersPage() {
               </div>
 
               {/* Integrated Filters Inside Table Card */}
-              <div className="p-5 bg-[#F8F9FA] border-b border-[#3C3C43]/10">
+              <div className="p-5 bg-[#007AFF]/5 border-b border-[#007AFF]/15">
                 <div className="flex items-center justify-between mb-3.5">
-                  <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider flex items-center gap-1.5">
+                  <h3 className="text-xs font-bold text-[#007AFF] uppercase tracking-wider flex items-center gap-1.5">
                     <Filter className="w-3.5 h-3.5 text-[#007AFF]" />
                     <span>Filter Customers</span>
                   </h3>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => setSearchQuery("")}
-                      className="px-3.5 py-1.5 rounded-full bg-[#E5E5EA] text-[#1C1C1E] text-xs font-semibold hover:bg-[#D1D1D6] cursor-pointer active:scale-95 transition"
+                      onClick={() => {
+                        setCustomerFilters({ from: "", to: "", customer: "", city: "", zone: "" });
+                        setSearchQuery("");
+                        addToast("Filters reset", "info");
+                      }}
+                      className="px-3.5 py-1.5 rounded-full bg-white border border-[#007AFF]/20 text-[#1C1C1E] text-xs font-semibold hover:bg-[#007AFF]/10 cursor-pointer active:scale-95 transition"
                     >
                       Reset
                     </button>
                     <button
                       type="button"
-                      onClick={() => addToast("Customer filters applied", "info")}
+                      onClick={() =>
+                        addToast(`Filters applied: ${filteredCustomers.length} customers found`, "success")
+                      }
                       className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm shadow-[#007AFF]/25 active:scale-95 transition"
                     >
                       Apply
@@ -750,7 +806,9 @@ export default function CustomersPage() {
                     </label>
                     <input
                       type="date"
-                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      value={customerFilters.from}
+                      onChange={(e) => setCustomerFilters({ ...customerFilters, from: e.target.value })}
+                      className="w-full border border-[#007AFF]/20 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
@@ -759,7 +817,9 @@ export default function CustomersPage() {
                     </label>
                     <input
                       type="date"
-                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      value={customerFilters.to}
+                      onChange={(e) => setCustomerFilters({ ...customerFilters, to: e.target.value })}
+                      className="w-full border border-[#007AFF]/20 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
@@ -769,26 +829,34 @@ export default function CustomersPage() {
                     <input
                       type="text"
                       placeholder="Search name or ID..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      value={customerFilters.customer}
+                      onChange={(e) => setCustomerFilters({ ...customerFilters, customer: e.target.value })}
+                      className="w-full border border-[#007AFF]/20 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
                     <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
                       City
                     </label>
-                    <select className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]">
+                    <select
+                      value={customerFilters.city}
+                      onChange={(e) => setCustomerFilters({ ...customerFilters, city: e.target.value })}
+                      className="w-full border border-[#007AFF]/20 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    >
                       <option value="">All Cities</option>
-                      <option value="AL_AIN">AL_AIN</option>
-                      <option value="ABU_DHABI">ABU_DHABI</option>
+                      <option value="AL_AIN">Al Ain</option>
+                      <option value="ABU_DHABI">Abu Dhabi</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
                       Zone
                     </label>
-                    <select className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]">
+                    <select
+                      value={customerFilters.zone}
+                      onChange={(e) => setCustomerFilters({ ...customerFilters, zone: e.target.value })}
+                      className="w-full border border-[#007AFF]/20 rounded-xl px-3 py-2 bg-white text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                    >
                       <option value="">All Zones</option>
                       <option value="SCHOOL AREA">SCHOOL AREA</option>
                       <option value="KHABISI">KHABISI</option>
@@ -798,13 +866,13 @@ export default function CustomersPage() {
                 </div>
               </div>
 
-              <div className="px-6 py-4 bg-[#F2F2F7]/50 border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
+              <div className="px-6 py-3.5 bg-[#007AFF]/[0.03] border-b border-[#007AFF]/15 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
                 <div className="flex items-center gap-2">
                   <span>Show</span>
                   <select
                     value={entriesPerPage}
                     onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                    className="border border-[#3C3C43]/15 rounded-xl px-3 py-1.5 bg-white text-[#1C1C1E] font-medium focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                    className="border border-[#007AFF]/20 rounded-xl px-3 py-1.5 bg-white text-[#1C1C1E] font-medium focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                   >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
@@ -812,13 +880,13 @@ export default function CustomersPage() {
                   <span>entries</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span>Search:</span>
+                  <span className="text-[#8E8E93]">Search:</span>
                   <input
                     type="text"
                     value={searchQuery}
                     placeholder="Search customers..."
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="border border-[#3C3C43]/15 rounded-full px-3.5 py-1.5 w-52 bg-white text-[#1C1C1E] text-xs focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                    className="border border-[#007AFF]/20 rounded-xl px-3.5 py-1.5 w-52 bg-white text-[#1C1C1E] text-xs focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                   />
                 </div>
               </div>
@@ -912,7 +980,7 @@ export default function CustomersPage() {
         {/* 2. DELETED CUSTOMERS SUB-VIEW (delt-customers.png) */}
         {viewMode === "deleted" && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
               <div>
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Deleted Customer Details
@@ -1022,7 +1090,7 @@ export default function CustomersPage() {
         {/* 3. NEW CUSTOMER & EDIT CUSTOMER SUB-VIEWS (new customer.png & edit customer.png) */}
         {(viewMode === "new" || viewMode === "edit") && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 {viewMode === "edit"
                   ? `Edit Customer - ${selectedCustomer?.name || ""}`
@@ -1476,7 +1544,7 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+                  <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Asset History of {selectedCustomer.customer_id}
                     </h2>
@@ -1608,7 +1676,7 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+                  <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Order History of {selectedCustomer.customer_id}
                     </h2>
@@ -1694,7 +1762,7 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+                  <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Payment History of {selectedCustomer.customer_id}
                     </h2>
@@ -1768,7 +1836,7 @@ export default function CustomersPage() {
                 </div>
 
                 <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+                  <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Wallet Recharge of {selectedCustomer.customer_id}
                     </h2>

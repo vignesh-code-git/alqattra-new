@@ -168,7 +168,7 @@ export default function RoutesPage() {
           /* Main Routes iOS Table Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
             {/* Header Banner */}
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">Manage Fleet Routes</h2>
               <p className="text-[#8E8E93] text-[11px] mt-0.5">Assigned city territories and delivery channels</p>
             </div>
@@ -300,7 +300,7 @@ export default function RoutesPage() {
         ) : (
           /* Add New Route iOS Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden max-w-2xl mx-auto">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">Add New Route</h2>
             </div>
 

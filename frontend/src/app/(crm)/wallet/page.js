@@ -249,7 +249,7 @@ export default function WalletPage() {
         {viewMode === "list" ? (
           /* Main Wallet Table Card (wallets.png) */
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Wallet Management
               </h2>
@@ -361,7 +361,7 @@ export default function WalletPage() {
         ) : (
           /* WALLET RECHARGE SUB-VIEW (wallet recharge.png) */
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden max-w-4xl mx-auto">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Create Wallet Recharge Order
               </h2>

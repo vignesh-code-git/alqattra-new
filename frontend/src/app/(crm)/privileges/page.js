@@ -185,7 +185,7 @@ export default function PrivilegesPage() {
           /* Main Privileges iOS Table Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
             {/* Header Banner */}
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">
                 Control and Customize User Access Levels
               </h2>
@@ -305,7 +305,7 @@ export default function PrivilegesPage() {
         ) : (
           /* Previlage Class Registration Card */
           <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-visible max-w-3xl mx-auto">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] rounded-t-3xl">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 rounded-t-3xl">
               <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">
                 Previlage Class Registration
               </h2>

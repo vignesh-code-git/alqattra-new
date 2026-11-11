@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Compass,
   LayoutDashboard,
   Boxes,
   ShoppingCart,
@@ -28,7 +27,6 @@ import { useSidebar } from "@/context/SidebarContext";
 import { useTerritory } from "@/context/TerritoryContext";
 
 const navigationItems = [
-  { name: "Explore", href: "/dashboard?view=explore", icon: Compass },
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Utilities", href: "/utilities", icon: Boxes },
   { name: "Orders", href: "/orders", icon: ShoppingCart },
@@ -48,16 +46,9 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { addToast } = useToast();
-  const { isMobileOpen, closeMobileSidebar } = useSidebar();
+  const { isMobileOpen, closeMobileSidebar, isCollapsed, toggleCollapse } = useSidebar();
   const { territory, setTerritory } = useTerritory();
   const [showTerritoryPopover, setShowTerritoryPopover] = useState(false);
-  const [currentQuery, setCurrentQuery] = useState("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCurrentQuery(window.location.search);
-    }
-  }, [pathname]);
 
   const handleLogout = () => {
     addToast("Logged out successfully", "info");
@@ -78,27 +69,45 @@ export default function Sidebar() {
         />
       )}
 
+      {/* Floating Expand CRM Icon when Sidebar is Collapsed */}
+      {isCollapsed && (
+        <button
+          type="button"
+          onClick={toggleCollapse}
+          title="Expand Sidebar"
+          className="fixed left-3 top-3.5 z-50 w-9 h-9 rounded-2xl bg-white/95 backdrop-blur-xl shadow-md border border-[#007AFF]/25 flex items-center justify-center text-[#007AFF] hover:bg-[#007AFF]/10 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          aria-label="Expand Sidebar"
+        >
+          <Droplets className="w-5 h-5 text-[#007AFF]" />
+        </button>
+      )}
+
       {/* iOS Compact Icon-Only Sidebar - Strictly fits 100vh viewport height without scrollbar */}
       <aside
         className={`w-[4.5rem] bg-white/95 backdrop-blur-2xl border-r border-[#3C3C43]/10 flex flex-col justify-between items-center h-screen max-h-screen fixed left-0 top-0 z-50 select-none shadow-xl lg:shadow-xs transition-transform duration-300 ease-out py-2 overflow-visible ${
-          isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          isCollapsed
+            ? "-translate-x-full"
+            : isMobileOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        {/* TOP: Brand Logo + Territory Action Pill */}
+        {/* TOP: CRM Icon (No border, click to collapse) + Territory Action Pill */}
         <div className="flex flex-col items-center gap-1.5 w-full shrink-0 relative overflow-visible">
-          {/* Logo with Blue Border (no blue filled container) */}
-          <Link
-            href="/dashboard"
-            onClick={closeMobileSidebar}
-            title="Al Qattara CRM"
-            className="w-9 h-9 rounded-xl border-2 border-[#007AFF] bg-white flex items-center justify-center text-[#007AFF] shadow-2xs hover:bg-[#007AFF]/10 active:scale-95 transition-all group relative"
+          {/* CRM Icon with No Border - Click to collapse sidebar */}
+          <button
+            type="button"
+            onClick={toggleCollapse}
+            title="Click to collapse sidebar"
+            className="w-9 h-9 rounded-xl bg-transparent flex items-center justify-center text-[#007AFF] hover:bg-[#007AFF]/10 active:scale-95 transition-all group relative cursor-pointer outline-none"
+            aria-label="Collapse sidebar"
           >
-            <Droplets className="w-5 h-5 text-[#007AFF]" />
+            <Droplets className="w-6 h-6 text-[#007AFF]" />
             <span className="absolute left-[4.5rem] ml-2 px-2.5 py-1.5 bg-[#1C1C1E] text-white text-[11px] font-semibold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 pointer-events-none transition-all duration-150 whitespace-nowrap z-[100] border border-white/10">
               <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#1C1C1E] rotate-45 border-l border-b border-white/10" />
-              Al Qattara CRM
+              Click to collapse
             </span>
-          </Link>
+          </button>
 
           {/* Close button on mobile */}
           <button
@@ -170,19 +179,14 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* MIDDLE: 14 Navigation Icons - Perfectly scaled to fit viewport height */}
-        <nav className="flex flex-col items-center gap-0.5 my-auto w-full overflow-visible">
+        {/* MIDDLE: 13 Navigation Icons - Perfectly scaled to fit viewport height */}
+        <nav className="flex flex-col items-center gap-1 my-auto w-full overflow-visible">
           {navigationItems.map((item) => {
             const Icon = item.icon;
-            const isExplore = item.name === "Explore";
-            let isActive = false;
-            if (isExplore) {
-              isActive = pathname === "/dashboard" && currentQuery.includes("view=explore");
-            } else if (item.href === "/dashboard") {
-              isActive = pathname === "/dashboard" && !currentQuery.includes("view=explore");
-            } else {
-              isActive = pathname.startsWith(item.href);
-            }
+            const isActive =
+              item.href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(item.href);
 
             return (
               <Link

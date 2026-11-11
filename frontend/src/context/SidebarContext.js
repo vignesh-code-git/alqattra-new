@@ -8,10 +8,14 @@ const SidebarContext = createContext({
   toggleMobileSidebar: () => {},
   closeMobileSidebar: () => {},
   openMobileSidebar: () => {},
+  isCollapsed: false,
+  toggleCollapse: () => {},
+  setIsCollapsed: () => {},
 });
 
 export function SidebarProvider({ children }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
 
   // Close mobile sidebar on route change
@@ -34,6 +38,7 @@ export function SidebarProvider({ children }) {
   const toggleMobileSidebar = () => setIsMobileOpen((prev) => !prev);
   const closeMobileSidebar = () => setIsMobileOpen(false);
   const openMobileSidebar = () => setIsMobileOpen(true);
+  const toggleCollapse = () => setIsCollapsed((prev) => !prev);
 
   return (
     <SidebarContext.Provider
@@ -42,6 +47,9 @@ export function SidebarProvider({ children }) {
         toggleMobileSidebar,
         closeMobileSidebar,
         openMobileSidebar,
+        isCollapsed,
+        toggleCollapse,
+        setIsCollapsed,
       }}
     >
       {children}

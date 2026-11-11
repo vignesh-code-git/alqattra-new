@@ -274,7 +274,8 @@ export default function OrdersPage() {
         !o.customer_name.toLowerCase().includes(q) &&
         !o.customer_id.toLowerCase().includes(q) &&
         !o.salesman_name.toLowerCase().includes(q) &&
-        !o.truck.toLowerCase().includes(q)
+        !o.truck.toLowerCase().includes(q) &&
+        !(o.zone && o.zone.toLowerCase().includes(q))
       ) {
         return false;
       }
@@ -285,8 +286,59 @@ export default function OrdersPage() {
       ) {
         return false;
       }
-      if (filters.truck && o.truck !== filters.truck) return false;
-      if (filters.status && o.status.toLowerCase() !== filters.status.toLowerCase()) return false;
+      if (
+        filters.salesman &&
+        !o.salesman_name.toLowerCase().includes(filters.salesman.toLowerCase())
+      ) {
+        return false;
+      }
+      if (
+        filters.route &&
+        !o.truck.toLowerCase().includes(filters.route.toLowerCase()) &&
+        !o.delivery_note.toLowerCase().includes(filters.route.toLowerCase())
+      ) {
+        return false;
+      }
+      if (
+        filters.zone &&
+        (!o.zone || !o.zone.toLowerCase().includes(filters.zone.toLowerCase()))
+      ) {
+        return false;
+      }
+      if (filters.truck && o.truck.toLowerCase() !== filters.truck.toLowerCase()) {
+        return false;
+      }
+      if (filters.status && o.status.toLowerCase() !== filters.status.toLowerCase()) {
+        return false;
+      }
+      if (
+        filters.paymentMethod &&
+        (!o.payment_method || o.payment_method.toLowerCase() !== filters.paymentMethod.toLowerCase())
+      ) {
+        return false;
+      }
+      if (
+        filters.paymentStatus &&
+        (!o.payment_status || o.payment_status.toLowerCase() !== filters.paymentStatus.toLowerCase())
+      ) {
+        return false;
+      }
+      if (filters.from && o.order_date) {
+        const fromDate = new Date(filters.from);
+        const parts = o.order_date.split("/");
+        if (parts.length === 3) {
+          const oDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+          if (oDate < fromDate) return false;
+        }
+      }
+      if (filters.to && o.order_date) {
+        const toDate = new Date(filters.to);
+        const parts = o.order_date.split("/");
+        if (parts.length === 3) {
+          const oDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+          if (oDate > toDate) return false;
+        }
+      }
       return true;
     });
   }, [orders, searchQuery, filters]);
@@ -524,11 +576,11 @@ export default function OrdersPage() {
             </div>
 
             {/* Orders Management iOS Table Card */}
-            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/15 bg-[#E5E5EA] flex items-center justify-between">
+            <div className="bg-white rounded-3xl shadow-sm border border-[#007AFF]/25 overflow-hidden">
+              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
                 <div>
                   <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Orders Management</h2>
-                  <p className="text-[#8E8E93] text-xs mt-0.5">Live delivery records, billing and status</p>
+                  <p className="text-[#007AFF]/80 text-xs mt-0.5">Live delivery records, billing and status</p>
                 </div>
                 <button
                   type="button"
@@ -541,16 +593,16 @@ export default function OrdersPage() {
               </div>
 
               {/* Integrated Filters Inside Table Card */}
-              <div className="p-5 bg-[#F8F9FA] border-b border-[#3C3C43]/10">
+              <div className="p-5 bg-[#007AFF]/5 border-b border-[#007AFF]/15">
                 <div className="flex items-center justify-between mb-3.5">
-                  <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider flex items-center gap-1.5">
+                  <h3 className="text-xs font-bold text-[#007AFF] uppercase tracking-wider flex items-center gap-1.5">
                     <Filter className="w-3.5 h-3.5 text-[#007AFF]" />
                     <span>Filter Orders</span>
                   </h3>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() =>
+                      onClick={() => {
                         setFilters({
                           from: "",
                           to: "",
@@ -563,15 +615,18 @@ export default function OrdersPage() {
                           paymentMethod: "",
                           paymentStatus: "",
                           product: "",
-                        })
-                      }
-                      className="px-3.5 py-1.5 rounded-full bg-[#E5E5EA] text-[#1C1C1E] text-xs font-semibold hover:bg-[#D1D1D6] cursor-pointer transition active:scale-95"
+                        });
+                        addToast("Filters reset", "info");
+                      }}
+                      className="px-3.5 py-1.5 rounded-full bg-white border border-[#007AFF]/20 text-[#1C1C1E] text-xs font-semibold hover:bg-[#007AFF]/10 cursor-pointer transition active:scale-95"
                     >
                       Reset
                     </button>
                     <button
                       type="button"
-                      onClick={() => addToast("Filters applied", "info")}
+                      onClick={() =>
+                        addToast(`Filters applied: ${filteredOrders.length} orders found`, "success")
+                      }
                       className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm shadow-[#007AFF]/25 transition active:scale-95"
                     >
                       Apply
@@ -587,7 +642,7 @@ export default function OrdersPage() {
                       type="date"
                       value={filters.from}
                       onChange={(e) => setFilters({ ...filters, from: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#007AFF]/20 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
@@ -598,7 +653,7 @@ export default function OrdersPage() {
                       type="date"
                       value={filters.to}
                       onChange={(e) => setFilters({ ...filters, to: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#007AFF]/20 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
@@ -610,7 +665,7 @@ export default function OrdersPage() {
                       placeholder="Customer Name / ID"
                       value={filters.customer}
                       onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#007AFF]/20 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     />
                   </div>
                   <div>
@@ -620,7 +675,7 @@ export default function OrdersPage() {
                     <select
                       value={filters.salesman}
                       onChange={(e) => setFilters({ ...filters, salesman: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#007AFF]/20 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     >
                       <option value="">All Salesmen</option>
                       <option value="56 - ANAS">56 - ANAS</option>
@@ -635,7 +690,7 @@ export default function OrdersPage() {
                     <select
                       value={filters.route}
                       onChange={(e) => setFilters({ ...filters, route: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#007AFF]/20 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     >
                       <option value="">All Routes</option>
                       <option value="6350">6350</option>
@@ -651,7 +706,7 @@ export default function OrdersPage() {
                     <select
                       value={filters.zone}
                       onChange={(e) => setFilters({ ...filters, zone: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#007AFF]/20 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     >
                       <option value="">All Zones</option>
                       <option value="MANAZIF">MANAZIF</option>
@@ -666,7 +721,7 @@ export default function OrdersPage() {
                     <select
                       value={filters.truck}
                       onChange={(e) => setFilters({ ...filters, truck: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#007AFF]/20 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     >
                       <option value="">All Trucks</option>
                       <option value="T6350">T6350</option>
@@ -681,7 +736,7 @@ export default function OrdersPage() {
                     <select
                       value={filters.status}
                       onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#007AFF]/20 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     >
                       <option value="">All Status</option>
                       <option value="Delivered">Delivered</option>
@@ -695,7 +750,7 @@ export default function OrdersPage() {
                     <select
                       value={filters.paymentMethod}
                       onChange={(e) => setFilters({ ...filters, paymentMethod: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#007AFF]/20 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     >
                       <option value="">All Methods</option>
                       <option value="Cash">Cash</option>
@@ -710,7 +765,7 @@ export default function OrdersPage() {
                     <select
                       value={filters.paymentStatus}
                       onChange={(e) => setFilters({ ...filters, paymentStatus: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                      className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#007AFF]/20 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                     >
                       <option value="">All Payment Status</option>
                       <option value="PAID">Paid</option>
@@ -720,13 +775,13 @@ export default function OrdersPage() {
                 </div>
               </div>
 
-              <div className="px-6 py-3.5 bg-[#F2F2F7] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
+              <div className="px-6 py-3.5 bg-[#007AFF]/[0.03] border-b border-[#007AFF]/15 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
                 <div className="flex items-center gap-2">
                   <span>Show</span>
                   <select
                     value={entriesPerPage}
                     onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                    className="rounded-xl px-2.5 py-1 bg-white text-[#1C1C1E] focus:outline-none"
+                    className="rounded-xl px-2.5 py-1 bg-white border border-[#007AFF]/20 text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                   >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
@@ -741,7 +796,7 @@ export default function OrdersPage() {
                     placeholder="Search orders..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="rounded-xl px-3 py-1.5 w-52 bg-white focus:outline-none"
+                    className="rounded-xl px-3 py-1.5 w-52 bg-white border border-[#007AFF]/20 text-[#1C1C1E] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
                   />
                 </div>
               </div>
@@ -850,7 +905,7 @@ export default function OrdersPage() {
         {/* NEW ORDER SUB-VIEW (new orders.png) */}
         {viewMode === "new" && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Order Information</h2>
             </div>
 
@@ -1083,7 +1138,7 @@ export default function OrdersPage() {
         {/* EDIT ORDER SUB-VIEW (edit orders.png) */}
         {viewMode === "edit" && editingOrder && (
           <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA]">
+            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Update Order #{editingOrder.delivery_note}
               </h2>
