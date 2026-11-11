@@ -1,404 +1,370 @@
 "use client";
+
 import React, { useState, useMemo } from "react";
-import { Plus, Download, X, Search } from "lucide-react";
+import Header from "@/components/Header";
+import { useToast } from "@/components/Toast";
+import { Home, ArrowUpDown } from "lucide-react";
 
 const INITIAL_ZONES = [
-  { id: "Z-01", name: "AL QATTARA SECTOR A", city: "AL_AIN", routes: "6335, 6338", created: "2024-01-10", status: "ACTIVE" },
-  { id: "Z-02", name: "AL JIMI CENTRAL", city: "AL_AIN", routes: "6347, 6339", created: "2024-01-12", status: "ACTIVE" },
-  { id: "Z-03", name: "ZAKHER SOUTH", city: "AL_AIN", routes: "6341, 6357", created: "2024-01-18", status: "ACTIVE" },
-  { id: "Z-04", name: "FALAJ HAZZAA", city: "AL_AIN", routes: "8066, 6350", created: "2024-02-01", status: "ACTIVE" },
-  { id: "Z-05", name: "AL MUWAIJI WEST", city: "AL_AIN", routes: "6354, 6343", created: "2024-02-14", status: "ACTIVE" },
-  { id: "Z-06", name: "AL TOWAYYA NORTH", city: "AL_AIN", routes: "6337, 6340", created: "2024-03-02", status: "ACTIVE" },
-  { id: "Z-07", name: "AL MARKHANIYA", city: "AL_AIN", routes: "6345, 6349", created: "2024-03-15", status: "ACTIVE" },
-  { id: "Z-08", name: "SANAIYA INDUSTRIAL", city: "AL_AIN", routes: "6352, 6355", created: "2024-04-04", status: "ACTIVE" },
-  { id: "Z-09", name: "AL HILI DISTRICT", city: "AL_AIN", routes: "6358, 6360", created: "2024-04-19", status: "ACTIVE" },
-  { id: "Z-10", name: "AL BATEEN SECTOR", city: "AL_AIN", routes: "6362", created: "2024-05-08", status: "INACTIVE" },
+  {
+    id: 1,
+    zone: "INDUSTRIAL AREA 2 LULU",
+    route_id: "6354",
+    creation_date: "2026-07-28T13:45:59.484Z",
+    updated_at: "2026-07-28T13:45:59.484Z",
+  },
+  {
+    id: 2,
+    zone: "Muwaiji-Shaikh Salama",
+    route_id: "6335",
+    creation_date: "2026-05-14T12:16:07.464Z",
+    updated_at: "2026-05-14T12:16:07.464Z",
+  },
+  {
+    id: 3,
+    zone: "KHABISI",
+    route_id: "6335",
+    creation_date: "2025-07-14T08:31:06.303Z",
+    updated_at: "2025-07-14T08:31:06.303Z",
+  },
+  {
+    id: 4,
+    zone: "ASHAREJ",
+    route_id: "6352",
+    creation_date: "2025-07-14T08:16:54.063Z",
+    updated_at: "2025-07-14T08:16:54.063Z",
+  },
+  {
+    id: 5,
+    zone: "MARKHANIA",
+    route_id: "6352",
+    creation_date: "2025-07-14T08:14:18.899Z",
+    updated_at: "2025-07-14T08:14:18.899Z",
+  },
+  {
+    id: 6,
+    zone: "MANAZIF",
+    route_id: "6350",
+    creation_date: "2025-07-14T08:12:35.529Z",
+    updated_at: "2025-07-14T08:12:35.529Z",
+  },
+  {
+    id: 7,
+    zone: "MUTHARID",
+    route_id: "6328",
+    creation_date: "2025-07-14T08:08:11.612Z",
+    updated_at: "2025-07-14T08:08:11.612Z",
+  },
+  {
+    id: 8,
+    zone: "JAHILI",
+    route_id: "6354",
+    creation_date: "2025-07-14T06:34:26.318Z",
+    updated_at: "2025-07-14T06:34:26.318Z",
+  },
+  {
+    id: 9,
+    zone: "SAROOJ",
+    route_id: "6354",
+    creation_date: "2025-07-14T06:33:02.405Z",
+    updated_at: "2025-07-14T06:33:02.405Z",
+  },
+  {
+    id: 10,
+    zone: "SAROOJ NEW",
+    route_id: "6354",
+    creation_date: "2025-07-14T06:32:25.280Z",
+    updated_at: "2025-07-14T06:32:25.280Z",
+  },
 ];
 
 export default function ZonesPage() {
+  const { addToast } = useToast();
   const [zones, setZones] = useState(INITIAL_ZONES);
+  const [viewMode, setViewMode] = useState("list"); // "list" | "add"
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
-  const [cityFilter, setCityFilter] = useState("ALL");
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const [appliedFilters, setAppliedFilters] = useState({ city: "ALL", status: "ALL" });
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Modal State (Figma 3:1790 - new zones / edit zones)
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingZone, setEditingZone] = useState(null);
-  const [form, setForm] = useState({
-    id: "",
-    name: "",
-    city: "AL_AIN",
-    routes: "",
-    status: "ACTIVE",
-  });
+  const [zoneName, setZoneName] = useState("");
+  const [routeId, setRouteId] = useState("");
 
   const filteredZones = useMemo(() => {
-    return zones.filter((z) => {
-      const matchCity = appliedFilters.city === "ALL" || z.city === appliedFilters.city;
-      const matchStatus = appliedFilters.status === "ALL" || z.status === appliedFilters.status;
-      const q = searchQuery.trim().toLowerCase();
-      const matchSearch =
-        !q ||
-        z.id.toLowerCase().includes(q) ||
-        z.name.toLowerCase().includes(q) ||
-        z.city.toLowerCase().includes(q) ||
-        z.routes.toLowerCase().includes(q);
-      return matchCity && matchStatus && matchSearch;
-    });
-  }, [zones, appliedFilters, searchQuery]);
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return zones;
+    return zones.filter(
+      (z) =>
+        z.zone.toLowerCase().includes(q) ||
+        z.route_id.toLowerCase().includes(q) ||
+        z.creation_date.toLowerCase().includes(q)
+    );
+  }, [zones, searchQuery]);
 
-  const openNewModal = () => {
-    setEditingZone(null);
-    setForm({
-      id: `Z-${String(zones.length + 1).padStart(2, "0")}`,
-      name: "",
-      city: "AL_AIN",
-      routes: "",
-      status: "ACTIVE",
-    });
-    setModalOpen(true);
+  const paginatedRows = filteredZones.slice(
+    (currentPage - 1) * entriesPerPage,
+    currentPage * entriesPerPage
+  );
+
+  const openAddView = () => {
+    setZoneName("");
+    setRouteId("");
+    setViewMode("add");
   };
 
-  const openEditModal = (row) => {
-    setEditingZone(row);
-    setForm({
-      id: row.id,
-      name: row.name,
-      city: row.city,
-      routes: row.routes,
-      status: row.status,
-    });
-    setModalOpen(true);
-  };
-
-  const handleSave = (e) => {
+  const handleAddZone = (e) => {
     e.preventDefault();
-    if (!form.name.trim()) return;
-    if (editingZone) {
-      setZones((prev) =>
-        prev.map((z) => (z.id === editingZone.id ? { ...z, ...form } : z))
-      );
-    } else {
-      setZones((prev) => [
-        {
-          ...form,
-          created: new Date().toISOString().slice(0, 10),
-        },
-        ...prev,
-      ]);
+    if (!zoneName.trim() || !routeId.trim()) {
+      addToast("Please enter Zone and Route ID", "error");
+      return;
     }
-    setModalOpen(false);
+    const nowIso = new Date().toISOString();
+    const newEntry = {
+      id: Date.now(),
+      zone: zoneName.trim(),
+      route_id: routeId.trim(),
+      creation_date: nowIso,
+      updated_at: nowIso,
+    };
+    setZones((prev) => [newEntry, ...prev]);
+    addToast(`Zone "${zoneName}" added successfully`, "success");
+    setViewMode("list");
   };
 
-  const handleDelete = (id) => {
-    setZones((prev) => prev.filter((z) => z.id !== id));
-  };
-
-  const handleExportCSV = () => {
-    const headers = ["ZONE ID", "ZONE NAME", "CITY", "ROUTES", "CREATED ON", "STATUS"];
-    const rows = filteredZones.map((r) => [r.id, r.name, r.city, r.routes, r.created, r.status]);
-    const csv = [headers, ...rows].map((row) => row.map((v) => `"${v}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "zones-list.csv";
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleDelete = (row) => {
+    setZones((prev) => prev.filter((z) => z.id !== row.id));
+    addToast(`Zone "${row.zone}" deleted`, "info");
   };
 
   return (
-    <div className="space-y-5">
-      {/* Top Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="text-[13px] text-slate-400 font-medium">
-          Home <span className="mx-1.5 text-slate-300">/</span>{" "}
-          <span className="text-slate-700 font-semibold">Zones</span>
-        </div>
-        <button
-          onClick={openNewModal}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#FF5A5F] hover:bg-[#e84c51] text-white text-[13px] font-semibold shadow-sm transition cursor-pointer"
-        >
-          <Plus size={15} /> New Zone
-        </button>
-      </div>
+    <div className="min-h-screen bg-[#F4F6F9] flex flex-col">
+      <Header title="Zones" subtitle="Manage Zones" />
 
-      {/* Filter Bar */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs p-5">
-        <h3 className="text-[14px] font-bold text-slate-800 mb-3.5">Filter Zones</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-              City
-            </label>
-            <select
-              value={cityFilter}
-              onChange={(e) => setCityFilter(e.target.value)}
-              className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[12.5px] text-slate-700 bg-white focus:outline-none focus:border-[#5948DB]"
-            >
-              <option value="ALL">All Cities</option>
-              <option value="AL_AIN">AL_AIN</option>
-              <option value="ABU_DHABI">ABU_DHABI</option>
-              <option value="DUBAI">DUBAI</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-              Status
-            </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[12.5px] text-slate-700 bg-white focus:outline-none focus:border-[#5948DB]"
-            >
-              <option value="ALL">All Status</option>
-              <option value="ACTIVE">ACTIVE</option>
-              <option value="INACTIVE">INACTIVE</option>
-            </select>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setAppliedFilters({ city: cityFilter, status: statusFilter })}
-              className="h-9 px-5 rounded-lg bg-[#5948DB] hover:bg-[#4938c7] text-white text-[12.5px] font-semibold transition cursor-pointer"
-            >
-              Apply Filter
-            </button>
-            <button
-              onClick={() => {
-                setCityFilter("ALL");
-                setStatusFilter("ALL");
-                setAppliedFilters({ city: "ALL", status: "ALL" });
-                setSearchQuery("");
-              }}
-              className="h-9 px-4 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-[12.5px] font-semibold transition cursor-pointer"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Zones Table Card (Figma 3:1789) */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
-        {/* Dark Navy-to-Blue Gradient Banner */}
-        <div className="bg-linear-to-r from-[#0F172A] via-[#1E3A5F] to-[#3B6998] px-5 py-3.5 flex items-center justify-between">
-          <h3 className="text-[15px] font-bold text-white tracking-wide">Zones</h3>
-          <button
-            onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white text-[12px] font-semibold transition cursor-pointer"
-          >
-            <Download size={14} /> Export
-          </button>
-        </div>
-
-        {/* Show entries & Search bar */}
-        <div className="px-5 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 text-[12.5px] text-slate-600">
-          <div className="flex items-center gap-2">
-            <span>Show</span>
-            <select
-              value={entriesPerPage}
-              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-              className="h-8 px-2 rounded-md border border-slate-200 text-[12.5px] bg-white focus:outline-none focus:border-[#5948DB]"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-            </select>
-            <span>entries</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-500">Search:</span>
-            <div className="relative">
-              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search zones..."
-                className="h-8 pl-8 pr-3 w-52 rounded-md border border-slate-200 text-[12.5px] focus:outline-none focus:border-[#5948DB]"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#5948DB] text-white text-[11px] font-bold uppercase tracking-wider">
-                <th className="py-3 px-4">ZONE ID</th>
-                <th className="py-3 px-4">ZONE NAME</th>
-                <th className="py-3 px-4">CITY</th>
-                <th className="py-3 px-4">ROUTES</th>
-                <th className="py-3 px-4">CREATED ON</th>
-                <th className="py-3 px-4">STATUS</th>
-                <th className="py-3 px-4 text-center">ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-[12.5px] text-slate-700">
-              {filteredZones.slice(0, entriesPerPage).map((row, idx) => (
-                <tr key={row.id} className={idx % 2 === 0 ? "bg-white hover:bg-slate-50/70" : "bg-slate-50/40 hover:bg-slate-50/90"}>
-                  <td className="py-3 px-4 font-bold text-[#5948DB]">{row.id}</td>
-                  <td className="py-3 px-4 font-semibold text-slate-800">{row.name}</td>
-                  <td className="py-3 px-4">{row.city}</td>
-                  <td className="py-3 px-4 font-medium text-slate-600">{row.routes}</td>
-                  <td className="py-3 px-4 text-slate-500">{row.created}</td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10.5px] font-bold ${
-                        row.status === "ACTIVE"
-                          ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                          : "bg-rose-50 text-rose-600 border border-rose-200"
-                      }`}
-                    >
-                      {row.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <button
-                        onClick={() => openEditModal(row)}
-                        className="px-2.5 py-1 rounded bg-[#10B981] hover:bg-[#059669] text-white text-[11px] font-semibold transition cursor-pointer"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(row.id)}
-                        className="px-2.5 py-1 rounded bg-[#FF5A5F] hover:bg-[#e0484d] text-white text-[11px] font-semibold transition cursor-pointer"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filteredZones.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-400 text-[13px]">
-                    No matching zones found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Footer Pagination */}
-        <div className="px-5 py-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[12px] text-slate-500">
-          <span>
-            Showing 1 to {Math.min(entriesPerPage, filteredZones.length)} of {filteredZones.length} entries
+      {/* Figma Black Top Banner */}
+      <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2.5 text-sm">
+          <span className="font-bold text-base tracking-tight">Zones</span>
+          <Home className="w-3.5 h-3.5 text-slate-300" />
+          <span className="text-slate-300 text-xs">
+            - {viewMode === "add" ? "New Zone" : "Manage Zones"} - ALL
           </span>
-          <div className="flex items-center gap-1">
-            <button className="px-2.5 py-1 rounded border border-slate-200 text-slate-500 hover:bg-slate-50">Previous</button>
-            <button className="px-2.5 py-1 rounded bg-[#5948DB] text-white font-semibold">1</button>
-            <button className="px-2.5 py-1 rounded border border-slate-200 text-slate-500 hover:bg-slate-50">Next</button>
-          </div>
         </div>
+        {viewMode === "list" && (
+          <button
+            type="button"
+            onClick={openAddView}
+            className="px-3.5 py-1.5 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+          >
+            + New Zone
+          </button>
+        )}
       </div>
 
-      {/* Modal: New Zone / Edit Zone (Figma 3:1790) */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-[1px] p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200">
-            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
-              <h3 className="text-[15px] font-bold">
-                {editingZone ? `Edit Zone - ${editingZone.id}` : "Add New Zone"}
-              </h3>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition cursor-pointer"
-              >
-                <X size={15} />
-              </button>
+      <div className="p-6 flex-1">
+        {viewMode === "list" ? (
+          /* Main Zones Table Card (Figma zones.png) */
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            {/* Dark Navy-to-Teal Header Banner */}
+            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+              <h2 className="text-white font-bold text-base tracking-wide">Manage Zones</h2>
             </div>
-            <form onSubmit={handleSave} className="p-5 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Zone ID *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.id}
-                    onChange={(e) => setForm({ ...form, id: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    City *
-                  </label>
-                  <select
-                    value={form.city}
-                    onChange={(e) => setForm({ ...form, city: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#5948DB]"
+
+            {/* Show Entries & Search Bar */}
+            <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
+              <div className="flex items-center gap-2">
+                <span>Show</span>
+                <select
+                  value={entriesPerPage}
+                  onChange={(e) => {
+                    setEntriesPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="border border-slate-300 rounded px-2 py-1 bg-white text-slate-700 focus:outline-none focus:border-[#5948DB]"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+                <span>entries</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span>Search:</span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="border border-slate-300 rounded px-2.5 py-1 w-44 focus:outline-none focus:border-[#5948DB]"
+                />
+              </div>
+            </div>
+
+            {/* Exact 5-Column Figma Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="py-3 px-6">
+                      <div className="flex items-center justify-between">
+                        <span>ZONE</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <span>ROUTE ID</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <span>CREATION DATE</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <span>UPDATED AT</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-6">
+                      <div className="flex items-center justify-between">
+                        <span>ACTIONS</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200/70 text-[12px] text-slate-700">
+                  {paginatedRows.map((row) => (
+                    <tr key={row.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-3.5 px-6 font-medium text-slate-800">{row.zone}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{row.route_id}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{row.creation_date}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{row.updated_at}</td>
+                      <td className="py-3.5 px-6">
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(row)}
+                          className="px-3 py-1 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-[11px] font-semibold transition cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {paginatedRows.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-slate-400">
+                        No matching zone records found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Footer Pagination */}
+            <div className="px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+              <div>
+                Showing {filteredZones.length === 0 ? 0 : 1} to{" "}
+                {Math.min(entriesPerPage, filteredZones.length)} of 201 entries
+              </div>
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => setCurrentPage(1)}
+                    className={`w-6 h-6 rounded-full text-[11px] flex items-center justify-center transition cursor-pointer ${
+                      page === 1
+                        ? "bg-[#5948DB] text-white font-semibold"
+                        : "text-slate-500 hover:bg-slate-100"
+                    }`}
                   >
-                    <option value="AL_AIN">AL_AIN</option>
-                    <option value="ABU_DHABI">ABU_DHABI</option>
-                    <option value="DUBAI">DUBAI</option>
-                  </select>
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Zone Name *
-                  </label>
+                    {page}
+                  </button>
+                ))}
+                <span className="px-1 text-slate-400">...</span>
+                <button
+                  type="button"
+                  className="w-6 h-6 rounded-full text-[11px] flex items-center justify-center text-slate-500 hover:bg-slate-100"
+                >
+                  21
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Add New Zone Card (Figma new zones.png) */
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+              <h2 className="text-white font-bold text-base tracking-wide">Add New Zone</h2>
+            </div>
+
+            <form onSubmit={handleAddZone} className="p-8 space-y-5 max-w-6xl mx-auto">
+              {/* Zone */}
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Zone
+                </label>
+                <div className="md:col-span-9">
                   <input
                     type="text"
-                    required
-                    placeholder="e.g. AL QATTARA SECTOR A"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
+                    placeholder="Enter Zone"
+                    value={zoneName}
+                    onChange={(e) => setZoneName(e.target.value)}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 focus:outline-none focus:border-[#5948DB]"
                   />
                 </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Assigned Routes
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 6335, 6338"
-                    value={form.routes}
-                    onChange={(e) => setForm({ ...form, routes: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Status
-                  </label>
+              </div>
+
+              {/* Route ID */}
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Route ID
+                </label>
+                <div className="md:col-span-9">
                   <select
-                    value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#5948DB]"
+                    value={routeId}
+                    onChange={(e) => setRouteId(e.target.value)}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white focus:outline-none focus:border-[#5948DB]"
                   >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="">Select Route ID</option>
+                    <option value="6354">6354</option>
+                    <option value="6335">6335</option>
+                    <option value="6352">6352</option>
+                    <option value="6350">6350</option>
+                    <option value="6328">6328</option>
+                    <option value="2494">2494</option>
+                    <option value="100001">100001</option>
                   </select>
                 </div>
               </div>
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-[12.5px] font-semibold hover:bg-slate-50 cursor-pointer"
-                >
-                  Cancel
-                </button>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-2 pt-3">
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-[#5948DB] hover:bg-[#4938c7] text-white text-[12.5px] font-semibold shadow-xs cursor-pointer"
+                  className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
                 >
-                  {editingZone ? "Update Zone" : "Save Zone"}
+                  Add Zone
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className="px-4 py-1.5 rounded bg-[#E53E6A] hover:bg-[#d12c57] text-white text-xs font-semibold transition cursor-pointer"
+                >
+                  Cancel
                 </button>
               </div>
             </form>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

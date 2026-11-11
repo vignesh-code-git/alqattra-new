@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Droplets, Lock, User, ArrowRight } from "lucide-react";
+import { Droplets, Lock, Mail } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState("admin");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("rouda@alqattara.com");
+  const [password, setPassword] = useState("••••••••••••");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
@@ -15,92 +15,102 @@ export default function LoginPage() {
     setLoading(true);
     setTimeout(() => {
       router.push("/dashboard");
-    }, 500);
+    }, 400);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-emerald-50/20 flex flex-col justify-center items-center px-4 relative overflow-hidden">
-      {/* Background glowing effects */}
-      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-[#111736] relative flex flex-col justify-between overflow-hidden">
+      {/* Top gradient hero section with diagonal split (Figma login page.png) */}
+      <div
+        className="w-full pt-14 pb-44 px-4 text-center relative z-10 bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8]"
+        style={{
+          clipPath: "polygon(0 0, 100% 0, 100% 70%, 0 100%)",
+        }}
+      >
+        <h1 className="text-white text-2xl sm:text-3xl font-bold tracking-tight">
+          Welcome!
+        </h1>
+        <p className="text-slate-200 text-xs sm:text-sm mt-2">
+          Stay Cool, Stay Hydrated, Anywhere in the UAE
+        </p>
+      </div>
 
-      <div className="w-full max-w-md bg-white border border-slate-200 rounded-md sm:rounded-lg p-6 sm:p-8 shadow-xl shadow-slate-200/50 relative z-10">
-        {/* Brand Header */}
-        <div className="flex flex-col items-center mb-8 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white mb-3 shadow-lg shadow-emerald-500/20">
-            <Droplets className="w-7 h-7" />
-          </div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>القطارة</span>
-            <span className="text-emerald-600 font-extrabold">AL QATTARA</span>
-          </h1>
-          <p className="text-xs text-slate-500 mt-1 font-medium">
-            Pure Drinking Water CRM & ERP Platform
-          </p>
-        </div>
-
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1.5">
-              Username or Staff ID
-            </label>
-            <div className="relative">
-              <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
-                placeholder="Enter your username"
-              />
+      {/* Centered Login Card */}
+      <div className="w-full max-w-sm mx-auto -mt-32 px-4 relative z-20">
+        <div className="bg-[#F8FAFC] rounded-lg shadow-2xl border border-slate-200/80 p-7">
+          {/* Al Qattara Logo */}
+          <div className="flex flex-col items-center mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-full bg-linear-to-tr from-[#1B3B5A] to-[#38A3C7] flex items-center justify-center text-white shadow-sm">
+                <Droplets className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <div className="text-lg font-extrabold text-[#1B3B5A] leading-none">
+                  القطارة
+                </div>
+                <div className="text-[11px] font-extrabold text-[#1B3B5A] tracking-wider">
+                  AL QATTARA
+                </div>
+              </div>
             </div>
           </div>
 
-          <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1.5">
-              Password
-            </label>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                className="w-full pl-9 pr-3 py-2.5 bg-[#EDF2FF] border border-slate-200 rounded text-xs text-slate-700 focus:outline-none focus:border-[#5948DB]"
+              />
+            </div>
+
+            <div className="relative">
+              <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
-                placeholder="••••••••"
+                placeholder="Password"
+                className="w-full pl-9 pr-3 py-2.5 bg-[#EDF2FF] border border-slate-200 rounded text-xs text-slate-700 focus:outline-none focus:border-[#5948DB]"
               />
             </div>
-          </div>
 
-          <div className="flex items-center justify-between text-xs pt-1">
-            <label className="flex items-center gap-2 text-slate-600 hover:text-slate-800 cursor-pointer font-medium">
-              <input type="checkbox" defaultChecked className="rounded border-slate-300 text-blue-600 focus:ring-0" />
-              <span>Remember me</span>
-            </label>
-            <a href="#" className="text-blue-600 font-semibold hover:underline">Forgot password?</a>
-          </div>
+            <div className="pt-1">
+              <label className="inline-flex items-center gap-2 text-xs text-slate-500 cursor-pointer">
+                <input
+                  type="checkbox"
+                  defaultChecked
+                  className="rounded border-slate-300 text-[#5948DB]"
+                />
+                <span>Remember me</span>
+              </label>
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all shadow-md shadow-blue-500/20 active:scale-[0.98]"
-          >
-            {loading ? "Signing in..." : (
-              <>
-                <span>Sign in to CRM</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="mt-6 pt-5 border-t border-slate-100 text-center text-xs text-slate-500">
-          Default credentials: <span className="text-slate-900 font-mono font-bold">admin</span> / <span className="text-slate-900 font-mono font-bold">admin123</span>
+            <div className="text-center pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-6 py-2 rounded bg-[#5948DB] hover:bg-[#4938c7] text-white text-xs font-semibold shadow-md transition cursor-pointer"
+              >
+                {loading ? "Signing in..." : "Sign in"}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="w-full max-w-5xl mx-auto px-6 py-6 flex items-center justify-between text-xs text-slate-400 relative z-10">
+        <div>
+          © 2024 <span className="text-[#4A90E2] font-semibold">Iconia Technologies</span>
+        </div>
+        <div className="text-[#4A90E2]">Iconia Technologies</div>
+      </footer>
     </div>
   );
 }

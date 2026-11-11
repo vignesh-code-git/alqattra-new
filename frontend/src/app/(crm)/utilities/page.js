@@ -1,704 +1,583 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
 import {
-  Plus,
-  RefreshCw,
-  Boxes,
+  Home,
   ArrowUpDown,
-  AlertTriangle,
-  Download,
-  Edit,
-  Trash2,
-  Undo2,
-  Truck,
-  History,
-  Eye,
   Settings,
-  Clock,
-  FileBarChart2,
+  RotateCcw,
+  X,
+  Search,
+  Printer,
 } from "lucide-react";
+
+const INITIAL_STORE_ITEMS = [
+  {
+    id: 1,
+    product_id: "015",
+    item: "330ml PET Bottles",
+    description: "0",
+    current_stock: "N/A",
+    old_stock: "N/A",
+    damaged: "N/A",
+    discarded: "N/A",
+    stock_color: "slate",
+  },
+  {
+    id: 2,
+    product_id: "014",
+    item: "500ml PET Bottles",
+    description: "0",
+    current_stock: "N/A",
+    old_stock: "N/A",
+    damaged: "N/A",
+    discarded: "N/A",
+    stock_color: "slate",
+  },
+  {
+    id: 3,
+    product_id: "013",
+    item: "LIWA 500ml bottle",
+    description: "new",
+    current_stock: "3",
+    old_stock: "N/A",
+    damaged: "N/A",
+    discarded: "N/A",
+    stock_color: "amber",
+  },
+  {
+    id: 4,
+    product_id: "012",
+    item: "MINI DISPENSER",
+    description: "new",
+    current_stock: "5",
+    old_stock: "N/A",
+    damaged: "N/A",
+    discarded: "N/A",
+    stock_color: "amber",
+  },
+  {
+    id: 5,
+    product_id: "011",
+    item: "ALAIN SPARKLING 330ML",
+    description: "Alain water",
+    current_stock: "N/A",
+    old_stock: "N/A",
+    damaged: "N/A",
+    discarded: "N/A",
+    stock_color: "slate",
+  },
+  {
+    id: 6,
+    product_id: "010",
+    item: "ALAIN STILL 330ML",
+    description: "Alain water",
+    current_stock: "N/A",
+    old_stock: "N/A",
+    damaged: "N/A",
+    discarded: "N/A",
+    stock_color: "slate",
+  },
+  {
+    id: 7,
+    product_id: "009",
+    item: "ALAIN REGULAR 330ML",
+    description: "Alainwater",
+    current_stock: "N/A",
+    old_stock: "N/A",
+    damaged: "N/A",
+    discarded: "N/A",
+    stock_color: "slate",
+  },
+  {
+    id: 8,
+    product_id: "008",
+    item: "Own Bottle",
+    description: "bottle with customer",
+    current_stock: "N/A",
+    old_stock: "N/A",
+    damaged: "N/A",
+    discarded: "N/A",
+    stock_color: "slate",
+  },
+  {
+    id: 9,
+    product_id: "007",
+    item: "200 ML CUP",
+    description: "30 IN BOX",
+    current_stock: "151",
+    old_stock: "N/A",
+    damaged: "N/A",
+    discarded: "N/A",
+    stock_color: "emerald",
+  },
+  {
+    id: 10,
+    product_id: "006",
+    item: "STEEL STAND 5 BOTTLE",
+    description: "new",
+    current_stock: "7",
+    old_stock: "N/A",
+    damaged: "N/A",
+    discarded: "N/A",
+    stock_color: "amber",
+  },
+];
+
+const INITIAL_TRUCKS = [
+  {
+    id: 1,
+    truck_id: "T6335",
+    in_charge: "32",
+    assistants: "-",
+    route: "6335",
+    last_updated: "08/09/2026",
+    last_updated_full: "9/8/2026, 7:21:48 AM",
+    stocks: [
+      { item: "5 gal water", added: 192, delivered: 0, used: 0, damaged: 0, balance: 192, returned: 0 },
+      { item: "empty bottle", added: 192, delivered: 0, used: 0, damaged: 0, balance: 192, returned: 0 },
+    ],
+  },
+  {
+    id: 2,
+    truck_id: "100001",
+    in_charge: "factory",
+    assistants: "-",
+    route: "100001",
+    last_updated: "25/11/2025",
+    last_updated_full: "11/25/2025, 8:15:00 AM",
+    stocks: [
+      { item: "5 gal water", added: 250, delivered: 180, used: 0, damaged: 0, balance: 70, returned: 0 },
+    ],
+  },
+  {
+    id: 3,
+    truck_id: "100002",
+    in_charge: "110",
+    assistants: "-",
+    route: "1234",
+    last_updated: "25/09/2025",
+    last_updated_full: "9/25/2025, 9:00:00 AM",
+    stocks: [
+      { item: "5 gal water", added: 160, delivered: 120, used: 0, damaged: 0, balance: 40, returned: 0 },
+    ],
+  },
+  {
+    id: 4,
+    truck_id: "T3115",
+    in_charge: "119",
+    assistants: "140, 141",
+    route: "3115",
+    last_updated: "10/09/2025",
+    last_updated_full: "9/10/2025, 7:45:12 AM",
+    stocks: [
+      { item: "5 gal water", added: 200, delivered: 150, used: 0, damaged: 0, balance: 50, returned: 0 },
+    ],
+  },
+  {
+    id: 5,
+    truck_id: "T9302",
+    in_charge: "136",
+    assistants: "142",
+    route: "9302",
+    last_updated: "10/09/2025",
+    last_updated_full: "9/10/2025, 8:02:10 AM",
+    stocks: [
+      { item: "5 gal water", added: 180, delivered: 140, used: 0, damaged: 0, balance: 40, returned: 0 },
+    ],
+  },
+  {
+    id: 6,
+    truck_id: "T6358",
+    in_charge: "55",
+    assistants: "86, 134",
+    route: "6358",
+    last_updated: "12/05/2024",
+    last_updated_full: "5/12/2024, 7:30:00 AM",
+    stocks: [
+      { item: "5 gal water", added: 210, delivered: 190, used: 0, damaged: 0, balance: 20, returned: 0 },
+    ],
+  },
+  {
+    id: 7,
+    truck_id: "T6357",
+    in_charge: "84",
+    assistants: "132, 133",
+    route: "6357",
+    last_updated: "12/05/2024",
+    last_updated_full: "5/12/2024, 7:35:00 AM",
+    stocks: [
+      { item: "5 gal water", added: 195, delivered: 175, used: 0, damaged: 0, balance: 20, returned: 0 },
+    ],
+  },
+  {
+    id: 8,
+    truck_id: "T8066",
+    in_charge: "57",
+    assistants: "118, 97",
+    route: "8066",
+    last_updated: "12/05/2024",
+    last_updated_full: "5/12/2024, 7:50:00 AM",
+    stocks: [
+      { item: "5 gal water", added: 220, delivered: 200, used: 0, damaged: 0, balance: 20, returned: 0 },
+    ],
+  },
+  {
+    id: 9,
+    truck_id: "T6684",
+    in_charge: "48",
+    assistants: "81",
+    route: "6684",
+    last_updated: "21/03/2024",
+    last_updated_full: "3/21/2024, 8:10:00 AM",
+    stocks: [
+      { item: "5 gal water", added: 180, delivered: 160, used: 0, damaged: 0, balance: 20, returned: 0 },
+    ],
+  },
+  {
+    id: 10,
+    truck_id: "T6356",
+    in_charge: "38",
+    assistants: "49",
+    route: "6356",
+    last_updated: "21/01/2024",
+    last_updated_full: "1/21/2024, 7:15:00 AM",
+    stocks: [
+      { item: "5 gal water", added: 190, delivered: 170, used: 0, damaged: 0, balance: 20, returned: 0 },
+    ],
+  },
+];
+
+const PRODUCT_SUMMARY_LIST = [
+  { name: "5 gal water", loaded: 4390, delivered: 2281, returned: 0 },
+  { name: "COOLER", loaded: 14, delivered: 504, returned: 0 },
+  { name: "empty bottle", loaded: 4586, delivered: 6876, returned: 0 },
+  { name: "WATER PUMP", loaded: 1, delivered: 53, returned: 0 },
+  { name: "coupon", loaded: 0, delivered: 29, returned: 0 },
+  { name: "used cooler", loaded: 0, delivered: 2, returned: 0 },
+  { name: "STEEL STAND 8", loaded: 2, delivered: 2, returned: 0 },
+  { name: "STEEL STAND 5 BOTTLE", loaded: 0, delivered: 29, returned: 0 },
+  { name: "200 ML CUP", loaded: 214, delivered: 2589, returned: 0 },
+];
 
 export default function UtilitiesPage() {
   const { addToast } = useToast();
+  const [activeTab, setActiveTab] = useState("store"); // "store" | "car"
+  const [subView, setSubView] = useState("list"); // "list" | "update_inventory" | "add_item" | "view_item" | "add_truck" | "manage_truck"
 
-  // Main module switcher: "store_inventory" (1:1691) | "car_stock" (3:1704) | "stock_history" (3:1700)
-  const [moduleView, setModuleView] = useState("store_inventory");
+  const [storeItems, setStoreItems] = useState(INITIAL_STORE_ITEMS);
+  const [trucks, setTrucks] = useState(INITIAL_TRUCKS);
 
-  // 1. Store Inventory State (Figma 1:1691)
-  const [inventory, setInventory] = useState([
-    {
-      id: 1,
-      product_id: "015",
-      product_name: "5 gal water",
-      category: "Water Bottle",
-      price: "5.00",
-      previous_stock: 0,
-      current_stock: 0,
-      damaged_stock: 0,
-      last_updated: "08/09/2026",
-      status: "Active",
-    },
-    {
-      id: 2,
-      product_id: "017",
-      product_name: "empty bottle",
-      category: "Empty Bottle",
-      price: "25.00",
-      previous_stock: 0,
-      current_stock: 0,
-      damaged_stock: 0,
-      last_updated: "08/09/2026",
-      status: "Active",
-    },
-    {
-      id: 3,
-      product_id: "018",
-      product_name: "COOLER",
-      category: "Dispenser",
-      price: "350.00",
-      previous_stock: 0,
-      current_stock: 0,
-      damaged_stock: 0,
-      last_updated: "08/09/2026",
-      status: "Active",
-    },
-    {
-      id: 4,
-      product_id: "016",
-      product_name: "500ml PET Bottles",
-      category: "Carton Pack",
-      price: "15.00",
-      previous_stock: 0,
-      current_stock: 0,
-      damaged_stock: 0,
-      last_updated: "08/09/2026",
-      status: "Active",
-    },
-  ]);
-
-  // 2. Car Stock Transaction (Exact 10 rows from Figma 3:1704 - steps/1163/media_0.png)
-  const [trucks, setTrucks] = useState([
-    {
-      id: 1,
-      truck_id: "T6335",
-      in_charge: "32",
-      assistants: "",
-      route: "6335",
-      last_updated: "08/09/2026",
-      status: "Active",
-      stock_items: [
-        { product_id: "015", name: "5 gal water", filled: 155, empty: 155, damaged: 0 },
-        { product_id: "017", name: "empty bottle", filled: 0, empty: 155, damaged: 0 },
-      ],
-    },
-    {
-      id: 2,
-      truck_id: "100003",
-      in_charge: "Alremeithi",
-      assistants: "",
-      route: "100001",
-      last_updated: "09/06/2026",
-      status: "Active",
-      stock_items: [
-        { product_id: "015", name: "5 gal water", filled: 190, empty: 40, damaged: 0 },
-      ],
-    },
-    {
-      id: 3,
-      truck_id: "100002",
-      in_charge: "LAMIA",
-      assistants: "",
-      route: "100001",
-      last_updated: "04/05/2026",
-      status: "Active",
-      stock_items: [
-        { product_id: "015", name: "5 gal water", filled: 150, empty: 35, damaged: 0 },
-      ],
-    },
-    {
-      id: 4,
-      truck_id: "100001",
-      in_charge: "factory",
-      assistants: "",
-      route: "100001",
-      last_updated: "05/09/2026",
-      status: "Active",
-      stock_items: [
-        { product_id: "015", name: "5 gal water", filled: 420, empty: 110, damaged: 0 },
-      ],
-    },
-    {
-      id: 5,
-      truck_id: "T6338",
-      in_charge: "120",
-      assistants: "79",
-      route: "6338",
-      last_updated: "07/09/2026",
-      status: "Active",
-      stock_items: [
-        { product_id: "015", name: "5 gal water", filled: 310, empty: 60, damaged: 0 },
-      ],
-    },
-    {
-      id: 6,
-      truck_id: "T6347",
-      in_charge: "90",
-      assistants: "53",
-      route: "6347",
-      last_updated: "02/09/2026",
-      status: "Active",
-      stock_items: [
-        { product_id: "015", name: "5 gal water", filled: 265, empty: 85, damaged: 0 },
-      ],
-    },
-    {
-      id: 7,
-      truck_id: "T6339",
-      in_charge: "42",
-      assistants: "",
-      route: "6339",
-      last_updated: "29/08/2026",
-      status: "Active",
-      stock_items: [
-        { product_id: "015", name: "5 gal water", filled: 295, empty: 55, damaged: 0 },
-      ],
-    },
-    {
-      id: 8,
-      truck_id: "T6341",
-      in_charge: "47",
-      assistants: "98",
-      route: "6341",
-      last_updated: "08/09/2026",
-      status: "Active",
-      stock_items: [
-        { product_id: "015", name: "5 gal water", filled: 100, empty: 100, damaged: 0 },
-      ],
-    },
-    {
-      id: 9,
-      truck_id: "T6357",
-      in_charge: "59",
-      assistants: "86",
-      route: "6357",
-      last_updated: "07/09/2026",
-      status: "Active",
-      stock_items: [
-        { product_id: "015", name: "5 gal water", filled: 225, empty: 65, damaged: 0 },
-      ],
-    },
-    {
-      id: 10,
-      truck_id: "T8066",
-      in_charge: "113",
-      assistants: "93",
-      route: "8066",
-      last_updated: "08/09/2026",
-      status: "Active",
-      stock_items: [
-        { product_id: "015", name: "5 gal water", filled: 147, empty: 147, damaged: 0 },
-      ],
-    },
-  ]);
-
-  // 3. Stock Transaction History (Exact 10 rows from Figma 3:1700 - steps/1159/media_0.png)
-  const [stockHistory, setStockHistory] = useState([
-    {
-      id: 1,
-      date: "08/09/2026",
-      truck_id: "T6335",
-      city: "AL_AIN",
-      product_id: "015",
-      product_name: "5 gal water",
-      quantity: 155,
-      in_out: "OUT",
-      time: "9:30:22 PM",
-      item_type: "NORMAL",
-      done_by: "32",
-    },
-    {
-      id: 2,
-      date: "08/09/2026",
-      truck_id: "T6335",
-      city: "AL_AIN",
-      product_id: "015",
-      product_name: "5 gal water",
-      quantity: 155,
-      in_out: "IN",
-      time: "9:30:22 PM",
-      item_type: "NORMAL",
-      done_by: "32",
-    },
-    {
-      id: 3,
-      date: "08/09/2026",
-      truck_id: "T6355",
-      city: "AL_AIN",
-      product_id: "015",
-      product_name: "5 gal water",
-      quantity: 23,
-      in_out: "OUT",
-      time: "9:28:18 PM",
-      item_type: "NORMAL",
-      done_by: "56",
-    },
-    {
-      id: 4,
-      date: "08/09/2026",
-      truck_id: "T6355",
-      city: "AL_AIN",
-      product_id: "015",
-      product_name: "5 gal water",
-      quantity: 23,
-      in_out: "IN",
-      time: "9:28:18 PM",
-      item_type: "NORMAL",
-      done_by: "56",
-    },
-    {
-      id: 5,
-      date: "08/09/2026",
-      truck_id: "T8066",
-      city: "AL_AIN",
-      product_id: "015",
-      product_name: "5 gal water",
-      quantity: 147,
-      in_out: "OUT",
-      time: "7:51:43 PM",
-      item_type: "NORMAL",
-      done_by: "113",
-    },
-    {
-      id: 6,
-      date: "08/09/2026",
-      truck_id: "T8066",
-      city: "AL_AIN",
-      product_id: "015",
-      product_name: "5 gal water",
-      quantity: 147,
-      in_out: "IN",
-      time: "7:51:43 PM",
-      item_type: "NORMAL",
-      done_by: "113",
-    },
-    {
-      id: 7,
-      date: "08/09/2026",
-      truck_id: "T6348",
-      city: "AL_AIN",
-      product_id: "015",
-      product_name: "5 gal water",
-      quantity: 10,
-      in_out: "OUT",
-      time: "6:17:04 PM",
-      item_type: "NORMAL",
-      done_by: "92",
-    },
-    {
-      id: 8,
-      date: "08/09/2026",
-      truck_id: "T6348",
-      city: "AL_AIN",
-      product_id: "015",
-      product_name: "5 gal water",
-      quantity: 10,
-      in_out: "IN",
-      time: "6:17:04 PM",
-      item_type: "NORMAL",
-      done_by: "92",
-    },
-    {
-      id: 9,
-      date: "08/09/2026",
-      truck_id: "T6341",
-      city: "AL_AIN",
-      product_id: "015",
-      product_name: "5 gal water",
-      quantity: 100,
-      in_out: "OUT",
-      time: "5:57:40 PM",
-      item_type: "NORMAL",
-      done_by: "47",
-    },
-    {
-      id: 10,
-      date: "08/09/2026",
-      truck_id: "T6341",
-      city: "AL_AIN",
-      product_id: "015",
-      product_name: "5 gal water",
-      quantity: 100,
-      in_out: "IN",
-      time: "5:57:40 PM",
-      item_type: "NORMAL",
-      done_by: "47",
-    },
-  ]);
-
-  // Filters & UI states
-  const [search, setSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
-  const [truckSearch, setTruckSearch] = useState("");
-  const [historySearch, setHistorySearch] = useState("");
-  const [historyFromDate, setHistoryFromDate] = useState("");
-  const [historyToDate, setHistoryToDate] = useState("");
-  const [historyTruckFilter, setHistoryTruckFilter] = useState("All");
-  const [historyProductFilter, setHistoryProductFilter] = useState("All");
 
-  // Modals
-  const [showStockModal, setShowStockModal] = useState(false);
-  const [showAddProductModal, setShowAddProductModal] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
-  const [deleteTarget, setDeleteTarget] = useState(null);
-  const [deleteTruckTarget, setDeleteTruckTarget] = useState(null);
+  // Selected item / truck for modals & sub-views
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedTruck, setSelectedTruck] = useState(null);
+  const [truckModalOpen, setTruckModalOpen] = useState(false);
+  const [productSummaryDrawerOpen, setProductSummaryDrawerOpen] = useState(false);
+  const [summarySearch, setSummarySearch] = useState("");
 
-  // Car Stock Modals (Figma 3:1708, 3:1712, 3:1716, 3:1720)
-  const [showAddTruckModal, setShowAddTruckModal] = useState(false);
-  const [showProductSummaryModal, setShowProductSummaryModal] = useState(false);
-  const [viewTruckStock, setViewTruckStock] = useState(null);
-  const [manageTruckStock, setManageTruckStock] = useState(null);
-  const [editingTruck, setEditingTruck] = useState(null);
+  // Update Inventory State (update-inventrery.png)
+  const [updateStockForm, setUpdateStockForm] = useState({
+    date: "2026-09-08",
+    store: "Al Ain",
+    item: "",
+    itemType: "New",
+    quantity: "",
+  });
+  const [inputStocks, setInputStocks] = useState([]);
 
+  // Add New Item State (add new item.png)
+  const [newItemForm, setNewItemForm] = useState({
+    product_id: "",
+    item: "",
+    price: "",
+    description: "",
+    priority: "Primary",
+    asset: "Yes",
+  });
+
+  // Add New Truck State (add-new truck.png)
   const [newTruckForm, setNewTruckForm] = useState({
     truck_id: "",
-    in_charge: "",
-    assistants: "",
+    city: "",
     route: "",
   });
 
-  const [manageForm, setManageForm] = useState({
-    product_name: "5 gal water",
-    action_type: "OUT",
-    item_type: "NORMAL",
-    quantity: 50,
+  // Manage Truck Stock State (truck-manage.png)
+  const [manageTruckForm, setManageTruckForm] = useState({
+    product: "",
+    store: "Al Ain",
+    action: "Add to Truck",
+    condition: "New",
+    quantity: "",
   });
 
-  const [stockType, setStockType] = useState("IN");
-  const [selectedProduct, setSelectedProduct] = useState("5 gal water");
-  const [stockQty, setStockQty] = useState(100);
-
-  const [newProduct, setNewProduct] = useState({
-    product_id: "",
-    name: "",
-    category: "Water Bottle",
-    price: "5.00",
-    initial_stock: 0,
-  });
-
-  const filteredInventory = useMemo(() => {
-    return inventory.filter((item) => {
-      if (item.status === "Deleted") return false;
-      if (!search.trim()) return true;
-      const q = search.toLowerCase();
-      return (
-        item.product_name.toLowerCase().includes(q) ||
-        item.product_id.toLowerCase().includes(q) ||
-        item.category.toLowerCase().includes(q)
-      );
-    });
-  }, [inventory, search]);
+  const filteredStoreItems = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return storeItems;
+    return storeItems.filter(
+      (i) =>
+        i.product_id.toLowerCase().includes(q) ||
+        i.item.toLowerCase().includes(q) ||
+        i.description.toLowerCase().includes(q)
+    );
+  }, [storeItems, searchQuery]);
 
   const filteredTrucks = useMemo(() => {
-    return trucks.filter((t) => {
-      if (t.status === "Deleted") return false;
-      if (!truckSearch.trim()) return true;
-      const q = truckSearch.toLowerCase();
-      return (
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return trucks;
+    return trucks.filter(
+      (t) =>
         t.truck_id.toLowerCase().includes(q) ||
         t.in_charge.toLowerCase().includes(q) ||
-        t.assistants.toLowerCase().includes(q) ||
         t.route.toLowerCase().includes(q)
-      );
-    });
-  }, [trucks, truckSearch]);
-
-  const filteredHistory = useMemo(() => {
-    return stockHistory.filter((h) => {
-      if (historyTruckFilter !== "All" && h.truck_id !== historyTruckFilter)
-        return false;
-      if (
-        historyProductFilter !== "All" &&
-        h.product_name !== historyProductFilter
-      )
-        return false;
-      if (!historySearch.trim()) return true;
-      const q = historySearch.toLowerCase();
-      return Object.values(h).some((v) =>
-        String(v).toLowerCase().includes(q)
-      );
-    });
-  }, [
-    stockHistory,
-    historyTruckFilter,
-    historyProductFilter,
-    historySearch,
-  ]);
-
-  const handleStockUpdate = (e) => {
-    e.preventDefault();
-    const qty = parseInt(stockQty) || 0;
-    setInventory((prev) =>
-      prev.map((item) => {
-        if (item.product_name === selectedProduct) {
-          return {
-            ...item,
-            previous_stock: item.current_stock,
-            current_stock:
-              stockType === "IN"
-                ? item.current_stock + qty
-                : Math.max(0, item.current_stock - qty),
-            last_updated: "08/09/2026",
-          };
-        }
-        return item;
-      })
     );
-    setStockHistory((prev) => [
-      {
-        id: Date.now(),
-        date: "08/09/2026",
-        truck_id: "100001",
-        city: "AL_AIN",
-        product_id: "015",
-        product_name: selectedProduct,
-        quantity: qty,
-        in_out: stockType,
-        time: "9:35:00 PM",
-        item_type: "NORMAL",
-        done_by: "Admin",
-      },
-      ...prev,
-    ]);
-    addToast(`Inventory updated for ${selectedProduct}`, "success");
-    setShowStockModal(false);
-  };
+  }, [trucks, searchQuery]);
 
-  const handleAddProduct = (e) => {
-    e.preventDefault();
-    const created = {
-      id: Date.now(),
-      product_id: newProduct.product_id || `0${19 + inventory.length}`,
-      product_name: newProduct.name,
-      category: newProduct.category,
-      price: parseFloat(newProduct.price || 5).toFixed(2),
-      previous_stock: 0,
-      current_stock: parseInt(newProduct.initial_stock) || 0,
-      damaged_stock: 0,
-      last_updated: "08/09/2026",
-      status: "Active",
-    };
-    setInventory([...inventory, created]);
-    setShowAddProductModal(false);
-    addToast(`Product ${created.product_name} added!`, "success");
-  };
+  const filteredProductSummary = useMemo(() => {
+    const q = summarySearch.trim().toLowerCase();
+    if (!q) return PRODUCT_SUMMARY_LIST;
+    return PRODUCT_SUMMARY_LIST.filter((p) => p.name.toLowerCase().includes(q));
+  }, [summarySearch]);
 
-  const handleCreateTruck = (e) => {
+  // Handlers
+  const handleAddInputStock = (e) => {
     e.preventDefault();
+    if (!updateStockForm.item || !updateStockForm.quantity) {
+      addToast("Please select an Item and enter Quantity", "error");
+      return;
+    }
+    const found = storeItems.find((s) => s.item === updateStockForm.item);
     const entry = {
       id: Date.now(),
-      truck_id: newTruckForm.truck_id.trim() || "T6360",
-      in_charge: newTruckForm.in_charge.trim() || "32",
-      assistants: newTruckForm.assistants.trim() || "",
-      route:
-        newTruckForm.route.trim() ||
-        newTruckForm.truck_id.replace("T", "") ||
-        "6360",
+      date: updateStockForm.date,
+      item_id: found ? found.product_id : "016",
+      item_name: updateStockForm.item,
+      item_type: updateStockForm.itemType,
+      store: updateStockForm.store,
+      quantity: updateStockForm.quantity,
+    };
+    setInputStocks((prev) => [entry, ...prev]);
+    setUpdateStockForm({ ...updateStockForm, quantity: "" });
+    addToast(`Added ${entry.quantity} of ${entry.item_name} to input stocks`, "success");
+  };
+
+  const handleSaveNewProduct = (e) => {
+    e.preventDefault();
+    if (!newItemForm.product_id.trim() || !newItemForm.item.trim()) {
+      addToast("Please fill in Product ID and Product Name", "error");
+      return;
+    }
+    const created = {
+      id: Date.now(),
+      product_id: newItemForm.product_id.trim(),
+      item: newItemForm.item.trim(),
+      description: newItemForm.description.trim() || "new",
+      current_stock: "0",
+      old_stock: "N/A",
+      damaged: "N/A",
+      discarded: "N/A",
+      stock_color: "amber",
+    };
+    setStoreItems((prev) => [created, ...prev]);
+    addToast(`Product "${created.item}" saved successfully`, "success");
+    setSubView("list");
+  };
+
+  const handleDeleteStoreItem = (row) => {
+    setStoreItems((prev) => prev.filter((i) => i.id !== row.id));
+    addToast(`Item "${row.item}" deleted`, "info");
+  };
+
+  const handleAddNewTruck = (e) => {
+    e.preventDefault();
+    if (!newTruckForm.truck_id.trim()) {
+      addToast("Please enter a Truck ID", "error");
+      return;
+    }
+    const created = {
+      id: Date.now(),
+      truck_id: newTruckForm.truck_id.trim(),
+      in_charge: "32",
+      assistants: "-",
+      route: newTruckForm.route || "6335",
       last_updated: "08/09/2026",
-      status: "Active",
-      stock_items: [
+      last_updated_full: "9/8/2026, 10:00:00 AM",
+      stocks: [
+        { item: "5 gal water", added: 0, delivered: 0, used: 0, damaged: 0, balance: 0, returned: 0 },
+      ],
+    };
+    setTrucks((prev) => [created, ...prev]);
+    addToast(`Truck "${created.truck_id}" added successfully`, "success");
+    setSubView("list");
+  };
+
+  const handleAddTruckRecord = (e) => {
+    e.preventDefault();
+    if (!manageTruckForm.product || !manageTruckForm.quantity || !selectedTruck) {
+      addToast("Please select a Product and enter Quantity", "error");
+      return;
+    }
+    const qty = Number(manageTruckForm.quantity) || 0;
+    const updatedTruck = {
+      ...selectedTruck,
+      stocks: [
+        ...selectedTruck.stocks,
         {
-          product_id: "015",
-          name: "5 gal water",
-          filled: 100,
-          empty: 0,
+          item: manageTruckForm.product,
+          added: qty,
+          delivered: 0,
+          used: 0,
           damaged: 0,
+          balance: qty,
+          returned: 0,
         },
       ],
     };
-    setTrucks([entry, ...trucks]);
-    setShowAddTruckModal(false);
-    setNewTruckForm({ truck_id: "", in_charge: "", assistants: "", route: "" });
-    addToast(`Truck ${entry.truck_id} added!`, "success");
-  };
-
-  const handleManageTruckSubmit = (e) => {
-    e.preventDefault();
-    if (!manageTruckStock) return;
-    const qty = parseInt(manageForm.quantity) || 0;
-    const isOut = manageForm.action_type === "OUT";
-
-    setTrucks((prev) =>
-      prev.map((t) => {
-        if (t.id !== manageTruckStock.id) return t;
-        const updatedItems = (t.stock_items || []).map((s) =>
-          s.name === manageForm.product_name
-            ? {
-                ...s,
-                filled: isOut ? s.filled + qty : Math.max(0, s.filled - qty),
-              }
-            : s
-        );
-        return { ...t, last_updated: "08/09/2026", stock_items: updatedItems };
-      })
-    );
-
-    setStockHistory((prev) => [
-      {
-        id: Date.now(),
-        date: "08/09/2026",
-        truck_id: manageTruckStock.truck_id,
-        city: "AL_AIN",
-        product_id: "015",
-        product_name: manageForm.product_name,
-        quantity: qty,
-        in_out: manageForm.action_type,
-        time: "9:40:10 PM",
-        item_type: manageForm.item_type,
-        done_by: manageTruckStock.in_charge,
-      },
-      ...prev,
-    ]);
-
-    setManageTruckStock(null);
-    addToast(
-      `Car stock updated for Truck ${manageTruckStock.truck_id}`,
-      "success"
-    );
-  };
-
-  const handleExportCSV = () => {
-    addToast("Exported table data to CSV", "success");
+    setSelectedTruck(updatedTruck);
+    setTrucks((prev) => prev.map((t) => (t.id === updatedTruck.id ? updatedTruck : t)));
+    setManageTruckForm({ ...manageTruckForm, quantity: "" });
+    addToast(`Added ${qty} ${manageTruckForm.product} to ${selectedTruck.truck_id}`, "success");
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-[#F8FAFC]">
-      <Header
-        title="Utilities"
-        subtitle={
-          moduleView === "car_stock"
-            ? "Car Stock Transaction"
-            : moduleView === "stock_history"
-            ? "Stock Transaction History"
-            : "Store Inventory"
-        }
-      />
+    <div className="min-h-screen bg-[#F4F6F9] flex flex-col">
+      <Header title="Utilities" subtitle="Manage Inventory" />
 
-      <main className="p-6 space-y-5 flex-1 overflow-y-auto">
-        {/* Top Module Switcher Tabs + Action Buttons matching Figma 1:1691, 3:1700, 3:1704 */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 bg-white border border-slate-200 p-1 rounded-lg shadow-2xs">
+      {/* Figma Black Top Banner */}
+      <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2.5 text-sm">
+          <span className="font-bold text-base tracking-tight">Utilities</span>
+          <Home className="w-3.5 h-3.5 text-slate-300" />
+          <span className="text-slate-300 text-xs">
+            -{" "}
+            {subView === "update_inventory"
+              ? "Update Inventory"
+              : subView === "add_item"
+              ? "Add New Item"
+              : subView === "add_truck"
+              ? "Add New Truck"
+              : subView === "manage_truck"
+              ? "Manage Truck Stock"
+              : "Manage Inventory"}{" "}
+            - ALL
+          </span>
+        </div>
+        {subView !== "list" && (
+          <button
+            type="button"
+            onClick={() => setSubView("list")}
+            className="px-3.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition cursor-pointer"
+          >
+            Back to List
+          </button>
+        )}
+      </div>
+
+      {/* Sub-navigation bar when in main list view */}
+      {subView === "list" && (
+        <div className="px-6 pt-5 pb-1 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setModuleView("store_inventory")}
-              className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
-                moduleView === "store_inventory"
-                  ? "bg-[#5948DB] text-white shadow-2xs"
-                  : "text-slate-600 hover:text-slate-900"
+              onClick={() => {
+                setActiveTab("store");
+                setSearchQuery("");
+              }}
+              className={`px-4 py-2 rounded text-xs font-semibold transition cursor-pointer ${
+                activeTab === "store"
+                  ? "bg-white text-slate-800 shadow-xs border border-slate-200/80"
+                  : "bg-slate-200/70 text-slate-500 hover:text-slate-800"
               }`}
             >
-              <Boxes className="w-3.5 h-3.5" />
-              <span>Store Inventory</span>
+              Store Inventory
             </button>
             <button
               type="button"
-              onClick={() => setModuleView("car_stock")}
-              className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
-                moduleView === "car_stock"
-                  ? "bg-[#5948DB] text-white shadow-2xs"
-                  : "text-slate-600 hover:text-slate-900"
+              onClick={() => {
+                setActiveTab("car");
+                setSearchQuery("");
+              }}
+              className={`px-4 py-2 rounded text-xs font-semibold transition cursor-pointer ${
+                activeTab === "car"
+                  ? "bg-white text-slate-800 shadow-xs border border-slate-200/80"
+                  : "bg-slate-200/70 text-slate-500 hover:text-slate-800"
               }`}
             >
-              <Truck className="w-3.5 h-3.5" />
-              <span>Car Stock Transaction</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setModuleView("stock_history")}
-              className={`px-4 py-1.5 rounded-md text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
-                moduleView === "stock_history"
-                  ? "bg-[#5948DB] text-white shadow-2xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <History className="w-3.5 h-3.5" />
-              <span>View Inventory History</span>
+              Car Stock Transaction
             </button>
           </div>
 
-          {moduleView === "store_inventory" && (
-            <div className="flex items-center gap-2.5">
+          {activeTab === "store" ? (
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setShowStockModal(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded-md text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                onClick={() => setSubView("update_inventory")}
+                className="px-3.5 py-1.5 rounded bg-[#1E3A5F] hover:bg-[#152c4a] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
               >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Update Inventory</span>
+                Update Inventory
               </button>
               <button
                 type="button"
-                onClick={() => setShowAddProductModal(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-[#FF5A5F] hover:bg-[#E0484D] text-white rounded-md text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                onClick={() => {
+                  setNewItemForm({
+                    product_id: "",
+                    item: "",
+                    price: "",
+                    description: "",
+                    priority: "Primary",
+                    asset: "Yes",
+                  });
+                  setSubView("add_item");
+                }}
+                className="px-3.5 py-1.5 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add New Item</span>
+                + Add New Item
               </button>
             </div>
-          )}
-
-          {moduleView === "car_stock" && (
-            <div className="flex items-center gap-2.5">
+          ) : (
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setShowAddTruckModal(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-[#FF5A5F] hover:bg-[#E0484D] text-white rounded-md text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                onClick={() => {
+                  setNewTruckForm({ truck_id: "", city: "", route: "" });
+                  setSubView("add_truck");
+                }}
+                className="px-3.5 py-1.5 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add New Truck</span>
+                + Add New Truck
               </button>
               <button
                 type="button"
-                onClick={() => setShowProductSummaryModal(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded-md text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                onClick={() => setProductSummaryDrawerOpen(true)}
+                className="px-3.5 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
               >
-                <FileBarChart2 className="w-3.5 h-3.5" />
-                <span>Product Summary</span>
+                Product Summary
               </button>
             </div>
           )}
         </div>
+      )}
 
-        {/* ===================================================================== */}
-        {/* VIEW 1: STORE INVENTORY (Figma 1:1691) */}
-        {/* ===================================================================== */}
-        {moduleView === "store_inventory" && (
-          <div className="bg-white rounded-md border border-slate-200 shadow-2xs overflow-hidden">
-            {/* Dark Navy-to-Blue Gradient Banner */}
-            <div className="bg-linear-to-r from-[#0F172A] via-[#1E3A5F] to-[#3B6998] px-5 py-3 flex items-center justify-between text-white">
-              <h3 className="text-sm font-bold tracking-wide">
-                Store Inventory
-              </h3>
-              <button
-                type="button"
-                onClick={handleExportCSV}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Export</span>
-              </button>
+      <div className="p-6 flex-1 space-y-6">
+        {/* 1. STORE INVENTORY LIST VIEW (utilities-store inventery.png) */}
+        {subView === "list" && activeTab === "store" && (
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+              <h2 className="text-white font-bold text-base tracking-wide">Inventory Management</h2>
             </div>
 
-            {/* Show [10] entries & Search bar */}
-            <div className="px-5 py-3 bg-white border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
-              <div className="flex items-center gap-1.5">
+            <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
+              <div className="flex items-center gap-2">
                 <span>Show</span>
                 <select
                   value={entriesPerPage}
                   onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                  className="px-2 py-1 border border-slate-200 rounded bg-white text-slate-800 font-semibold focus:outline-none"
+                  className="border border-slate-300 rounded px-2 py-1 bg-white text-slate-700 focus:outline-none"
                 >
                   <option value={10}>10</option>
                   <option value={25}>25</option>
@@ -706,106 +585,82 @@ export default function UtilitiesPage() {
                 </select>
                 <span>entries</span>
               </div>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <span className="text-slate-600 font-medium">Search:</span>
+              <div className="flex items-center gap-2">
+                <span>Search:</span>
                 <input
                   type="text"
-                  placeholder="Search inventory..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full sm:w-56 px-3 py-1.5 bg-white border border-slate-200 rounded text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#5948DB]"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="border border-slate-300 rounded px-2.5 py-1 w-44 focus:outline-none focus:border-[#5948DB]"
                 />
               </div>
             </div>
 
-            <div className="overflow-x-auto touch-pan-x">
-              <table className="w-full text-left text-xs border-collapse min-w-[850px]">
-                <thead className="bg-[#5948DB] text-[11px] font-bold text-white uppercase tracking-wider border-b border-[#4A3AC9]">
-                  <tr>
-                    <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                      PRODUCT ID
-                    </th>
-                    <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                      PRODUCT NAME
-                    </th>
-                    <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                      CATEGORY
-                    </th>
-                    <th className="px-4 py-3 text-right border-r border-[#7161F0]/60">
-                      PRICE (AED)
-                    </th>
-                    <th className="px-4 py-3 text-center border-r border-[#7161F0]/60">
-                      PREVIOUS STOCK
-                    </th>
-                    <th className="px-4 py-3 text-center border-r border-[#7161F0]/60">
-                      CURRENT STOCK
-                    </th>
-                    <th className="px-4 py-3 text-center border-r border-[#7161F0]/60">
-                      DAMAGED STOCK
-                    </th>
-                    <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                      LAST UPDATED
-                    </th>
-                    <th className="px-4 py-3 text-center">ACTIONS</th>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                    {[
+                      "PRODUCT ID",
+                      "ITEM",
+                      "DESCRIPTION",
+                      "CURRENT STOCK",
+                      "OLD STOCK",
+                      "DAMAGED",
+                      "DISCARDED",
+                      "ACTIONS",
+                    ].map((col) => (
+                      <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
+                        <div className="flex items-center justify-between gap-1">
+                          <span>{col}</span>
+                          <ArrowUpDown className="w-3 h-3 text-slate-400 shrink-0" />
+                        </div>
+                      </th>
+                    ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 font-medium">
-                  {filteredInventory.map((item) => (
-                    <tr
-                      key={item.id}
-                      className="hover:bg-slate-50/90 transition-colors"
-                    >
-                      <td className="px-4 py-3 font-mono font-bold text-slate-800 border-r border-slate-200">
-                        {item.product_id}
+                <tbody className="divide-y divide-slate-200/70 text-[12px] text-slate-700">
+                  {filteredStoreItems.slice(0, entriesPerPage).map((row) => (
+                    <tr key={row.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-3.5 pl-6 pr-4 font-medium text-slate-800">
+                        {row.product_id}
                       </td>
-                      <td className="px-4 py-3 font-bold text-slate-900 border-r border-slate-200">
-                        {item.product_name}
+                      <td className="py-3.5 px-4 text-slate-700">{row.item}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{row.description}</td>
+                      <td className="py-3.5 px-4 font-semibold">
+                        <span
+                          className={
+                            row.stock_color === "emerald"
+                              ? "text-[#48BB78]"
+                              : row.stock_color === "amber"
+                              ? "text-[#ECC94B]"
+                              : "text-slate-600 font-normal"
+                          }
+                        >
+                          {row.current_stock}
+                        </span>
                       </td>
-                      <td className="px-4 py-3 text-slate-600 border-r border-slate-200">
-                        {item.category}
-                      </td>
-                      <td className="px-4 py-3 text-right font-mono font-bold text-slate-900 border-r border-slate-200">
-                        AED {item.price}
-                      </td>
-                      <td className="px-4 py-3 text-center font-mono text-slate-700 border-r border-slate-200">
-                        {item.previous_stock}
-                      </td>
-                      <td className="px-4 py-3 text-center font-mono font-bold text-emerald-700 border-r border-slate-200">
-                        {item.current_stock}
-                      </td>
-                      <td className="px-4 py-3 text-center font-mono text-rose-600 border-r border-slate-200">
-                        {item.damaged_stock}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-slate-600 border-r border-slate-200">
-                        {item.last_updated}
-                      </td>
-                      <td className="px-4 py-3 text-center whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-1.5">
+                      <td className="py-3.5 px-4 text-slate-600">{row.old_stock}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{row.damaged}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{row.discarded}</td>
+                      <td className="py-3.5 pl-4 pr-6">
+                        <div className="flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => {
-                              setHistoryProductFilter(item.product_name);
-                              setModuleView("stock_history");
+                              setSelectedItem(row);
+                              setSubView("view_item");
                             }}
-                            className="px-3 py-1 rounded bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer"
+                            className="px-3 py-1 rounded bg-[#38A3C7] hover:bg-[#2d89a8] text-white text-[11px] font-semibold transition cursor-pointer"
                           >
                             View
                           </button>
                           <button
                             type="button"
-                            onClick={() => setEditingItem({ ...item })}
-                            className="px-2.5 py-1 rounded bg-[#10B981] hover:bg-[#059669] text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer"
+                            onClick={() => handleDeleteStoreItem(row)}
+                            className="px-3 py-1 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-[11px] font-semibold transition cursor-pointer"
                           >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setDeleteTarget(item)}
-                            className="p-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-colors cursor-pointer"
-                            title="Delete Item"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            Delete
                           </button>
                         </div>
                       </td>
@@ -815,161 +670,131 @@ export default function UtilitiesPage() {
               </table>
             </div>
 
-            <div className="px-5 py-3.5 bg-white border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
-              <div>
-                Showing 1 to {filteredInventory.length} of{" "}
-                {filteredInventory.length} entries
-              </div>
+            <div className="px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+              <div>Showing 1 to 10 of 15 entries</div>
               <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  className="px-2.5 py-1 rounded border border-slate-200 bg-white text-slate-500"
-                >
-                  Previous
-                </button>
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded bg-[#5948DB] text-white font-bold"
-                >
+                <button className="w-6 h-6 rounded-full bg-[#5948DB] text-white text-[11px] font-semibold flex items-center justify-center">
                   1
                 </button>
-                <button
-                  type="button"
-                  className="px-2.5 py-1 rounded border border-slate-200 bg-white text-slate-500"
-                >
-                  Next
+                <button className="w-6 h-6 rounded-full text-slate-500 hover:bg-slate-100 text-[11px] flex items-center justify-center">
+                  2
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* ===================================================================== */}
-        {/* VIEW 2: CAR STOCK TRANSACTION (Figma 3:1704 - steps/1163/media_0.png) */}
-        {/* ===================================================================== */}
-        {moduleView === "car_stock" && (
-          <div className="bg-white rounded-md border border-slate-200 shadow-2xs overflow-hidden">
-            {/* Dark Navy-to-Blue Gradient Banner */}
-            <div className="bg-linear-to-r from-[#0F172A] via-[#1E3A5F] to-[#3B6998] px-5 py-3 flex items-center justify-between text-white">
-              <h2 className="text-sm font-bold tracking-wide">
+        {/* 2. CAR STOCK TRANSACTION LIST VIEW (car stock transactions.png) */}
+        {subView === "list" && activeTab === "car" && (
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+              <h2 className="text-white font-bold text-base tracking-wide">
                 Truck Delivery and Details
               </h2>
-              <div className="flex items-center gap-3 text-xs">
-                <div className="flex items-center gap-1.5 text-slate-200">
-                  <span>Show</span>
-                  <select className="px-2 py-1 border border-slate-400/40 rounded bg-white text-slate-800 font-semibold">
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                  </select>
-                  <span>trucks</span>
-                </div>
+            </div>
+
+            <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
+              <div className="flex items-center gap-2">
+                <span>Show</span>
+                <select
+                  value={entriesPerPage}
+                  onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+                  className="border border-slate-300 rounded px-2 py-1 bg-white text-slate-700 focus:outline-none"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                </select>
+                <span>entries</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>Search:</span>
                 <input
                   type="text"
-                  placeholder="Search trucks..."
-                  value={truckSearch}
-                  onChange={(e) => setTruckSearch(e.target.value)}
-                  className="w-48 px-3 py-1 bg-white border border-slate-200 rounded text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="border border-slate-300 rounded px-2.5 py-1 w-44 focus:outline-none focus:border-[#5948DB]"
                 />
               </div>
             </div>
 
-            <div className="overflow-x-auto touch-pan-x">
-              <table className="w-full text-left text-xs border-collapse min-w-[800px]">
-                <thead className="bg-[#5948DB] text-[11px] font-bold text-white uppercase tracking-wider border-b border-[#4A3AC9]">
-                  <tr>
-                    <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                      <div className="flex items-center justify-between">
-                        <span>TRUCK ID</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#C4BCFB]" />
-                      </div>
-                    </th>
-                    <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                      <div className="flex items-center justify-between">
-                        <span>IN-CHARGE</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#C4BCFB]" />
-                      </div>
-                    </th>
-                    <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                      ASSISTANTS
-                    </th>
-                    <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                      <div className="flex items-center justify-between">
-                        <span>ROUTE</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#C4BCFB]" />
-                      </div>
-                    </th>
-                    <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                      <div className="flex items-center justify-between">
-                        <span>LAST UPDATED</span>
-                        <ArrowUpDown className="w-3 h-3 text-[#C4BCFB]" />
-                      </div>
-                    </th>
-                    <th className="px-4 py-3 text-center border-r border-[#7161F0]/60">
-                      STOCK
-                    </th>
-                    <th className="px-4 py-3 text-center">ACTIONS</th>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                    {[
+                      "TRUCK ID",
+                      "IN-CHARGE",
+                      "ASSISTANTS",
+                      "ROUTE",
+                      "LAST UPDATED",
+                      "STOCK",
+                      "ACTIONS",
+                    ].map((col) => (
+                      <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
+                        <div className="flex items-center justify-between gap-1">
+                          <span>{col}</span>
+                          <ArrowUpDown className="w-3 h-3 text-slate-400 shrink-0" />
+                        </div>
+                      </th>
+                    ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 font-medium">
-                  {filteredTrucks.map((t) => (
-                    <tr
-                      key={t.id}
-                      className="hover:bg-slate-50/90 transition-colors"
-                    >
-                      <td className="px-4 py-3 font-mono font-bold text-slate-800 border-r border-slate-200">
-                        {t.truck_id}
+                <tbody className="divide-y divide-slate-200/70 text-[12px] text-slate-700">
+                  {filteredTrucks.slice(0, entriesPerPage).map((truck) => (
+                    <tr key={truck.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-3.5 pl-6 pr-4 font-medium text-slate-800">
+                        {truck.truck_id}
                       </td>
-                      <td className="px-4 py-3 text-slate-700 font-semibold border-r border-slate-200">
-                        {t.in_charge}
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 border-r border-slate-200">
-                        {t.assistants}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-slate-700 border-r border-slate-200">
-                        {t.route}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-slate-600 border-r border-slate-200">
-                        {t.last_updated}
-                      </td>
-                      <td className="px-4 py-3 text-center border-r border-slate-200">
-                        <div className="flex items-center justify-center gap-2">
+                      <td className="py-3.5 px-4 text-slate-600">{truck.in_charge}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{truck.assistants}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{truck.route}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{truck.last_updated}</td>
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-1.5">
                           <button
                             type="button"
-                            onClick={() => setViewTruckStock(t)}
-                            className="px-3 py-1 rounded bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[11px] font-bold shadow-2xs transition-colors cursor-pointer"
+                            onClick={() => {
+                              setSelectedTruck(truck);
+                              setTruckModalOpen(true);
+                            }}
+                            className="px-3 py-1 rounded bg-[#4A90E2] hover:bg-[#357ABD] text-white text-[11px] font-semibold transition cursor-pointer"
                           >
                             View
                           </button>
                           <button
                             type="button"
-                            onClick={() => setManageTruckStock(t)}
-                            className="px-3 py-1 rounded bg-[#10B981] hover:bg-[#059669] text-white text-[11px] font-bold shadow-2xs transition-colors cursor-pointer"
+                            onClick={() => {
+                              setSelectedTruck(truck);
+                              setSubView("manage_truck");
+                            }}
+                            className="px-3 py-1 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-[11px] font-semibold transition cursor-pointer"
                           >
                             Manage
                           </button>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setEditingTruck({ ...t })}
-                            className="p-1.5 rounded bg-amber-50 hover:bg-amber-100 text-amber-600 border border-amber-200 transition-colors cursor-pointer"
-                            title="Edit Truck Settings"
-                          >
-                            <Settings className="w-3.5 h-3.5" />
-                          </button>
+                      <td className="py-3.5 pl-4 pr-6">
+                        <div className="flex items-center gap-3 text-slate-500">
                           <button
                             type="button"
                             onClick={() => {
-                              setHistoryTruckFilter(t.truck_id);
-                              setModuleView("stock_history");
+                              setSelectedTruck(truck);
+                              setSubView("manage_truck");
                             }}
-                            className="p-1.5 rounded bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-colors cursor-pointer"
-                            title="View Truck Stock History"
+                            title="Configure Truck"
+                            className="hover:text-slate-800 cursor-pointer"
                           >
-                            <Clock className="w-3.5 h-3.5" />
+                            <Settings className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              addToast(`Stock history synced for ${truck.truck_id}`, "info")
+                            }
+                            title="Reset / History"
+                            className="hover:text-slate-800 cursor-pointer"
+                          >
+                            <RotateCcw className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
@@ -979,948 +804,787 @@ export default function UtilitiesPage() {
               </table>
             </div>
 
-            <div className="px-5 py-3.5 bg-white border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
-              <div>
-                Showing 1 to {filteredTrucks.length} of 35 trucks
-              </div>
+            <div className="px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+              <div>Showing 1 to 10 of 29 entries</div>
               <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded border border-slate-200 bg-white text-slate-500"
-                >
-                  Prev
-                </button>
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded bg-[#5948DB] text-white font-bold"
-                >
-                  1
-                </button>
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded border border-slate-200 bg-white text-slate-700"
-                >
-                  2
-                </button>
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded border border-slate-200 bg-white text-slate-700"
-                >
-                  3
-                </button>
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded border border-slate-200 bg-white text-slate-700"
-                >
-                  4
-                </button>
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded border border-slate-200 bg-white text-slate-700"
-                >
-                  Next
-                </button>
+                {[1, 2, 3].map((p) => (
+                  <button
+                    key={p}
+                    className={`w-6 h-6 rounded-full text-[11px] flex items-center justify-center ${
+                      p === 1 ? "bg-[#5948DB] text-white font-semibold" : "text-slate-500"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         )}
 
-        {/* ===================================================================== */}
-        {/* VIEW 3: STOCK TRANSACTION HISTORY (Figma 3:1700 - steps/1159/media_0.png) */}
-        {/* ===================================================================== */}
-        {moduleView === "stock_history" && (
-          <div className="space-y-5">
-            {/* 6 KPI Cards matching exact Figma 3:1700 values */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {[
-                {
-                  label: "PREVIOUS STOCK",
-                  val: "0",
-                  color: "text-slate-800",
-                  border: "border-l-4 border-l-blue-500",
-                },
-                {
-                  label: "STOCK INWARD",
-                  val: "243393",
-                  color: "text-emerald-600",
-                  border: "border-l-4 border-l-emerald-500",
-                },
-                {
-                  label: "STOCK OUTWARD",
-                  val: "243393",
-                  color: "text-amber-600",
-                  border: "border-l-4 border-l-amber-500",
-                },
-                {
-                  label: "DAMAGED ITEMS",
-                  val: "0",
-                  color: "text-rose-600",
-                  border: "border-l-4 border-l-rose-500",
-                },
-                {
-                  label: "CURRENT STOCK",
-                  val: "0",
-                  color: "text-indigo-700",
-                  border: "border-l-4 border-l-indigo-500",
-                },
-                {
-                  label: "DISPOSED STOCK",
-                  val: "0",
-                  color: "text-slate-600",
-                  border: "border-l-4 border-l-slate-400",
-                },
-              ].map((k, idx) => (
+        {/* 3. UPDATE INVENTORY SUB-VIEW (update-inventrery.png) */}
+        {subView === "update_inventory" && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+                <h2 className="text-white font-bold text-base tracking-wide">Update Stock</h2>
+              </div>
+
+              <form onSubmit={handleAddInputStock} className="p-8 space-y-4 max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                    Stock Date
+                  </label>
+                  <div className="md:col-span-9">
+                    <input
+                      type="date"
+                      value={updateStockForm.date}
+                      onChange={(e) =>
+                        setUpdateStockForm({ ...updateStockForm, date: e.target.value })
+                      }
+                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                    Store
+                  </label>
+                  <div className="md:col-span-9">
+                    <select
+                      value={updateStockForm.store}
+                      onChange={(e) =>
+                        setUpdateStockForm({ ...updateStockForm, store: e.target.value })
+                      }
+                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    >
+                      <option value="Al Ain">Al Ain</option>
+                      <option value="Abu Dhabi">Abu Dhabi</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                    Item
+                  </label>
+                  <div className="md:col-span-9">
+                    <select
+                      value={updateStockForm.item}
+                      onChange={(e) =>
+                        setUpdateStockForm({ ...updateStockForm, item: e.target.value })
+                      }
+                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    >
+                      <option value="">Select Item</option>
+                      {storeItems.map((it) => (
+                        <option key={it.id} value={it.item}>
+                          {it.item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                    Item Type
+                  </label>
+                  <div className="md:col-span-9">
+                    <select
+                      value={updateStockForm.itemType}
+                      onChange={(e) =>
+                        setUpdateStockForm({ ...updateStockForm, itemType: e.target.value })
+                      }
+                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    >
+                      <option value="New">New</option>
+                      <option value="Old">Old</option>
+                      <option value="Damaged">Damaged</option>
+                      <option value="Discarded">Discarded</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                    Quantity
+                  </label>
+                  <div className="md:col-span-9">
+                    <input
+                      type="number"
+                      placeholder="Enter Quantity"
+                      value={updateStockForm.quantity}
+                      onChange={(e) =>
+                        setUpdateStockForm({ ...updateStockForm, quantity: e.target.value })
+                      }
+                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
+                  >
+                    Add Item
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Bottom Input Stocks Table Card */}
+            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+                <h2 className="text-white font-bold text-base tracking-wide">Input Stocks</h2>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                      {[
+                        "DATE",
+                        "ITEM ID",
+                        "ITEM NAME",
+                        "ITEM TYPE",
+                        "STORE",
+                        "QUANTITY",
+                        "ACTION",
+                      ].map((col) => (
+                        <th key={col} className="py-3 px-6">
+                          <div className="flex items-center justify-between">
+                            <span>{col}</span>
+                            <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200/70 text-[12px] text-slate-700">
+                    {inputStocks.map((st) => (
+                      <tr key={st.id}>
+                        <td className="py-3 px-6">{st.date}</td>
+                        <td className="py-3 px-6">{st.item_id}</td>
+                        <td className="py-3 px-6">{st.item_name}</td>
+                        <td className="py-3 px-6">{st.item_type}</td>
+                        <td className="py-3 px-6">{st.store}</td>
+                        <td className="py-3 px-6 font-semibold">{st.quantity}</td>
+                        <td className="py-3 px-6">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setInputStocks((prev) => prev.filter((x) => x.id !== st.id))
+                            }
+                            className="px-2.5 py-1 rounded bg-[#E05D38] text-white text-[11px] font-semibold"
+                          >
+                            Remove
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {inputStocks.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="py-6 text-center text-slate-400 text-xs">
+                          Showing 0 to 0 of 0 entries
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 4. ADD NEW ITEM SUB-VIEW (add new item.png) */}
+        {subView === "add_item" && (
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+              <h2 className="text-white font-bold text-base tracking-wide">
+                Add / Update Product
+              </h2>
+            </div>
+
+            <form onSubmit={handleSaveNewProduct} className="p-8 space-y-4 max-w-5xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Product ID
+                </label>
+                <div className="md:col-span-9">
+                  <input
+                    type="text"
+                    placeholder="Enter Product ID"
+                    value={newItemForm.product_id}
+                    onChange={(e) =>
+                      setNewItemForm({ ...newItemForm, product_id: e.target.value })
+                    }
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Product Name
+                </label>
+                <div className="md:col-span-9">
+                  <input
+                    type="text"
+                    placeholder="Enter Product Name"
+                    value={newItemForm.item}
+                    onChange={(e) => setNewItemForm({ ...newItemForm, item: e.target.value })}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Price
+                </label>
+                <div className="md:col-span-9">
+                  <input
+                    type="text"
+                    placeholder="Enter Product Description"
+                    value={newItemForm.price}
+                    onChange={(e) => setNewItemForm({ ...newItemForm, price: e.target.value })}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Description
+                </label>
+                <div className="md:col-span-9">
+                  <input
+                    type="text"
+                    placeholder="Enter Product Description"
+                    value={newItemForm.description}
+                    onChange={(e) =>
+                      setNewItemForm({ ...newItemForm, description: e.target.value })
+                    }
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Priority
+                </label>
+                <div className="md:col-span-9">
+                  <select
+                    value={newItemForm.priority}
+                    onChange={(e) =>
+                      setNewItemForm({ ...newItemForm, priority: e.target.value })
+                    }
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                  >
+                    <option value="Primary">Primary</option>
+                    <option value="Secondary">Secondary</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Asset
+                </label>
+                <div className="md:col-span-9">
+                  <select
+                    value={newItemForm.asset}
+                    onChange={(e) => setNewItemForm({ ...newItemForm, asset: e.target.value })}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                  >
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3">
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
+                >
+                  Save Product
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* 5. VIEW STORE ITEM HISTORY SUB-VIEW (view-inventrary.png) */}
+        {subView === "view_item" && selectedItem && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs">
+                <div className="text-[11px] font-bold text-slate-400 uppercase">CURRENT STOCK</div>
+                <div className="text-2xl font-bold text-[#48BB78] mt-1">
+                  {selectedItem.current_stock === "N/A" ? 0 : selectedItem.current_stock}
+                </div>
+              </div>
+              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs">
+                <div className="text-[11px] font-bold text-slate-400 uppercase">OLD STOCK</div>
+                <div className="text-2xl font-bold text-slate-700 mt-1">0</div>
+              </div>
+              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs">
+                <div className="text-[11px] font-bold text-slate-400 uppercase">DAMAGED STOCK</div>
+                <div className="text-2xl font-bold text-rose-500 mt-1">0</div>
+              </div>
+              <div className="bg-white rounded-lg p-5 border border-slate-200/80 shadow-xs">
+                <div className="text-[11px] font-bold text-slate-400 uppercase">
+                  DISCARDED STOCK
+                </div>
+                <div className="text-2xl font-bold text-amber-500 mt-1">0</div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+              <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+                <h2 className="text-white font-bold text-base tracking-wide">
+                  Stock Transaction History - {selectedItem.item} ({selectedItem.product_id})
+                </h2>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                      {["DATE", "STORE", "ITEM", "ITEM TYPE", "QUANTITY", "UPDATED BY"].map(
+                        (col) => (
+                          <th key={col} className="py-3 px-6">
+                            {col}
+                          </th>
+                        )
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200/70 text-xs text-slate-700">
+                    <tr>
+                      <td className="py-3.5 px-6">08/09/2026</td>
+                      <td className="py-3.5 px-6">Al Ain</td>
+                      <td className="py-3.5 px-6 font-medium">{selectedItem.item}</td>
+                      <td className="py-3.5 px-6">New</td>
+                      <td className="py-3.5 px-6 font-semibold">
+                        {selectedItem.current_stock === "N/A" ? 0 : selectedItem.current_stock}
+                      </td>
+                      <td className="py-3.5 px-6">IRSHAD (STORE KEEPER)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 6. ADD NEW TRUCK SUB-VIEW (add-new truck.png) */}
+        {subView === "add_truck" && (
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+              <h2 className="text-white font-bold text-base tracking-wide">Add New Truck</h2>
+            </div>
+
+            <form onSubmit={handleAddNewTruck} className="p-8 space-y-5 max-w-5xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Truck ID
+                </label>
+                <div className="md:col-span-9">
+                  <input
+                    type="text"
+                    placeholder="Enter Truck ID"
+                    value={newTruckForm.truck_id}
+                    onChange={(e) =>
+                      setNewTruckForm({ ...newTruckForm, truck_id: e.target.value })
+                    }
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  City
+                </label>
+                <div className="md:col-span-9">
+                  <select
+                    value={newTruckForm.city}
+                    onChange={(e) => setNewTruckForm({ ...newTruckForm, city: e.target.value })}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                  >
+                    <option value="">Select City</option>
+                    <option value="AL_AIN">AL_AIN</option>
+                    <option value="ABU_DHABI">ABU_DHABI</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Assigned Routes
+                </label>
+                <div className="md:col-span-9">
+                  <select
+                    value={newTruckForm.route}
+                    onChange={(e) => setNewTruckForm({ ...newTruckForm, route: e.target.value })}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                  >
+                    <option value="">Select Assigned Route</option>
+                    <option value="6335">6335</option>
+                    <option value="6350">6350</option>
+                    <option value="6354">6354</option>
+                    <option value="3115">3115</option>
+                    <option value="9302">9302</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3">
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
+                >
+                  Add Truck
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSubView("list")}
+                  className="px-4 py-1.5 rounded bg-[#E53E6A] hover:bg-[#d12c57] text-white text-xs font-semibold transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* 7. MANAGE TRUCK STOCK SUB-VIEW (truck-manage.png) */}
+        {subView === "manage_truck" && selectedTruck && (
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+              <h2 className="text-white font-bold text-base tracking-wide">Manage Truck Stock</h2>
+            </div>
+
+            <div className="p-8 space-y-6">
+              <form onSubmit={handleAddTruckRecord} className="space-y-4 max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                    Truck ID
+                  </label>
+                  <div className="md:col-span-9">
+                    <input
+                      type="text"
+                      disabled
+                      value={selectedTruck.truck_id}
+                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-500 bg-[#EDF2F7]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                    Product
+                  </label>
+                  <div className="md:col-span-9">
+                    <select
+                      value={manageTruckForm.product}
+                      onChange={(e) =>
+                        setManageTruckForm({ ...manageTruckForm, product: e.target.value })
+                      }
+                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    >
+                      <option value="">Select Product</option>
+                      <option value="5 gal water">5 gal water</option>
+                      <option value="empty bottle">empty bottle</option>
+                      <option value="200 ML CUP">200 ML CUP</option>
+                      <option value="COOLER">COOLER</option>
+                      <option value="WATER PUMP">WATER PUMP</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                    Store
+                  </label>
+                  <div className="md:col-span-9">
+                    <select
+                      value={manageTruckForm.store}
+                      onChange={(e) =>
+                        setManageTruckForm({ ...manageTruckForm, store: e.target.value })
+                      }
+                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    >
+                      <option value="Al Ain">Al Ain</option>
+                      <option value="Abu Dhabi">Abu Dhabi</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                    Action
+                  </label>
+                  <div className="md:col-span-9">
+                    <select
+                      value={manageTruckForm.action}
+                      onChange={(e) =>
+                        setManageTruckForm({ ...manageTruckForm, action: e.target.value })
+                      }
+                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    >
+                      <option value="Add to Truck">Add to Truck</option>
+                      <option value="Return to Store">Return to Store</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                    Condition
+                  </label>
+                  <div className="md:col-span-9">
+                    <select
+                      value={manageTruckForm.condition}
+                      onChange={(e) =>
+                        setManageTruckForm({ ...manageTruckForm, condition: e.target.value })
+                      }
+                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white"
+                    >
+                      <option value="New">New</option>
+                      <option value="Used">Used</option>
+                      <option value="Damaged">Damaged</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                  <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                    Quantity
+                  </label>
+                  <div className="md:col-span-9">
+                    <input
+                      type="number"
+                      placeholder="Enter Quantity"
+                      value={manageTruckForm.quantity}
+                      onChange={(e) =>
+                        setManageTruckForm({ ...manageTruckForm, quantity: e.target.value })
+                      }
+                      className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
+                  >
+                    Add Record
+                  </button>
+                </div>
+              </form>
+
+              {/* Truck Stock Table inside Manage Truck Stock */}
+              <div className="overflow-x-auto border-t border-slate-200 pt-4">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                      {[
+                        "PRODUCT",
+                        "ADDED",
+                        "DELIVERED",
+                        "USED",
+                        "DAMAGED",
+                        "BALANCE",
+                        "RETURNED",
+                      ].map((col) => (
+                        <th key={col} className="py-3 px-4">
+                          {col}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200/70 text-xs text-slate-700">
+                    {selectedTruck.stocks.map((st, idx) => (
+                      <tr key={idx}>
+                        <td className="py-3 px-4 font-medium">{st.item}</td>
+                        <td className="py-3 px-4">{st.added}</td>
+                        <td className="py-3 px-4">{st.delivered}</td>
+                        <td className="py-3 px-4">{st.used}</td>
+                        <td className="py-3 px-4">{st.damaged}</td>
+                        <td className="py-3 px-4">{st.balance}</td>
+                        <td className="py-3 px-4">{st.returned}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    addToast(`Closed stock session for ${selectedTruck.truck_id}`, "info");
+                    setSubView("list");
+                  }}
+                  className="px-4 py-1.5 rounded bg-[#E53E6A] hover:bg-[#d12c57] text-white text-xs font-semibold transition cursor-pointer"
+                >
+                  Close Stock
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 8. TRUCK STOCK DETAILS MODAL (truck view.png) */}
+      {truckModalOpen && selectedTruck && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-800">Truck Stock Details</h3>
+              <button
+                type="button"
+                onClick={() => setTruckModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="flex flex-wrap items-center justify-between text-xs text-slate-700 gap-4">
+                <div>
+                  <span className="font-bold">Truck ID:</span> {selectedTruck.truck_id}
+                </div>
+                <div>
+                  <span className="font-bold">In-Charge:</span> {selectedTruck.in_charge}
+                </div>
+                <div>
+                  <span className="font-bold">Last Updated:</span>{" "}
+                  {selectedTruck.last_updated_full}
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10px] font-bold text-slate-500 uppercase">
+                      {[
+                        "ITEM",
+                        "ADDED",
+                        "DELIVERED",
+                        "USED",
+                        "DAMAGED",
+                        "BALANCE",
+                        "RETURNED",
+                      ].map((c) => (
+                        <th key={c} className="py-2.5 px-3">
+                          {c}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200/70 text-xs text-slate-700">
+                    {selectedTruck.stocks.map((st, idx) => (
+                      <tr key={idx}>
+                        <td className="py-3 px-3">{st.item}</td>
+                        <td className="py-3 px-3">{st.added}</td>
+                        <td className="py-3 px-3">{st.delivered}</td>
+                        <td className="py-3 px-3">{st.used}</td>
+                        <td className="py-3 px-3">{st.damaged}</td>
+                        <td className="py-3 px-3">{st.balance}</td>
+                        <td className="py-3 px-3">{st.returned}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setTruckModalOpen(false)}
+                className="px-3.5 py-1.5 rounded border border-slate-300 bg-white text-slate-700 text-xs font-medium hover:bg-slate-50 cursor-pointer"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="px-3.5 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold cursor-pointer inline-flex items-center gap-1"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                Print
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 9. TOTAL PRODUCT DELIVERY SUMMARY RIGHT-HAND DRAWER (product-summary.png) */}
+      {productSummaryDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/30">
+          <div className="bg-white w-full max-w-xs h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200">
+            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="text-xs font-bold text-slate-700">
+                Total Product Delivery Summary
+              </h3>
+              <button
+                type="button"
+                onClick={() => setProductSummaryDrawerOpen(false)}
+                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 border-b border-slate-100">
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search Product..."
+                  value={summarySearch}
+                  onChange={(e) => setSummarySearch(e.target.value)}
+                  className="w-full pl-8 pr-3 py-1.5 border border-slate-200 rounded text-xs focus:outline-none focus:border-[#5948DB]"
+                />
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {filteredProductSummary.map((item, idx) => (
                 <div
                   key={idx}
-                  className={`bg-white rounded-md border border-slate-200 ${k.border} p-3.5 shadow-2xs`}
+                  className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs"
                 >
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                    {k.label}
-                  </span>
-                  <div
-                    className={`text-lg font-extrabold font-mono mt-1 ${k.color}`}
-                  >
-                    {k.val}
+                  <div className="text-xs font-semibold text-slate-600 mb-2">{item.name}</div>
+                  <div className="grid grid-cols-3 text-center gap-2">
+                    <div>
+                      <div className="text-sm font-bold text-[#5948DB]">{item.loaded}</div>
+                      <div className="text-[9px] font-bold text-slate-400 uppercase">LOADED</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-[#48BB78]">{item.delivered}</div>
+                      <div className="text-[9px] font-bold text-slate-400 uppercase">
+                        DELIVERED
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-[#E05D38]">{item.returned}</div>
+                      <div className="text-[9px] font-bold text-slate-400 uppercase">RETURNED</div>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
-
-            {/* Filter Stock History Panel (Figma 3:1700) */}
-            <div className="bg-white rounded-md border border-slate-200 p-4 shadow-2xs space-y-3">
-              <div className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                Filter Stock History
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">
-                    From Date
-                  </label>
-                  <input
-                    type="date"
-                    value={historyFromDate}
-                    onChange={(e) => setHistoryFromDate(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-md text-slate-800"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">
-                    To Date
-                  </label>
-                  <input
-                    type="date"
-                    value={historyToDate}
-                    onChange={(e) => setHistoryToDate(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-md text-slate-800"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">
-                    Truck ID
-                  </label>
-                  <select
-                    value={historyTruckFilter}
-                    onChange={(e) => setHistoryTruckFilter(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-md text-slate-800 font-medium"
-                  >
-                    <option value="All">Select Truck</option>
-                    {trucks.map((t) => (
-                      <option key={t.id} value={t.truck_id}>
-                        {t.truck_id}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">
-                    Product
-                  </label>
-                  <select
-                    value={historyProductFilter}
-                    onChange={(e) => setHistoryProductFilter(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-md text-slate-800 font-medium"
-                  >
-                    <option value="All">5 gal water</option>
-                    {inventory.map((i) => (
-                      <option key={i.id} value={i.product_name}>
-                        {i.product_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setHistoryFromDate("");
-                    setHistoryToDate("");
-                    setHistoryTruckFilter("All");
-                    setHistoryProductFilter("All");
-                    setHistorySearch("");
-                  }}
-                  className="py-1.5 px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-md text-xs transition-colors cursor-pointer"
-                >
-                  Reset
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    addToast("Stock history filters applied", "success")
-                  }
-                  className="py-1.5 px-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold rounded-md text-xs shadow-2xs transition-colors cursor-pointer"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-
-            {/* Stock Transaction History Table (Figma 3:1700) */}
-            <div className="bg-white rounded-md border border-slate-200 shadow-2xs overflow-hidden">
-              <div className="bg-linear-to-r from-[#0F172A] via-[#1E3A5F] to-[#3B6998] px-5 py-3 flex items-center justify-between text-white">
-                <h3 className="text-sm font-bold tracking-wide">
-                  Stock Transaction History
-                </h3>
-                <button
-                  type="button"
-                  onClick={handleExportCSV}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-md text-xs font-bold shadow-2xs transition-colors cursor-pointer"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Export</span>
-                </button>
-              </div>
-
-              <div className="px-5 py-3 bg-white border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
-                <div className="flex items-center gap-1.5">
-                  <span>Show</span>
-                  <select className="px-2 py-1 border border-slate-200 rounded bg-white text-slate-800 font-semibold">
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                  </select>
-                  <span>entries</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span>Search:</span>
-                  <input
-                    type="text"
-                    placeholder="Search history..."
-                    value={historySearch}
-                    onChange={(e) => setHistorySearch(e.target.value)}
-                    className="w-56 px-3 py-1.5 bg-white border border-slate-200 rounded text-xs text-slate-800"
-                  />
-                </div>
-              </div>
-
-              <div className="overflow-x-auto touch-pan-x">
-                <table className="w-full text-left text-xs border-collapse min-w-[900px]">
-                  <thead className="bg-[#5948DB] text-[11px] font-bold text-white uppercase tracking-wider border-b border-[#4A3AC9]">
-                    <tr>
-                      <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                        DATE
-                      </th>
-                      <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                        TRUCK ID
-                      </th>
-                      <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                        CITY
-                      </th>
-                      <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                        PRODUCT ID
-                      </th>
-                      <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                        PRODUCT NAME
-                      </th>
-                      <th className="px-4 py-3 text-center border-r border-[#7161F0]/60">
-                        QUANTITY
-                      </th>
-                      <th className="px-4 py-3 text-center border-r border-[#7161F0]/60">
-                        IN/OUT
-                      </th>
-                      <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                        TIME
-                      </th>
-                      <th className="px-4 py-3 border-r border-[#7161F0]/60">
-                        ITEM TYPE
-                      </th>
-                      <th className="px-4 py-3">DONE BY</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 font-medium">
-                    {filteredHistory.map((h) => (
-                      <tr
-                        key={h.id}
-                        className="hover:bg-slate-50/90 transition-colors"
-                      >
-                        <td className="px-4 py-3 font-mono text-slate-600 border-r border-slate-200">
-                          {h.date}
-                        </td>
-                        <td className="px-4 py-3 font-mono font-bold text-slate-900 border-r border-slate-200">
-                          {h.truck_id}
-                        </td>
-                        <td className="px-4 py-3 font-bold text-slate-700 border-r border-slate-200">
-                          {h.city}
-                        </td>
-                        <td className="px-4 py-3 font-mono text-slate-700 border-r border-slate-200">
-                          {h.product_id}
-                        </td>
-                        <td className="px-4 py-3 font-bold text-slate-900 border-r border-slate-200">
-                          {h.product_name}
-                        </td>
-                        <td className="px-4 py-3 text-center font-mono font-extrabold text-slate-900 border-r border-slate-200">
-                          {h.quantity}
-                        </td>
-                        <td className="px-4 py-3 text-center border-r border-slate-200">
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                              h.in_out === "IN"
-                                ? "bg-emerald-100 text-emerald-700"
-                                : "bg-amber-100 text-amber-700"
-                            }`}
-                          >
-                            {h.in_out}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 font-mono text-slate-600 border-r border-slate-200">
-                          {h.time}
-                        </td>
-                        <td className="px-4 py-3 text-slate-700 border-r border-slate-200">
-                          {h.item_type}
-                        </td>
-                        <td className="px-4 py-3 font-semibold text-slate-800">
-                          {h.done_by}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Add New Truck Modal (Figma 3:1708) */}
-      {showAddTruckModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg w-full max-w-md shadow-2xl overflow-hidden">
-            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
-              <h2 className="text-sm font-bold">Add New Truck</h2>
-              <button
-                type="button"
-                onClick={() => setShowAddTruckModal(false)}
-                className="text-white/80 hover:text-white text-lg font-bold cursor-pointer"
-              >
-                ×
-              </button>
-            </div>
-            <form onSubmit={handleCreateTruck} className="p-5 space-y-3.5 text-xs">
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Truck ID *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. T6360"
-                  value={newTruckForm.truck_id}
-                  onChange={(e) =>
-                    setNewTruckForm({ ...newTruckForm, truck_id: e.target.value })
-                  }
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900 font-mono font-bold"
-                />
-              </div>
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  In-Charge (Salesman ID) *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. 32"
-                  value={newTruckForm.in_charge}
-                  onChange={(e) =>
-                    setNewTruckForm({
-                      ...newTruckForm,
-                      in_charge: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900"
-                />
-              </div>
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Assistants
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. 79"
-                  value={newTruckForm.assistants}
-                  onChange={(e) =>
-                    setNewTruckForm({
-                      ...newTruckForm,
-                      assistants: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900"
-                />
-              </div>
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Route *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. 6360"
-                  value={newTruckForm.route}
-                  onChange={(e) =>
-                    setNewTruckForm({ ...newTruckForm, route: e.target.value })
-                  }
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900 font-mono"
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setShowAddTruckModal(false)}
-                  className="px-4 py-1.5 rounded bg-slate-200 text-slate-700 font-bold cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-1.5 rounded bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold cursor-pointer"
-                >
-                  Save Truck
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Product Summary Modal (Figma 3:1712) */}
-      {showProductSummaryModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg w-full max-w-2xl shadow-2xl overflow-hidden">
-            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
-              <h2 className="text-sm font-bold">Product Summary</h2>
-              <button
-                type="button"
-                onClick={() => setShowProductSummaryModal(false)}
-                className="text-white/80 hover:text-white text-lg font-bold cursor-pointer"
-              >
-                ×
-              </button>
-            </div>
-            <div className="p-5 space-y-4 text-xs">
-              <div className="border border-slate-200 rounded-md overflow-hidden">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#5948DB] text-white font-semibold uppercase text-[11px]">
-                    <tr>
-                      <th className="px-4 py-2.5 border-r border-[#7161F0]/60">
-                        PRODUCT ID
-                      </th>
-                      <th className="px-4 py-2.5 border-r border-[#7161F0]/60">
-                        PRODUCT NAME
-                      </th>
-                      <th className="px-4 py-2.5 text-center border-r border-[#7161F0]/60">
-                        NORMAL STOCK
-                      </th>
-                      <th className="px-4 py-2.5 text-center">DAMAGED STOCK</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 font-medium">
-                    <tr>
-                      <td className="px-4 py-2.5 font-mono font-bold text-slate-800 border-r border-slate-200">
-                        015
-                      </td>
-                      <td className="px-4 py-2.5 font-bold text-slate-900 border-r border-slate-200">
-                        5 gal water
-                      </td>
-                      <td className="px-4 py-2.5 text-center font-mono font-bold text-blue-700 border-r border-slate-200">
-                        2,257
-                      </td>
-                      <td className="px-4 py-2.5 text-center font-mono font-bold text-rose-600">
-                        0
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-2.5 font-mono font-bold text-slate-800 border-r border-slate-200">
-                        017
-                      </td>
-                      <td className="px-4 py-2.5 font-bold text-slate-900 border-r border-slate-200">
-                        empty bottle
-                      </td>
-                      <td className="px-4 py-2.5 text-center font-mono font-bold text-blue-700 border-r border-slate-200">
-                        852
-                      </td>
-                      <td className="px-4 py-2.5 text-center font-mono font-bold text-rose-600">
-                        0
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-2.5 font-mono font-bold text-slate-800 border-r border-slate-200">
-                        018
-                      </td>
-                      <td className="px-4 py-2.5 font-bold text-slate-900 border-r border-slate-200">
-                        COOLER
-                      </td>
-                      <td className="px-4 py-2.5 text-center font-mono font-bold text-blue-700 border-r border-slate-200">
-                        0
-                      </td>
-                      <td className="px-4 py-2.5 text-center font-mono font-bold text-rose-600">
-                        0
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowProductSummaryModal(false)}
-                  className="px-4 py-1.5 rounded bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* View Truck Stock Modal (Figma 3:1716) */}
-      {viewTruckStock && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg w-full max-w-lg shadow-2xl overflow-hidden">
-            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
-              <h2 className="text-sm font-bold">
-                Truck Stock Details — {viewTruckStock.truck_id}
-              </h2>
-              <button
-                type="button"
-                onClick={() => setViewTruckStock(null)}
-                className="text-white/80 hover:text-white text-lg font-bold cursor-pointer"
-              >
-                ×
-              </button>
-            </div>
-            <div className="p-5 space-y-4 text-xs">
-              <div className="border border-slate-200 rounded-md overflow-hidden">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#5948DB] text-white font-semibold uppercase text-[11px]">
-                    <tr>
-                      <th className="px-3.5 py-2.5 border-r border-[#7161F0]/60">
-                        PRODUCT
-                      </th>
-                      <th className="px-3.5 py-2.5 text-center border-r border-[#7161F0]/60">
-                        NORMAL STOCK
-                      </th>
-                      <th className="px-3.5 py-2.5 text-center">
-                        DAMAGED STOCK
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200">
-                    {(viewTruckStock.stock_items || []).map((s, idx) => (
-                      <tr key={idx}>
-                        <td className="px-3.5 py-2.5 font-bold text-slate-900 border-r border-slate-200">
-                          {s.name}
-                        </td>
-                        <td className="px-3.5 py-2.5 text-center font-mono font-bold text-blue-700 border-r border-slate-200">
-                          {s.filled}
-                        </td>
-                        <td className="px-3.5 py-2.5 text-center font-mono font-bold text-rose-600">
-                          {s.damaged}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setViewTruckStock(null)}
-                  className="px-4 py-1.5 rounded bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Manage Truck Stock Modal (Figma 3:1720) */}
-      {manageTruckStock && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg w-full max-w-md shadow-2xl overflow-hidden">
-            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
-              <h2 className="text-sm font-bold">
-                Manage Car Stock — {manageTruckStock.truck_id}
-              </h2>
-              <button
-                type="button"
-                onClick={() => setManageTruckStock(null)}
-                className="text-white/80 hover:text-white text-lg font-bold cursor-pointer"
-              >
-                ×
-              </button>
-            </div>
-            <form
-              onSubmit={handleManageTruckSubmit}
-              className="p-5 space-y-3.5 text-xs"
-            >
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Product
-                </label>
-                <select
-                  value={manageForm.product_name}
-                  onChange={(e) =>
-                    setManageForm({
-                      ...manageForm,
-                      product_name: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md font-medium text-slate-900"
-                >
-                  {inventory.map((i) => (
-                    <option key={i.id} value={i.product_name}>
-                      {i.product_name} ({i.product_id})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-700 font-semibold block mb-1">
-                    IN / OUT
-                  </label>
-                  <select
-                    value={manageForm.action_type}
-                    onChange={(e) =>
-                      setManageForm({
-                        ...manageForm,
-                        action_type: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md font-medium text-slate-900"
-                  >
-                    <option value="OUT">OUT (Load to Truck)</option>
-                    <option value="IN">IN (Return to Store)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-slate-700 font-semibold block mb-1">
-                    Item Type
-                  </label>
-                  <select
-                    value={manageForm.item_type}
-                    onChange={(e) =>
-                      setManageForm({
-                        ...manageForm,
-                        item_type: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md font-medium text-slate-900"
-                  >
-                    <option value="NORMAL">NORMAL</option>
-                    <option value="DAMAGED">DAMAGED</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Quantity
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  required
-                  value={manageForm.quantity}
-                  onChange={(e) =>
-                    setManageForm({ ...manageForm, quantity: e.target.value })
-                  }
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md font-mono font-bold text-slate-900"
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setManageTruckStock(null)}
-                  className="px-4 py-1.5 rounded bg-slate-200 text-slate-700 font-bold cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 rounded bg-[#10B981] hover:bg-[#059669] text-white font-bold cursor-pointer"
-                >
-                  Submit
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Update Inventory Modal (Figma 3:1692) */}
-      {showStockModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg w-full max-w-md shadow-2xl overflow-hidden">
-            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
-              <h2 className="text-sm font-bold">Update Inventory</h2>
-              <button
-                type="button"
-                onClick={() => setShowStockModal(false)}
-                className="text-white/80 hover:text-white text-lg font-bold cursor-pointer"
-              >
-                ×
-              </button>
-            </div>
-            <form onSubmit={handleStockUpdate} className="p-5 space-y-3.5 text-xs">
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Select Product
-                </label>
-                <select
-                  value={selectedProduct}
-                  onChange={(e) => setSelectedProduct(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900 font-medium"
-                >
-                  {inventory.map((item) => (
-                    <option key={item.id} value={item.product_name}>
-                      {item.product_name} ({item.product_id})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Action Type
-                </label>
-                <select
-                  value={stockType}
-                  onChange={(e) => setStockType(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900 font-medium"
-                >
-                  <option value="IN">IN (Add Stock)</option>
-                  <option value="OUT">OUT (Remove Stock)</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Quantity
-                </label>
-                <input
-                  type="number"
-                  required
-                  min="1"
-                  value={stockQty}
-                  onChange={(e) => setStockQty(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900 font-mono font-bold"
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setShowStockModal(false)}
-                  className="px-4 py-1.5 rounded bg-slate-200 text-slate-700 font-bold cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-1.5 rounded bg-[#10B981] hover:bg-[#059669] text-white font-bold cursor-pointer"
-                >
-                  Update
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Add New Item Modal (Figma 3:1696) */}
-      {showAddProductModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg w-full max-w-md shadow-2xl overflow-hidden">
-            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
-              <h2 className="text-sm font-bold">Add New Item</h2>
-              <button
-                type="button"
-                onClick={() => setShowAddProductModal(false)}
-                className="text-white/80 hover:text-white text-lg font-bold cursor-pointer"
-              >
-                ×
-              </button>
-            </div>
-            <form onSubmit={handleAddProduct} className="p-5 space-y-3.5 text-xs">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-700 font-semibold block mb-1">
-                    Product ID *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. 019"
-                    value={newProduct.product_id}
-                    onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        product_id: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md font-mono font-bold text-slate-900"
-                  />
-                </div>
-                <div>
-                  <label className="text-slate-700 font-semibold block mb-1">
-                    Price (AED) *
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={newProduct.price}
-                    onChange={(e) =>
-                      setNewProduct({ ...newProduct, price: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md font-mono font-bold text-slate-900"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Product Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. 200ml Cup Water Carton"
-                  value={newProduct.name}
-                  onChange={(e) =>
-                    setNewProduct({ ...newProduct, name: e.target.value })
-                  }
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900"
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setShowAddProductModal(false)}
-                  className="px-4 py-1.5 rounded bg-slate-200 text-slate-700 font-bold cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-1.5 rounded bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold cursor-pointer"
-                >
-                  Add Item
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Truck Details Modal */}
-      {editingTruck && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg w-full max-w-md shadow-2xl overflow-hidden">
-            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
-              <h2 className="text-sm font-bold">
-                Edit Truck ({editingTruck.truck_id})
-              </h2>
-              <button
-                type="button"
-                onClick={() => setEditingTruck(null)}
-                className="text-white/80 hover:text-white text-lg font-bold cursor-pointer"
-              >
-                ×
-              </button>
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setTrucks((prev) =>
-                  prev.map((t) =>
-                    t.id === editingTruck.id ? editingTruck : t
-                  )
-                );
-                setEditingTruck(null);
-                addToast(`Truck ${editingTruck.truck_id} updated`, "success");
-              }}
-              className="p-5 space-y-3 text-xs"
-            >
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  In-Charge
-                </label>
-                <input
-                  type="text"
-                  value={editingTruck.in_charge}
-                  onChange={(e) =>
-                    setEditingTruck({
-                      ...editingTruck,
-                      in_charge: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900"
-                />
-              </div>
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Assistants
-                </label>
-                <input
-                  type="text"
-                  value={editingTruck.assistants}
-                  onChange={(e) =>
-                    setEditingTruck({
-                      ...editingTruck,
-                      assistants: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900"
-                />
-              </div>
-              <div>
-                <label className="text-slate-700 font-semibold block mb-1">
-                  Route
-                </label>
-                <input
-                  type="text"
-                  value={editingTruck.route}
-                  onChange={(e) =>
-                    setEditingTruck({ ...editingTruck, route: e.target.value })
-                  }
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900"
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setEditingTruck(null)}
-                  className="px-4 py-1.5 rounded bg-slate-200 text-slate-700 font-bold cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 rounded bg-[#2563EB] text-white font-bold cursor-pointer"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}

@@ -1,386 +1,467 @@
 "use client";
+
 import React, { useState, useMemo } from "react";
-import { Plus, Download, X, Search } from "lucide-react";
+import Header from "@/components/Header";
+import { useToast } from "@/components/Toast";
+import { Home, ArrowUpDown, ChevronDown, X } from "lucide-react";
 
 const ALL_MODULES = [
-  "Dashboard",
-  "Utilities",
-  "Orders",
-  "Invoices",
-  "Customers",
-  "Reports",
-  "Wallet",
-  "Cashier",
-  "Zones",
-  "Routes",
-  "Salesman",
-  "Masters",
-  "Privileges",
+  "dashboard",
+  "utilities",
+  "orders",
+  "customers",
+  "reports",
+  "wallet",
+  "zones",
+  "routes",
+  "salesman",
+  "masters",
+  "privileges",
+  "cities",
+  "cashier",
+  "offer_commission",
 ];
 
-const INITIAL_USERS = [
-  { id: "U-01", username: "admin", email: "admin@alqattara.ae", role: "Super Admin", modules: [...ALL_MODULES], status: "ACTIVE" },
-  { id: "U-02", username: "operations_mgr", email: "ops@alqattara.ae", role: "Manager", modules: ["Dashboard", "Utilities", "Orders", "Invoices", "Customers", "Reports", "Zones", "Routes", "Salesman"], status: "ACTIVE" },
-  { id: "U-03", username: "cashier_alain", email: "cashier@alqattara.ae", role: "Cashier", modules: ["Dashboard", "Orders", "Invoices", "Wallet", "Cashier", "Reports"], status: "ACTIVE" },
-  { id: "U-04", username: "store_supervisor", email: "store@alqattara.ae", role: "Supervisor", modules: ["Dashboard", "Utilities", "Orders", "Routes", "Salesman"], status: "ACTIVE" },
-  { id: "U-05", username: "accounts_exec", email: "accounts@alqattara.ae", role: "Accountant", modules: ["Dashboard", "Invoices", "Reports", "Wallet", "Cashier"], status: "ACTIVE" },
-  { id: "U-06", username: "dispatch_desk", email: "dispatch@alqattara.ae", role: "Dispatcher", modules: ["Dashboard", "Orders", "Customers", "Zones", "Routes", "Salesman"], status: "ACTIVE" },
+const INITIAL_PRIVILEGES = [
+  {
+    id: 1,
+    class_name: "ADMINA",
+    readonly: "",
+    read_write:
+      "dashboard,utilities,orders,customers,reports,wallet,zones,routes,salesman,masters,privileges,cities,cashier,offer_commission",
+    registered_on: "27/10/2025",
+  },
+  {
+    id: 2,
+    class_name: "customercare",
+    readonly: "dashboard,orders,customers,reports,wallet,zones,routes,salesman",
+    read_write: "orders,customers,reports,salesman,cities",
+    registered_on: "20/09/2025",
+  },
+  {
+    id: 3,
+    class_name: "test",
+    readonly: "",
+    read_write: "masters,privileges,cashier",
+    registered_on: "14/09/2025",
+  },
+  {
+    id: 4,
+    class_name: "CASHIER",
+    readonly: "dashboard",
+    read_write: "orders,customers,reports,salesman,cities,cashier",
+    registered_on: "13/09/2025",
+  },
+  {
+    id: 5,
+    class_name: "ADMINISTRATOR",
+    readonly: "utilities,orders,customers,reports,wallet,zones,routes,salesman,cashier",
+    read_write: "cities",
+    registered_on: "15/07/2025",
+  },
+  {
+    id: 6,
+    class_name: "STORE KEEPER",
+    readonly: "utilities",
+    read_write: "utilities,cities",
+    registered_on: "15/07/2025",
+  },
+  {
+    id: 7,
+    class_name: "AAdmin",
+    readonly: "",
+    read_write:
+      "dashboard,utilities,orders,customers,reports,wallet,zones,routes,salesman,masters,privileges,cities,cashier",
+    registered_on: "15/07/2025",
+  },
+  {
+    id: 8,
+    class_name: "ADMIN",
+    readonly: "",
+    read_write:
+      "dashboard,utilities,orders,customers,reports,wallet,zones,routes,salesman,masters,privileges,cities",
+    registered_on: "28/02/2025",
+  },
 ];
 
 export default function PrivilegesPage() {
-  const [users, setUsers] = useState(INITIAL_USERS);
+  const { addToast } = useToast();
+  const [privileges, setPrivileges] = useState(INITIAL_PRIVILEGES);
+  const [viewMode, setViewMode] = useState("list"); // "list" | "add"
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Modal State (Figma 3:1887 Add New Privilege)
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
-  const [form, setForm] = useState({
-    id: "",
-    username: "",
-    email: "",
-    role: "Manager",
-    password: "",
-    modules: ["Dashboard", "Orders", "Customers"],
-    status: "ACTIVE",
-  });
+  const [className, setClassName] = useState("");
+  const [readOnlyModules, setReadOnlyModules] = useState([]);
+  const [writeModules, setWriteModules] = useState([]);
+  const [openReadOnlyDropdown, setOpenReadOnlyDropdown] = useState(false);
+  const [openWriteDropdown, setOpenWriteDropdown] = useState(false);
 
-  const filteredUsers = useMemo(() => {
+  const filteredPrivileges = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return users.filter(
-      (u) =>
-        !q ||
-        u.id.toLowerCase().includes(q) ||
-        u.username.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q) ||
-        u.role.toLowerCase().includes(q)
+    if (!q) return privileges;
+    return privileges.filter(
+      (p) =>
+        p.class_name.toLowerCase().includes(q) ||
+        p.readonly.toLowerCase().includes(q) ||
+        p.read_write.toLowerCase().includes(q) ||
+        p.registered_on.toLowerCase().includes(q)
     );
-  }, [users, searchQuery]);
+  }, [privileges, searchQuery]);
 
-  const openNewModal = () => {
-    setEditingUser(null);
-    setForm({
-      id: `U-0${users.length + 1}`,
-      username: "",
-      email: "",
-      role: "Manager",
-      password: "",
-      modules: ["Dashboard", "Orders", "Customers"],
-      status: "ACTIVE",
-    });
-    setModalOpen(true);
+  const totalPages = Math.max(1, Math.ceil(filteredPrivileges.length / entriesPerPage));
+  const paginatedRows = filteredPrivileges.slice(
+    (currentPage - 1) * entriesPerPage,
+    currentPage * entriesPerPage
+  );
+
+  const openAddView = () => {
+    setClassName("");
+    setReadOnlyModules([]);
+    setWriteModules([]);
+    setOpenReadOnlyDropdown(false);
+    setOpenWriteDropdown(false);
+    setViewMode("add");
   };
 
-  const openEditModal = (row) => {
-    setEditingUser(row);
-    setForm({ ...row, password: "" });
-    setModalOpen(true);
-  };
-
-  const toggleModuleInForm = (mod) => {
-    setForm((prev) => {
-      const exists = prev.modules.includes(mod);
-      return {
-        ...prev,
-        modules: exists ? prev.modules.filter((m) => m !== mod) : [...prev.modules, mod],
-      };
-    });
-  };
-
-  const handleSave = (e) => {
-    e.preventDefault();
-    if (!form.username.trim()) return;
-    if (editingUser) {
-      setUsers((prev) => prev.map((u) => (u.id === editingUser.id ? { ...u, ...form } : u)));
+  const toggleModule = (list, setList, mod) => {
+    if (list.includes(mod)) {
+      setList(list.filter((m) => m !== mod));
     } else {
-      setUsers((prev) => [{ ...form }, ...prev]);
+      setList([...list, mod]);
     }
-    setModalOpen(false);
   };
 
-  const handleDelete = (id) => {
-    setUsers((prev) => prev.filter((u) => u.id !== id));
-  };
+  const handleRegister = (e) => {
+    e.preventDefault();
+    if (!className.trim()) {
+      addToast("Please enter a Previlage Class name", "error");
+      return;
+    }
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const yyyy = today.getFullYear();
 
-  const handleExportCSV = () => {
-    const headers = ["USER ID", "USERNAME", "EMAIL", "ROLE", "MODULES ACCESS", "STATUS"];
-    const rows = filteredUsers.map((u) => [u.id, u.username, u.email, u.role, u.modules.join(" | "), u.status]);
-    const csv = [headers, ...rows].map((row) => row.map((v) => `"${v}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "privileges-list.csv";
-    a.click();
-    URL.revokeObjectURL(url);
+    const newItem = {
+      id: Date.now(),
+      class_name: className.trim(),
+      readonly: readOnlyModules.join(","),
+      read_write: writeModules.join(","),
+      registered_on: `${dd}/${mm}/${yyyy}`,
+    };
+    setPrivileges((prev) => [newItem, ...prev]);
+    addToast(`Previlage class "${className}" created successfully`, "success");
+    setViewMode("list");
   };
 
   return (
-    <div className="space-y-5">
-      {/* Top Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="text-[13px] text-slate-400 font-medium">
-          Home <span className="mx-1.5 text-slate-300">/</span>{" "}
-          <span className="text-slate-700 font-semibold">Privileges</span>
-        </div>
-        <button
-          onClick={openNewModal}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#FF5A5F] hover:bg-[#e84c51] text-white text-[13px] font-semibold shadow-sm transition cursor-pointer"
-        >
-          <Plus size={15} /> Add New
-        </button>
-      </div>
+    <div className="min-h-screen bg-[#F4F6F9] flex flex-col">
+      <Header title="Previlages" subtitle="Manage Previlages" />
 
-      {/* Privileges Table Card (Figma 3:1886) */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
-        <div className="bg-linear-to-r from-[#0F172A] via-[#1E3A5F] to-[#3B6998] px-5 py-3.5 flex items-center justify-between">
-          <h3 className="text-[15px] font-bold text-white tracking-wide">User Privileges & Roles</h3>
-          <button
-            onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white text-[12px] font-semibold transition cursor-pointer"
-          >
-            <Download size={14} /> Export
-          </button>
-        </div>
-
-        <div className="px-5 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 text-[12.5px] text-slate-600">
-          <div className="flex items-center gap-2">
-            <span>Show</span>
-            <select
-              value={entriesPerPage}
-              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-              className="h-8 px-2 rounded-md border border-slate-200 text-[12.5px] bg-white focus:outline-none focus:border-[#5948DB]"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-            </select>
-            <span>entries</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-500">Search:</span>
-            <div className="relative">
-              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search privileges..."
-                className="h-8 pl-8 pr-3 w-52 rounded-md border border-slate-200 text-[12.5px] focus:outline-none focus:border-[#5948DB]"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#5948DB] text-white text-[11px] font-bold uppercase tracking-wider">
-                <th className="py-3 px-4">USER ID</th>
-                <th className="py-3 px-4">USERNAME</th>
-                <th className="py-3 px-4">EMAIL</th>
-                <th className="py-3 px-4">ROLE</th>
-                <th className="py-3 px-4">MODULES ACCESS</th>
-                <th className="py-3 px-4">STATUS</th>
-                <th className="py-3 px-4 text-center">ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-[12.5px] text-slate-700">
-              {filteredUsers.slice(0, entriesPerPage).map((row, idx) => (
-                <tr key={row.id} className={idx % 2 === 0 ? "bg-white hover:bg-slate-50/70" : "bg-slate-50/40 hover:bg-slate-50/90"}>
-                  <td className="py-3 px-4 font-bold text-[#5948DB]">{row.id}</td>
-                  <td className="py-3 px-4 font-semibold text-slate-800">{row.username}</td>
-                  <td className="py-3 px-4 text-slate-500">{row.email}</td>
-                  <td className="py-3 px-4">
-                    <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 text-[#5948DB] text-[11px] font-semibold">
-                      {row.role}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex flex-wrap gap-1 max-w-md">
-                      {row.modules.map((m) => (
-                        <span
-                          key={m}
-                          className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10.5px] font-medium"
-                        >
-                          {m}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10.5px] font-bold ${
-                        row.status === "ACTIVE"
-                          ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                          : "bg-rose-50 text-rose-600 border border-rose-200"
-                      }`}
-                    >
-                      {row.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <button
-                        onClick={() => openEditModal(row)}
-                        className="px-2.5 py-1 rounded bg-[#10B981] hover:bg-[#059669] text-white text-[11px] font-semibold transition cursor-pointer"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(row.id)}
-                        className="px-2.5 py-1 rounded bg-[#FF5A5F] hover:bg-[#e0484d] text-white text-[11px] font-semibold transition cursor-pointer"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="px-5 py-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[12px] text-slate-500">
-          <span>
-            Showing 1 to {Math.min(entriesPerPage, filteredUsers.length)} of {filteredUsers.length} entries
+      {/* Figma Black Top Banner */}
+      <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2.5 text-sm">
+          <span className="font-bold text-base tracking-tight">Previlages</span>
+          <Home className="w-3.5 h-3.5 text-slate-300" />
+          <span className="text-slate-300 text-xs">
+            - {viewMode === "add" ? "Create Previlages" : "Manage Previlages"} - ALL
           </span>
-          <div className="flex items-center gap-1">
-            <button className="px-2.5 py-1 rounded border border-slate-200 text-slate-500 hover:bg-slate-50">Previous</button>
-            <button className="px-2.5 py-1 rounded bg-[#5948DB] text-white font-semibold">1</button>
-            <button className="px-2.5 py-1 rounded border border-slate-200 text-slate-500 hover:bg-slate-50">Next</button>
-          </div>
         </div>
+        {viewMode === "list" && (
+          <button
+            type="button"
+            onClick={openAddView}
+            className="px-3.5 py-1.5 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+          >
+            Add New
+          </button>
+        )}
       </div>
 
-      {/* Modal: Add New / Edit Privilege (Figma 3:1887) */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-[1px] p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-200">
-            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
-              <h3 className="text-[15px] font-bold">
-                {editingUser ? `Edit User Privileges - ${editingUser.username}` : "Add New User Privilege"}
-              </h3>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition cursor-pointer"
-              >
-                <X size={15} />
-              </button>
+      <div className="p-6 flex-1">
+        {viewMode === "list" ? (
+          /* Main Privileges Table Card (Figma privillages.png) */
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            {/* Dark Navy-to-Teal Header Banner */}
+            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+              <h2 className="text-white font-bold text-base tracking-wide">
+                Control and Customize User Access Levels
+              </h2>
             </div>
-            <form onSubmit={handleSave} className="p-5 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Username *
-                  </label>
+
+            {/* Show Entries & Search Bar */}
+            <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
+              <div className="flex items-center gap-2">
+                <span>Show</span>
+                <select
+                  value={entriesPerPage}
+                  onChange={(e) => {
+                    setEntriesPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="border border-slate-300 rounded px-2 py-1 bg-white text-slate-700 focus:outline-none focus:border-[#5948DB]"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+                <span>entries</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span>Search:</span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="border border-slate-300 rounded px-2.5 py-1 w-44 focus:outline-none focus:border-[#5948DB]"
+                />
+              </div>
+            </div>
+
+            {/* Exact 4-Column Figma Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="py-3 px-6">
+                      <div className="flex items-center justify-between">
+                        <span>CLASS NAME</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <span>READONLY</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <span>READ WRITE</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-6">
+                      <div className="flex items-center justify-between">
+                        <span>REGISTERED ON</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200/70 text-[12px] text-slate-700">
+                  {paginatedRows.map((row) => (
+                    <tr key={row.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-3.5 px-6 font-medium text-slate-800">{row.class_name}</td>
+                      <td className="py-3.5 px-4 text-slate-600 break-all">{row.readonly}</td>
+                      <td className="py-3.5 px-4 text-slate-600 break-all">{row.read_write}</td>
+                      <td className="py-3.5 px-6 text-slate-600 whitespace-nowrap">{row.registered_on}</td>
+                    </tr>
+                  ))}
+                  {paginatedRows.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center text-slate-400">
+                        No matching privilege records found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Footer Pagination */}
+            <div className="px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+              <div>
+                Showing {filteredPrivileges.length === 0 ? 0 : (currentPage - 1) * entriesPerPage + 1} to{" "}
+                {Math.min(currentPage * entriesPerPage, filteredPrivileges.length)} of{" "}
+                {filteredPrivileges.length} entries
+              </div>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-6 h-6 rounded-full text-[11px] flex items-center justify-center transition cursor-pointer ${
+                      currentPage === page
+                        ? "bg-[#5948DB] text-white font-semibold"
+                        : "text-slate-500 hover:bg-slate-100"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Previlage Class Registration Card (Figma add new-1.png) */
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-visible">
+            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4 rounded-t-lg">
+              <h2 className="text-white font-bold text-base tracking-wide">
+                Previlage Class Registration
+              </h2>
+            </div>
+
+            <form onSubmit={handleRegister} className="p-8 space-y-5 max-w-6xl mx-auto">
+              {/* Previlage Class */}
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Previlage Class
+                </label>
+                <div className="md:col-span-9">
                   <input
                     type="text"
-                    required
-                    value={form.username}
-                    onChange={(e) => setForm({ ...form, username: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
+                    placeholder="Class name"
+                    value={className}
+                    onChange={(e) => setClassName(e.target.value)}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 focus:outline-none focus:border-[#5948DB]"
                   />
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Role *
-                  </label>
-                  <select
-                    value={form.role}
-                    onChange={(e) => setForm({ ...form, role: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#5948DB]"
-                  >
-                    <option value="Super Admin">Super Admin</option>
-                    <option value="Manager">Manager</option>
-                    <option value="Supervisor">Supervisor</option>
-                    <option value="Cashier">Cashier</option>
-                    <option value="Accountant">Accountant</option>
-                    <option value="Dispatcher">Dispatcher</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Status
-                  </label>
-                  <select
-                    value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#5948DB]"
-                  >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
-                  </select>
                 </div>
               </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-[11.5px] font-semibold text-slate-600">
-                    Module Access Permissions
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setForm((prev) => ({
-                        ...prev,
-                        modules: prev.modules.length === ALL_MODULES.length ? [] : [...ALL_MODULES],
-                      }))
-                    }
-                    className="text-[11px] font-semibold text-[#5948DB] hover:underline cursor-pointer"
+              {/* ReadOnly Access */}
+              <div className="grid grid-cols-1 md:grid-cols-12 items-start gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600 pt-2">
+                  ReadOnly Access
+                </label>
+                <div className="md:col-span-9 relative">
+                  <div
+                    onClick={() => {
+                      setOpenReadOnlyDropdown(!openReadOnlyDropdown);
+                      setOpenWriteDropdown(false);
+                    }}
+                    className="min-h-[36px] w-full border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-700 flex items-center justify-between flex-wrap gap-1.5 cursor-pointer bg-white"
                   >
-                    {form.modules.length === ALL_MODULES.length ? "Clear All" : "Select All"}
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 rounded-lg border border-slate-200 bg-slate-50/50">
-                  {ALL_MODULES.map((mod) => (
-                    <label
-                      key={mod}
-                      className="flex items-center gap-2 text-[12px] text-slate-700 font-medium cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={form.modules.includes(mod)}
-                        onChange={() => toggleModuleInForm(mod)}
-                        className="rounded border-slate-300 text-[#5948DB] focus:ring-[#5948DB]"
-                      />
-                      <span>{mod}</span>
-                    </label>
-                  ))}
+                    {readOnlyModules.length === 0 ? (
+                      <span className="text-slate-400">Select ReadOnly Access</span>
+                    ) : (
+                      <div className="flex flex-wrap gap-1">
+                        {readOnlyModules.map((mod) => (
+                          <span
+                            key={mod}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px]"
+                          >
+                            {mod}
+                            <X
+                              className="w-3 h-3 cursor-pointer hover:text-rose-600"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleModule(readOnlyModules, setReadOnlyModules, mod);
+                              }}
+                            />
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-auto shrink-0" />
+                  </div>
+
+                  {openReadOnlyDropdown && (
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded shadow-lg z-20 max-h-48 overflow-y-auto p-2 grid grid-cols-2 sm:grid-cols-3 gap-1">
+                      {ALL_MODULES.map((mod) => (
+                        <label
+                          key={mod}
+                          className="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 text-xs text-slate-700 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={readOnlyModules.includes(mod)}
+                            onChange={() => toggleModule(readOnlyModules, setReadOnlyModules, mod)}
+                            className="rounded border-slate-300 text-[#5948DB]"
+                          />
+                          <span>{mod}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-[12.5px] font-semibold hover:bg-slate-50 cursor-pointer"
-                >
-                  Cancel
-                </button>
+              {/* Write Access */}
+              <div className="grid grid-cols-1 md:grid-cols-12 items-start gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600 pt-2">
+                  Write Access
+                </label>
+                <div className="md:col-span-9 relative">
+                  <div
+                    onClick={() => {
+                      setOpenWriteDropdown(!openWriteDropdown);
+                      setOpenReadOnlyDropdown(false);
+                    }}
+                    className="min-h-[36px] w-full border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-700 flex items-center justify-between flex-wrap gap-1.5 cursor-pointer bg-white"
+                  >
+                    {writeModules.length === 0 ? (
+                      <span className="text-slate-400">Select Read/Write Access</span>
+                    ) : (
+                      <div className="flex flex-wrap gap-1">
+                        {writeModules.map((mod) => (
+                          <span
+                            key={mod}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px]"
+                          >
+                            {mod}
+                            <X
+                              className="w-3 h-3 cursor-pointer hover:text-rose-600"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleModule(writeModules, setWriteModules, mod);
+                              }}
+                            />
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-auto shrink-0" />
+                  </div>
+
+                  {openWriteDropdown && (
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded shadow-lg z-20 max-h-48 overflow-y-auto p-2 grid grid-cols-2 sm:grid-cols-3 gap-1">
+                      {ALL_MODULES.map((mod) => (
+                        <label
+                          key={mod}
+                          className="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 text-xs text-slate-700 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={writeModules.includes(mod)}
+                            onChange={() => toggleModule(writeModules, setWriteModules, mod)}
+                            className="rounded border-slate-300 text-[#5948DB]"
+                          />
+                          <span>{mod}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-2 pt-3">
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-[#5948DB] hover:bg-[#4938c7] text-white text-[12.5px] font-semibold shadow-xs cursor-pointer"
+                  className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
                 >
-                  {editingUser ? "Update Privilege" : "Save Privilege"}
+                  Register
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className="px-4 py-1.5 rounded bg-[#E53E6A] hover:bg-[#d12c57] text-white text-xs font-semibold transition cursor-pointer"
+                >
+                  Cancel
                 </button>
               </div>
             </form>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

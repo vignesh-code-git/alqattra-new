@@ -1,436 +1,524 @@
 "use client";
+
 import React, { useState, useMemo } from "react";
-import { Plus, Download, X, Search } from "lucide-react";
+import Header from "@/components/Header";
+import { useToast } from "@/components/Toast";
+import { Home, ArrowUpDown } from "lucide-react";
 
 const INITIAL_SALESMEN = [
-  { id: "33", name: "AAMIR SUBAIR", phone: "+971 50 412 8831", email: "aamir.subair@alqattara.ae", route: "8066", truck: "T8066", city: "AL_AIN", status: "ACTIVE" },
-  { id: "32", name: "ABDULLAHNOOR", phone: "+971 50 783 1920", email: "abdullahnoor@alqattara.ae", route: "6335", truck: "T6335", city: "AL_AIN", status: "ACTIVE" },
-  { id: "53", name: "ALI ABDELAL", phone: "+971 52 910 3341", email: "ali.abdelal@alqattara.ae", route: "6350", truck: "T6350", city: "AL_AIN", status: "ACTIVE" },
-  { id: "109", name: "ALTHAF", phone: "+971 55 642 7719", email: "althaf@alqattara.ae", route: "6357", truck: "T6357", city: "AL_AIN", status: "ACTIVE" },
-  { id: "100", name: "AMJATH", phone: "+971 56 318 4402", email: "amjath@alqattara.ae", route: "6354", truck: "T6354", city: "AL_AIN", status: "ACTIVE" },
-  { id: "56", name: "ANAS", phone: "+971 50 829 6610", email: "anas@alqattara.ae", route: "6338", truck: "T6338", city: "AL_AIN", status: "ACTIVE" },
-  { id: "77", name: "ANFAS", phone: "+971 54 209 5518", email: "anfas@alqattara.ae", route: "6343", truck: "T6343", city: "AL_AIN", status: "ACTIVE" },
-  { id: "23", name: "ARSLAN", phone: "+971 50 391 2847", email: "arslan@alqattara.ae", route: "6339", truck: "T6339", city: "AL_AIN", status: "ACTIVE" },
-  { id: "47", name: "HASHIM", phone: "+971 52 714 9083", email: "hashim@alqattara.ae", route: "6347", truck: "T6347", city: "AL_AIN", status: "ACTIVE" },
-  { id: "113", name: "NISAR", phone: "+971 55 901 6234", email: "nisar@alqattara.ae", route: "6341", truck: "T6341", city: "AL_AIN", status: "ACTIVE" },
+  {
+    id: 1,
+    salesman_name: "NOOR",
+    salesman_id: "32",
+    city: "AL_AIN",
+    commission_schemes: "",
+    access: "Salesman",
+    registered_on: "02/05/2026",
+  },
+  {
+    id: 2,
+    salesman_name: "Alremeithi",
+    salesman_id: "Alremeithi",
+    city: "AL_AIN",
+    commission_schemes: "",
+    access: "Salesman",
+    registered_on: "09/04/2026",
+  },
+  {
+    id: 3,
+    salesman_name: "LAMIA",
+    salesman_id: "LAMIA",
+    city: "AL_AIN",
+    commission_schemes: "",
+    access: "Salesman",
+    registered_on: "09/04/2026",
+  },
+  {
+    id: 4,
+    salesman_name: "Factory",
+    salesman_id: "factory",
+    city: "AL_AIN",
+    commission_schemes: "",
+    access: "Salesman",
+    registered_on: "25/11/2025",
+  },
+  {
+    id: 5,
+    salesman_name: "ISAHAQ",
+    salesman_id: "57",
+    city: "ABU_DHABI",
+    commission_schemes: "",
+    access: "Salesman",
+    registered_on: "06/11/2025",
+  },
+  {
+    id: 6,
+    salesman_name: "KRISHNADAS",
+    salesman_id: "119",
+    city: "ABU_DHABI",
+    commission_schemes: "",
+    access: "Salesman",
+    registered_on: "04/10/2025",
+  },
+  {
+    id: 7,
+    salesman_name: "KULDEEP",
+    salesman_id: "132",
+    city: "ABU_DHABI",
+    commission_schemes: "",
+    access: "Salesman",
+    registered_on: "01/10/2025",
+  },
+  {
+    id: 8,
+    salesman_name: "HARIS",
+    salesman_id: "136",
+    city: "ABU_DHABI",
+    commission_schemes: "",
+    access: "Salesman",
+    registered_on: "01/10/2025",
+  },
+  {
+    id: 9,
+    salesman_name: "ALTHAF",
+    salesman_id: "109",
+    city: "AL_AIN",
+    commission_schemes: "",
+    access: "Salesman",
+    registered_on: "16/09/2025",
+  },
+  {
+    id: 10,
+    salesman_name: "SAFWAN",
+    salesman_id: "99",
+    city: "AL_AIN",
+    commission_schemes: "",
+    access: "Salesman",
+    registered_on: "10/09/2025",
+  },
 ];
 
 export default function SalesmanPage() {
+  const { addToast } = useToast();
   const [salesmen, setSalesmen] = useState(INITIAL_SALESMEN);
+  const [viewMode, setViewMode] = useState("list"); // "list" | "add" | "edit"
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
-  const [cityFilter, setCityFilter] = useState("ALL");
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const [appliedFilters, setAppliedFilters] = useState({ city: "ALL", status: "ALL" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [editingRow, setEditingRow] = useState(null);
 
-  // Modal State (Figma 3:1881 New Salesman & 3:1882 Edit Salesman)
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingSalesman, setEditingSalesman] = useState(null);
-  const [form, setForm] = useState({
-    id: "",
-    name: "",
-    phone: "",
-    email: "",
-    route: "6335",
-    truck: "T6335",
-    city: "AL_AIN",
+  const [formData, setFormData] = useState({
+    salesman_id: "",
+    salesman_name: "",
     password: "",
-    status: "ACTIVE",
+    city: "",
+    access: "Salesman",
+    commission_schemes: "",
   });
 
   const filteredSalesmen = useMemo(() => {
-    return salesmen.filter((s) => {
-      const matchCity = appliedFilters.city === "ALL" || s.city === appliedFilters.city;
-      const matchStatus = appliedFilters.status === "ALL" || s.status === appliedFilters.status;
-      const q = searchQuery.trim().toLowerCase();
-      const matchSearch =
-        !q ||
-        s.id.toLowerCase().includes(q) ||
-        s.name.toLowerCase().includes(q) ||
-        s.phone.toLowerCase().includes(q) ||
-        s.route.toLowerCase().includes(q) ||
-        s.truck.toLowerCase().includes(q);
-      return matchCity && matchStatus && matchSearch;
-    });
-  }, [salesmen, appliedFilters, searchQuery]);
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return salesmen;
+    return salesmen.filter(
+      (s) =>
+        s.salesman_name.toLowerCase().includes(q) ||
+        s.salesman_id.toLowerCase().includes(q) ||
+        s.city.toLowerCase().includes(q) ||
+        s.access.toLowerCase().includes(q) ||
+        s.registered_on.toLowerCase().includes(q)
+    );
+  }, [salesmen, searchQuery]);
 
-  const openNewModal = () => {
-    setEditingSalesman(null);
-    setForm({
-      id: String(114 + salesmen.length),
-      name: "",
-      phone: "+971 50 ",
-      email: "",
-      route: "6335",
-      truck: "T6335",
-      city: "AL_AIN",
+  const paginatedRows = filteredSalesmen.slice(
+    (currentPage - 1) * entriesPerPage,
+    currentPage * entriesPerPage
+  );
+
+  const openAddView = () => {
+    setEditingRow(null);
+    setFormData({
+      salesman_id: "",
+      salesman_name: "",
       password: "",
-      status: "ACTIVE",
+      city: "",
+      access: "Salesman",
+      commission_schemes: "",
     });
-    setModalOpen(true);
+    setViewMode("add");
   };
 
-  const openEditModal = (row) => {
-    setEditingSalesman(row);
-    setForm({ ...row, password: "" });
-    setModalOpen(true);
+  const openEditView = (row) => {
+    setEditingRow(row);
+    setFormData({
+      salesman_id: row.salesman_id,
+      salesman_name: row.salesman_name,
+      password: "",
+      city: row.city,
+      access: row.access || "Salesman",
+      commission_schemes: row.commission_schemes || "",
+    });
+    setViewMode("edit");
   };
 
-  const handleSave = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.name.trim()) return;
-    if (editingSalesman) {
-      setSalesmen((prev) =>
-        prev.map((s) => (s.id === editingSalesman.id ? { ...s, ...form } : s))
-      );
-    } else {
-      setSalesmen((prev) => [{ ...form }, ...prev]);
+    if (!formData.salesman_id.trim() || !formData.salesman_name.trim()) {
+      addToast("Please enter Salesperson ID and Name", "error");
+      return;
     }
-    setModalOpen(false);
-  };
 
-  const handleDelete = (id) => {
-    setSalesmen((prev) => prev.filter((s) => s.id !== id));
-  };
-
-  const handleExportCSV = () => {
-    const headers = ["SALESMAN ID", "NAME", "PHONE", "EMAIL", "ROUTE", "TRUCK", "CITY", "STATUS"];
-    const rows = filteredSalesmen.map((s) => [s.id, s.name, s.phone, s.email, s.route, s.truck, s.city, s.status]);
-    const csv = [headers, ...rows].map((row) => row.map((v) => `"${v}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "salesman-list.csv";
-    a.click();
-    URL.revokeObjectURL(url);
+    if (viewMode === "edit" && editingRow) {
+      setSalesmen((prev) =>
+        prev.map((s) =>
+          s.id === editingRow.id
+            ? {
+                ...s,
+                salesman_name: formData.salesman_name.trim(),
+                city: formData.city || s.city,
+                access: formData.access || "Salesman",
+                commission_schemes: formData.commission_schemes,
+              }
+            : s
+        )
+      );
+      addToast(`Salesperson "${formData.salesman_name}" updated successfully`, "success");
+    } else {
+      const today = new Date();
+      const dd = String(today.getDate()).padStart(2, "0");
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const yyyy = today.getFullYear();
+      const newEntry = {
+        id: Date.now(),
+        salesman_id: formData.salesman_id.trim(),
+        salesman_name: formData.salesman_name.trim(),
+        city: formData.city || "AL_AIN",
+        access: formData.access || "Salesman",
+        commission_schemes: formData.commission_schemes || "",
+        registered_on: `${dd}/${mm}/${yyyy}`,
+      };
+      setSalesmen((prev) => [newEntry, ...prev]);
+      addToast(`Salesperson "${formData.salesman_name}" registered successfully`, "success");
+    }
+    setViewMode("list");
   };
 
   return (
-    <div className="space-y-5">
-      {/* Top Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="text-[13px] text-slate-400 font-medium">
-          Home <span className="mx-1.5 text-slate-300">/</span>{" "}
-          <span className="text-slate-700 font-semibold">Salesman</span>
-        </div>
-        <button
-          onClick={openNewModal}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#FF5A5F] hover:bg-[#e84c51] text-white text-[13px] font-semibold shadow-sm transition cursor-pointer"
-        >
-          <Plus size={15} /> New Salesman
-        </button>
-      </div>
+    <div className="min-h-screen bg-[#F4F6F9] flex flex-col">
+      <Header title="Salesman" subtitle="Manage Salesman" />
 
-      {/* Filter Salesman Card */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs p-5">
-        <h3 className="text-[14px] font-bold text-slate-800 mb-3.5">Filter Salesman</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-              City
-            </label>
-            <select
-              value={cityFilter}
-              onChange={(e) => setCityFilter(e.target.value)}
-              className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[12.5px] text-slate-700 bg-white focus:outline-none focus:border-[#5948DB]"
-            >
-              <option value="ALL">All Cities</option>
-              <option value="AL_AIN">AL_AIN</option>
-              <option value="ABU_DHABI">ABU_DHABI</option>
-              <option value="DUBAI">DUBAI</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-              Status
-            </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[12.5px] text-slate-700 bg-white focus:outline-none focus:border-[#5948DB]"
-            >
-              <option value="ALL">All Status</option>
-              <option value="ACTIVE">ACTIVE</option>
-              <option value="INACTIVE">INACTIVE</option>
-            </select>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setAppliedFilters({ city: cityFilter, status: statusFilter })}
-              className="h-9 px-5 rounded-lg bg-[#5948DB] hover:bg-[#4938c7] text-white text-[12.5px] font-semibold transition cursor-pointer"
-            >
-              Apply Filter
-            </button>
-            <button
-              onClick={() => {
-                setCityFilter("ALL");
-                setStatusFilter("ALL");
-                setAppliedFilters({ city: "ALL", status: "ALL" });
-                setSearchQuery("");
-              }}
-              className="h-9 px-4 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-[12.5px] font-semibold transition cursor-pointer"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Salesman Table Card (Figma 3:1880) */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
-        <div className="bg-linear-to-r from-[#0F172A] via-[#1E3A5F] to-[#3B6998] px-5 py-3.5 flex items-center justify-between">
-          <h3 className="text-[15px] font-bold text-white tracking-wide">Salesman List</h3>
-          <button
-            onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white text-[12px] font-semibold transition cursor-pointer"
-          >
-            <Download size={14} /> Export
-          </button>
-        </div>
-
-        <div className="px-5 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 text-[12.5px] text-slate-600">
-          <div className="flex items-center gap-2">
-            <span>Show</span>
-            <select
-              value={entriesPerPage}
-              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-              className="h-8 px-2 rounded-md border border-slate-200 text-[12.5px] bg-white focus:outline-none focus:border-[#5948DB]"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-            </select>
-            <span>entries</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-500">Search:</span>
-            <div className="relative">
-              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search salesman..."
-                className="h-8 pl-8 pr-3 w-52 rounded-md border border-slate-200 text-[12.5px] focus:outline-none focus:border-[#5948DB]"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#5948DB] text-white text-[11px] font-bold uppercase tracking-wider">
-                <th className="py-3 px-4">SALESMAN ID</th>
-                <th className="py-3 px-4">NAME</th>
-                <th className="py-3 px-4">PHONE</th>
-                <th className="py-3 px-4">EMAIL</th>
-                <th className="py-3 px-4">ROUTE</th>
-                <th className="py-3 px-4">TRUCK</th>
-                <th className="py-3 px-4">CITY</th>
-                <th className="py-3 px-4">STATUS</th>
-                <th className="py-3 px-4 text-center">ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-[12.5px] text-slate-700">
-              {filteredSalesmen.slice(0, entriesPerPage).map((row, idx) => (
-                <tr key={row.id} className={idx % 2 === 0 ? "bg-white hover:bg-slate-50/70" : "bg-slate-50/40 hover:bg-slate-50/90"}>
-                  <td className="py-3 px-4 font-bold text-[#5948DB]">{row.id}</td>
-                  <td className="py-3 px-4 font-semibold text-slate-800">{row.name}</td>
-                  <td className="py-3 px-4">{row.phone}</td>
-                  <td className="py-3 px-4 text-slate-500">{row.email}</td>
-                  <td className="py-3 px-4 font-medium">{row.route}</td>
-                  <td className="py-3 px-4 font-semibold text-slate-700">{row.truck}</td>
-                  <td className="py-3 px-4">{row.city}</td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10.5px] font-bold ${
-                        row.status === "ACTIVE"
-                          ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                          : "bg-rose-50 text-rose-600 border border-rose-200"
-                      }`}
-                    >
-                      {row.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <button
-                        onClick={() => openEditModal(row)}
-                        className="px-2.5 py-1 rounded bg-[#10B981] hover:bg-[#059669] text-white text-[11px] font-semibold transition cursor-pointer"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(row.id)}
-                        className="px-2.5 py-1 rounded bg-[#FF5A5F] hover:bg-[#e0484d] text-white text-[11px] font-semibold transition cursor-pointer"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filteredSalesmen.length === 0 && (
-                <tr>
-                  <td colSpan={9} className="py-8 text-center text-slate-400 text-[13px]">
-                    No matching salesmen found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="px-5 py-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[12px] text-slate-500">
-          <span>
-            Showing 1 to {Math.min(entriesPerPage, filteredSalesmen.length)} of {filteredSalesmen.length} entries
+      {/* Figma Black Top Banner */}
+      <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2.5 text-sm">
+          <span className="font-bold text-base tracking-tight">Salesman</span>
+          <Home className="w-3.5 h-3.5 text-slate-300" />
+          <span className="text-slate-300 text-xs">
+            -{" "}
+            {viewMode === "add"
+              ? "Register Salesman"
+              : viewMode === "edit"
+              ? "Update Salesman"
+              : "Manage Salesman"}{" "}
+            - ALL
           </span>
-          <div className="flex items-center gap-1">
-            <button className="px-2.5 py-1 rounded border border-slate-200 text-slate-500 hover:bg-slate-50">Previous</button>
-            <button className="px-2.5 py-1 rounded bg-[#5948DB] text-white font-semibold">1</button>
-            <button className="px-2.5 py-1 rounded border border-slate-200 text-slate-500 hover:bg-slate-50">Next</button>
-          </div>
         </div>
+        {viewMode === "list" && (
+          <button
+            type="button"
+            onClick={openAddView}
+            className="px-3.5 py-1.5 rounded bg-[#E05D38] hover:bg-[#c94f2d] text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+          >
+            + New Salesman
+          </button>
+        )}
       </div>
 
-      {/* Modal: New Salesman (3:1881) & Edit Salesman (3:1882) */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-[1px] p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200">
-            <div className="bg-[#5948DB] px-5 py-3.5 flex items-center justify-between text-white">
-              <h3 className="text-[15px] font-bold">
-                {editingSalesman ? `Edit Salesman - ${editingSalesman.name}` : "Add New Salesman"}
-              </h3>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition cursor-pointer"
-              >
-                <X size={15} />
-              </button>
+      <div className="p-6 flex-1">
+        {viewMode === "list" ? (
+          /* Main Salesman Table Card (Figma salesman.png) */
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            {/* Dark Navy-to-Teal Header Banner */}
+            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+              <h2 className="text-white font-bold text-base tracking-wide">
+                Manage and Update Master Data Records
+              </h2>
             </div>
-            <form onSubmit={handleSave} className="p-5 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Salesman ID *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.id}
-                    onChange={(e) => setForm({ ...form, id: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. ABDULLAHNOOR"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Phone Number *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Assigned Route *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.route}
-                    onChange={(e) => setForm({ ...form, route: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Assigned Truck *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.truck}
-                    onChange={(e) => setForm({ ...form, truck: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#5948DB]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    City *
-                  </label>
-                  <select
-                    value={form.city}
-                    onChange={(e) => setForm({ ...form, city: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#5948DB]"
+
+            {/* Show Entries & Search Bar */}
+            <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
+              <div className="flex items-center gap-2">
+                <span>Show</span>
+                <select
+                  value={entriesPerPage}
+                  onChange={(e) => {
+                    setEntriesPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="border border-slate-300 rounded px-2 py-1 bg-white text-slate-700 focus:outline-none focus:border-[#5948DB]"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+                <span>entries</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span>Search:</span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="border border-slate-300 rounded px-2.5 py-1 w-44 focus:outline-none focus:border-[#5948DB]"
+                />
+              </div>
+            </div>
+
+            {/* Exact 7-Column Figma Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#F8FAFC] border-y border-slate-200 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="py-3 px-6">
+                      <div className="flex items-center justify-between">
+                        <span>SALESMAN NAME</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <span>SALESMAN ID</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <span>CITY</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <span>COMMISSION SCHEMES</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <span>ACCESS</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <span>REGISTERED ON</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="py-3 px-6 text-right">
+                      <ArrowUpDown className="w-3 h-3 text-slate-400 inline" />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200/70 text-[12px] text-slate-700">
+                  {paginatedRows.map((row) => (
+                    <tr key={row.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-3.5 px-6 font-medium text-slate-800">{row.salesman_name}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{row.salesman_id}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{row.city}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{row.commission_schemes}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{row.access}</td>
+                      <td className="py-3.5 px-4 text-slate-600">{row.registered_on}</td>
+                      <td className="py-3.5 px-6 text-right">
+                        <button
+                          type="button"
+                          onClick={() => openEditView(row)}
+                          className="px-3 py-1 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-[11px] font-semibold transition cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {paginatedRows.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="py-8 text-center text-slate-400">
+                        No matching salesman records found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Footer Pagination */}
+            <div className="px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+              <div>
+                Showing {filteredSalesmen.length === 0 ? 0 : 1} to{" "}
+                {Math.min(entriesPerPage, filteredSalesmen.length)} of 56 entries
+              </div>
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5, 6].map((page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => setCurrentPage(1)}
+                    className={`w-6 h-6 rounded-full text-[11px] flex items-center justify-center transition cursor-pointer ${
+                      page === 1
+                        ? "bg-[#5948DB] text-white font-semibold"
+                        : "text-slate-500 hover:bg-slate-100"
+                    }`}
                   >
+                    {page}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* New Salesman / Edit Salesman Card (Figma new salesman.png & edit.png) */
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200/80 overflow-hidden">
+            <div className="bg-linear-to-r from-[#091526] via-[#1B3B5A] to-[#6395B8] px-6 py-4">
+              <h2 className="text-white font-bold text-base tracking-wide">
+                {viewMode === "edit" ? "Update Salesperson" : "Salesperson Registration"}
+              </h2>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-8 space-y-5 max-w-6xl mx-auto">
+              {/* Salesperson ID */}
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Salesperson ID
+                </label>
+                <div className="md:col-span-9">
+                  <input
+                    type="text"
+                    disabled={viewMode === "edit"}
+                    placeholder="Unique identifier for the salesperson"
+                    value={formData.salesman_id}
+                    onChange={(e) => setFormData({ ...formData, salesman_id: e.target.value })}
+                    className={`w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 focus:outline-none focus:border-[#5948DB] ${
+                      viewMode === "edit" ? "bg-[#EDF2F7] text-slate-500 cursor-not-allowed" : "bg-white"
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Salesperson Name */}
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Salesperson Name
+                </label>
+                <div className="md:col-span-9">
+                  <input
+                    type="text"
+                    placeholder="Full name of the salesperson"
+                    value={formData.salesman_name}
+                    onChange={(e) => setFormData({ ...formData, salesman_name: e.target.value })}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 focus:outline-none focus:border-[#5948DB]"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Password
+                </label>
+                <div className="md:col-span-9">
+                  <input
+                    type="password"
+                    placeholder={
+                      viewMode === "edit"
+                        ? "Leave blank to keep current password"
+                        : "Secure password for login"
+                    }
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 focus:outline-none focus:border-[#5948DB]"
+                  />
+                </div>
+              </div>
+
+              {/* City */}
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  City
+                </label>
+                <div className="md:col-span-9">
+                  <select
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white focus:outline-none focus:border-[#5948DB]"
+                  >
+                    <option value="">Select a city</option>
                     <option value="AL_AIN">AL_AIN</option>
                     <option value="ABU_DHABI">ABU_DHABI</option>
-                    <option value="DUBAI">DUBAI</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[11.5px] font-semibold text-slate-600 mb-1">
-                    Status
-                  </label>
-                  <select
-                    value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value })}
-                    className="w-full h-9 px-3 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#5948DB]"
-                  >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
                   </select>
                 </div>
               </div>
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-[12.5px] font-semibold hover:bg-slate-50 cursor-pointer"
-                >
-                  Cancel
-                </button>
+
+              {/* Access */}
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Access
+                </label>
+                <div className="md:col-span-9">
+                  <select
+                    value={formData.access}
+                    onChange={(e) => setFormData({ ...formData, access: e.target.value })}
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white focus:outline-none focus:border-[#5948DB]"
+                  >
+                    <option value="Salesman">Salesman</option>
+                    <option value="Assistant">Assistant</option>
+                    <option value="Supervisor">Supervisor</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Commission Schemes */}
+              <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+                <label className="md:col-span-3 md:text-right text-xs font-medium text-slate-600">
+                  Commission Schemes
+                </label>
+                <div className="md:col-span-9">
+                  <select
+                    value={formData.commission_schemes}
+                    onChange={(e) =>
+                      setFormData({ ...formData, commission_schemes: e.target.value })
+                    }
+                    className="w-full border border-slate-200 rounded px-3.5 py-2 text-xs text-slate-700 bg-white focus:outline-none focus:border-[#5948DB]"
+                  >
+                    <option value="">Select commission schem</option>
+                    <option value="5gal">5gal</option>
+                    <option value="Standard">Standard</option>
+                    <option value="Corporate">Corporate</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-2 pt-3">
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-[#5948DB] hover:bg-[#4938c7] text-white text-[12.5px] font-semibold shadow-xs cursor-pointer"
+                  className="px-4 py-1.5 rounded bg-[#48BB78] hover:bg-[#38a169] text-white text-xs font-semibold transition cursor-pointer"
                 >
-                  {editingSalesman ? "Update Salesman" : "Save Salesman"}
+                  {viewMode === "edit" ? "Update" : "Register"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className="px-4 py-1.5 rounded bg-[#E53E6A] hover:bg-[#d12c57] text-white text-xs font-semibold transition cursor-pointer"
+                >
+                  Cancel
                 </button>
               </div>
             </form>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -171,123 +171,88 @@ export default function DashboardPage() {
     <div className="flex-1 flex flex-col">
       <Header title="Dashboard Overview" subtitle="Dashboard" />
 
-      <main className="p-5 space-y-5 flex-1 overflow-y-auto">
-        {/* Top Action Bar with Filters Button (Figma 1:1683 & 1:1687) */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-extrabold text-slate-900">Executive Performance Summary</h2>
-            <p className="text-[11px] text-slate-500">Real-time operational metrics, payment breakdown, and SKU trends</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md border text-xs font-bold transition-colors duration-150 shadow-2xs cursor-pointer outline-none focus:outline-none select-none ${
-              showFilters
-                ? "bg-[#5948DB] border-[#5948DB] text-white"
-                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
-            }`}
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>Filters</span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showFilters ? "rotate-180" : ""}`} />
-          </button>
+      {/* Figma Black Top Banner (Dashboard.png & dashboard-filter.png) */}
+      <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2.5 text-sm">
+          <span className="font-bold text-base tracking-tight">Default</span>
+          <span className="text-slate-300 text-xs">- Dashboard - ALL</span>
         </div>
+        <button
+          type="button"
+          onClick={() => setShowFilters(true)}
+          className="px-3.5 py-1.5 rounded bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold transition cursor-pointer shadow-xs"
+        >
+          Filters
+        </button>
+      </div>
 
-        {/* Collapsible Dashboard Filter Panel (Figma 1:1687 dashboard-filter) */}
+      <main className="p-5 space-y-5 flex-1 overflow-y-auto">
+        {/* Figma Dashboard Filters Modal (dashboard-filter.png) */}
         {showFilters && (
-          <div className="bg-white rounded-md border border-slate-200 p-4 shadow-2xs space-y-3 animate-in fade-in">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">Filter Dashboard Data</span>
-              <span className="text-[11px] text-slate-400">Apply date range, territory, or fleet filters</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
-              <div>
-                <label className="text-[11px] font-semibold text-slate-600 block mb-1">From Date</label>
-                <input
-                  type="date"
-                  value={filterFromDate}
-                  onChange={(e) => setFilterFromDate(e.target.value)}
-                  className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 focus:outline-none focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-600 block mb-1">To Date</label>
-                <input
-                  type="date"
-                  value={filterToDate}
-                  onChange={(e) => setFilterToDate(e.target.value)}
-                  className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 focus:outline-none focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-600 block mb-1">Territory / City</label>
-                <select
-                  value={filterTerritory}
-                  onChange={(e) => setFilterTerritory(e.target.value)}
-                  className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-medium focus:outline-none focus:border-blue-500"
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden">
+              <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+                <h3 className="text-sm font-bold text-slate-800">Dashboard Filters</h3>
+                <button
+                  type="button"
+                  onClick={() => setShowFilters(false)}
+                  className="text-slate-400 hover:text-slate-700 text-base font-bold cursor-pointer"
                 >
-                  <option value="All">All Territories</option>
-                  <option value="AL AIN">AL AIN</option>
-                  <option value="ABU DHABI">ABU DHABI</option>
-                  <option value="DUBAI">DUBAI</option>
-                </select>
+                  ×
+                </button>
               </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-600 block mb-1">Sales Representative</label>
-                <select
-                  value={filterSalesRep}
-                  onChange={(e) => setFilterSalesRep(e.target.value)}
-                  className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-medium focus:outline-none focus:border-blue-500"
+              <div className="p-5 space-y-4 text-xs text-slate-700">
+                <div>
+                  <label className="block font-semibold text-slate-600 mb-1">From Date</label>
+                  <input
+                    type="date"
+                    value={filterFromDate || "2026-09-07"}
+                    onChange={(e) => setFilterFromDate(e.target.value)}
+                    className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-slate-600 mb-1">To Date</label>
+                  <input
+                    type="date"
+                    value={filterToDate || "2026-09-07"}
+                    onChange={(e) => setFilterToDate(e.target.value)}
+                    className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-slate-600 mb-1">Filter By</label>
+                  <select
+                    value={filterTerritory}
+                    onChange={(e) => setFilterTerritory(e.target.value)}
+                    className="w-full border border-slate-200 rounded px-3 py-2 text-xs text-slate-700 bg-white"
+                  >
+                    <option value="Daily">Daily</option>
+                    <option value="Weekly">Weekly</option>
+                    <option value="Monthly">Monthly</option>
+                    <option value="Yearly">Yearly</option>
+                  </select>
+                </div>
+              </div>
+              <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowFilters(false)}
+                  className="px-3.5 py-1.5 rounded border border-slate-200 bg-white text-slate-600 text-xs font-semibold hover:bg-slate-50 cursor-pointer"
                 >
-                  <option value="All">Select Sales Rep</option>
-                  <option value="ANAS">56 - ANAS</option>
-                  <option value="NISAR">38 - NISAR</option>
-                  <option value="HASHIM">47 - HASHIM</option>
-                  <option value="MUFEED">57 - MUFEED</option>
-                  <option value="MALAKA">105 - MALAKA</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-600 block mb-1">Truck ID</label>
-                <select
-                  value={filterTruck}
-                  onChange={(e) => setFilterTruck(e.target.value)}
-                  className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-800 font-medium focus:outline-none focus:border-blue-500"
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFilters(false);
+                    addToast("Dashboard filters applied", "success");
+                  }}
+                  className="px-4 py-1.5 rounded bg-[#5948DB] hover:bg-[#4938c7] text-white text-xs font-semibold cursor-pointer"
                 >
-                  <option value="All">Select Truck</option>
-                  <option value="T6335">T6335</option>
-                  <option value="T6350">T6350</option>
-                  <option value="T6329">T6329</option>
-                  <option value="T6328">T6328</option>
-                  <option value="T6354">T6354</option>
-                </select>
+                  Apply
+                </button>
               </div>
-            </div>
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => {
-                  setFilterFromDate("");
-                  setFilterToDate("");
-                  setFilterTerritory("All");
-                  setFilterSalesRep("All");
-                  setFilterTruck("All");
-                  addToast("Dashboard filters reset", "info");
-                }}
-                className="px-4 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  addToast(`Dashboard filtered (${filterTerritory === "All" ? "All Territories" : filterTerritory})`, "success");
-                }}
-                className="px-5 py-1.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
-              >
-                Apply
-              </button>
             </div>
           </div>
         )}
