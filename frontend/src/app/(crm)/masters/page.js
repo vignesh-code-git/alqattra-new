@@ -3,7 +3,8 @@
 import React, { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
-import { Home, ArrowUpDown } from "lucide-react";
+import PanelHeader from "@/components/PanelHeader";
+import { Home, ArrowUpDown, Sliders, Plus } from "lucide-react";
 
 const INITIAL_MASTERS = [
   {
@@ -224,39 +225,27 @@ export default function MastersPage() {
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col">
       <Header title="Masters" subtitle="Manage Masters" />
 
-      {/* iOS Top Hero Navigation Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-3.5 flex items-center justify-between sticky top-16 z-20">
-        <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight text-[#1C1C1E]">Masters</span>
-          <Home className="w-3.5 h-3.5 text-[#8E8E93]" />
-          <span className="text-[#8E8E93] text-xs">
-            / {viewMode === "add" ? "Register Employee" : viewMode === "edit" ? "Update Employee" : "Manage Masters"}
-          </span>
-        </div>
-        {viewMode === "list" && (
-          <button
-            type="button"
-            onClick={openAddView}
-            className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition shadow-sm shadow-[#007AFF]/20 cursor-pointer"
-          >
-            + Add New
-          </button>
-        )}
-      </div>
-
       <div className="p-6 flex-1 max-w-7xl w-full mx-auto">
         {viewMode === "list" ? (
           /* Main Table iOS Card */
-          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
+          <div className="ios-surface overflow-hidden">
             {/* Header Banner */}
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
-              <div>
-                <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">
-                  Manage Master Data Records
-                </h2>
-                <p className="text-[#8E8E93] text-[11px] mt-0.5">Control employee accounts and designations</p>
-              </div>
-            </div>
+            <PanelHeader
+              icon={Sliders}
+              title="Master Data Records"
+              subtitle="Control employee accounts and designations"
+              actions={
+                <button
+                  type="button"
+                  onClick={openAddView}
+                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Add New
+                </button>
+              }
+              onAction={() => addToast("Exported master records", "success")}
+            />
 
             {/* Show Entries & Search Bar with iOS Rounded Controls */}
             <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
@@ -294,9 +283,9 @@ export default function MastersPage() {
 
             {/* Exact 7-Column Table with iOS Styling */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="ios-table w-full text-left">
                 <thead>
-                  <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] tracking-wider uppercase">
+                  <tr className="ios-thead">
                     <th className="py-3 px-6">
                       <div className="flex items-center justify-between">
                         <span>CUSTOMER NAME</span>
@@ -338,14 +327,14 @@ export default function MastersPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#3C3C43]/10 text-[12.5px] text-[#1C1C1E]">
+                <tbody className="text-[12.5px] text-[#1C1C1E]">
                   {paginatedRows.map((row) => (
                     <tr key={row.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                       <td className="py-3.5 px-6 font-semibold text-[#1C1C1E]">{row.customer_name}</td>
                       <td className="py-3.5 px-4 text-[#8E8E93] font-mono text-xs">{row.customer_id}</td>
                       <td className="py-3.5 px-4 text-[#3C3C43]">{row.registered_on}</td>
                       <td className="py-3.5 px-4">
-                        <span className="px-2.5 py-0.5 rounded-full bg-[#007AFF]/10 text-[#007AFF] text-[11px] font-semibold">
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#007AFF]/12 text-[#0062CC] text-[11px] font-semibold">
                           {row.contact}
                         </span>
                       </td>
@@ -355,7 +344,7 @@ export default function MastersPage() {
                         <button
                           type="button"
                           onClick={() => openEditView(row)}
-                          className="px-3 py-1 rounded-full bg-[#34C759] hover:bg-[#2FB34F] text-white text-[11px] font-semibold transition cursor-pointer shadow-xs"
+                          className="px-3 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[11px] font-semibold transition cursor-pointer"
                         >
                           Edit
                         </button>
@@ -400,8 +389,8 @@ export default function MastersPage() {
           </div>
         ) : (
           /* Add New / Edit Employee Card */
-          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden max-w-3xl mx-auto">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+          <div className="ios-surface overflow-hidden max-w-3xl mx-auto">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
               <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">
                 {viewMode === "edit" ? "Update Employee Record" : "Employee Registration"}
               </h2>

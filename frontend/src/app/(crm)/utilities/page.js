@@ -1,8 +1,13 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import { apiService } from "@/services/api";
+import useLiveData from "@/hooks/useLiveData";
+import { listOf, storeItemFromApi, productToApi, truckFromApi, productSummaryFromTrucks } from "@/services/crmMappers";
+import PanelHeader from "@/components/PanelHeader";
+import BackLink from "@/components/BackLink";
 import {
   Home,
   ArrowUpDown,
@@ -11,264 +16,49 @@ import {
   X,
   Search,
   Printer,
+  Boxes,
+  Truck,
 } from "lucide-react";
-
-const INITIAL_STORE_ITEMS = [
-  {
-    id: 1,
-    product_id: "015",
-    item: "330ml PET Bottles",
-    description: "0",
-    current_stock: "N/A",
-    old_stock: "N/A",
-    damaged: "N/A",
-    discarded: "N/A",
-    stock_color: "slate",
-  },
-  {
-    id: 2,
-    product_id: "014",
-    item: "500ml PET Bottles",
-    description: "0",
-    current_stock: "N/A",
-    old_stock: "N/A",
-    damaged: "N/A",
-    discarded: "N/A",
-    stock_color: "slate",
-  },
-  {
-    id: 3,
-    product_id: "013",
-    item: "LIWA 500ml bottle",
-    description: "new",
-    current_stock: "3",
-    old_stock: "N/A",
-    damaged: "N/A",
-    discarded: "N/A",
-    stock_color: "amber",
-  },
-  {
-    id: 4,
-    product_id: "012",
-    item: "MINI DISPENSER",
-    description: "new",
-    current_stock: "5",
-    old_stock: "N/A",
-    damaged: "N/A",
-    discarded: "N/A",
-    stock_color: "amber",
-  },
-  {
-    id: 5,
-    product_id: "011",
-    item: "ALAIN SPARKLING 330ML",
-    description: "Alain water",
-    current_stock: "N/A",
-    old_stock: "N/A",
-    damaged: "N/A",
-    discarded: "N/A",
-    stock_color: "slate",
-  },
-  {
-    id: 6,
-    product_id: "010",
-    item: "ALAIN STILL 330ML",
-    description: "Alain water",
-    current_stock: "N/A",
-    old_stock: "N/A",
-    damaged: "N/A",
-    discarded: "N/A",
-    stock_color: "slate",
-  },
-  {
-    id: 7,
-    product_id: "009",
-    item: "ALAIN REGULAR 330ML",
-    description: "Alainwater",
-    current_stock: "N/A",
-    old_stock: "N/A",
-    damaged: "N/A",
-    discarded: "N/A",
-    stock_color: "slate",
-  },
-  {
-    id: 8,
-    product_id: "008",
-    item: "Own Bottle",
-    description: "bottle with customer",
-    current_stock: "N/A",
-    old_stock: "N/A",
-    damaged: "N/A",
-    discarded: "N/A",
-    stock_color: "slate",
-  },
-  {
-    id: 9,
-    product_id: "007",
-    item: "200 ML CUP",
-    description: "30 IN BOX",
-    current_stock: "151",
-    old_stock: "N/A",
-    damaged: "N/A",
-    discarded: "N/A",
-    stock_color: "emerald",
-  },
-  {
-    id: 10,
-    product_id: "006",
-    item: "STEEL STAND 5 BOTTLE",
-    description: "new",
-    current_stock: "7",
-    old_stock: "N/A",
-    damaged: "N/A",
-    discarded: "N/A",
-    stock_color: "amber",
-  },
-];
-
-const INITIAL_TRUCKS = [
-  {
-    id: 1,
-    truck_id: "T6335",
-    in_charge: "32",
-    assistants: "-",
-    route: "6335",
-    last_updated: "08/09/2026",
-    last_updated_full: "9/8/2026, 7:21:48 AM",
-    stocks: [
-      { item: "5 gal water", added: 192, delivered: 0, used: 0, damaged: 0, balance: 192, returned: 0 },
-      { item: "empty bottle", added: 192, delivered: 0, used: 0, damaged: 0, balance: 192, returned: 0 },
-    ],
-  },
-  {
-    id: 2,
-    truck_id: "100001",
-    in_charge: "factory",
-    assistants: "-",
-    route: "100001",
-    last_updated: "25/11/2025",
-    last_updated_full: "11/25/2025, 8:15:00 AM",
-    stocks: [
-      { item: "5 gal water", added: 250, delivered: 180, used: 0, damaged: 0, balance: 70, returned: 0 },
-    ],
-  },
-  {
-    id: 3,
-    truck_id: "100002",
-    in_charge: "110",
-    assistants: "-",
-    route: "1234",
-    last_updated: "25/09/2025",
-    last_updated_full: "9/25/2025, 9:00:00 AM",
-    stocks: [
-      { item: "5 gal water", added: 160, delivered: 120, used: 0, damaged: 0, balance: 40, returned: 0 },
-    ],
-  },
-  {
-    id: 4,
-    truck_id: "T3115",
-    in_charge: "119",
-    assistants: "140, 141",
-    route: "3115",
-    last_updated: "10/09/2025",
-    last_updated_full: "9/10/2025, 7:45:12 AM",
-    stocks: [
-      { item: "5 gal water", added: 200, delivered: 150, used: 0, damaged: 0, balance: 50, returned: 0 },
-    ],
-  },
-  {
-    id: 5,
-    truck_id: "T9302",
-    in_charge: "136",
-    assistants: "142",
-    route: "9302",
-    last_updated: "10/09/2025",
-    last_updated_full: "9/10/2025, 8:02:10 AM",
-    stocks: [
-      { item: "5 gal water", added: 180, delivered: 140, used: 0, damaged: 0, balance: 40, returned: 0 },
-    ],
-  },
-  {
-    id: 6,
-    truck_id: "T6358",
-    in_charge: "55",
-    assistants: "86, 134",
-    route: "6358",
-    last_updated: "12/05/2024",
-    last_updated_full: "5/12/2024, 7:30:00 AM",
-    stocks: [
-      { item: "5 gal water", added: 210, delivered: 190, used: 0, damaged: 0, balance: 20, returned: 0 },
-    ],
-  },
-  {
-    id: 7,
-    truck_id: "T6357",
-    in_charge: "84",
-    assistants: "132, 133",
-    route: "6357",
-    last_updated: "12/05/2024",
-    last_updated_full: "5/12/2024, 7:35:00 AM",
-    stocks: [
-      { item: "5 gal water", added: 195, delivered: 175, used: 0, damaged: 0, balance: 20, returned: 0 },
-    ],
-  },
-  {
-    id: 8,
-    truck_id: "T8066",
-    in_charge: "57",
-    assistants: "118, 97",
-    route: "8066",
-    last_updated: "12/05/2024",
-    last_updated_full: "5/12/2024, 7:50:00 AM",
-    stocks: [
-      { item: "5 gal water", added: 220, delivered: 200, used: 0, damaged: 0, balance: 20, returned: 0 },
-    ],
-  },
-  {
-    id: 9,
-    truck_id: "T6684",
-    in_charge: "48",
-    assistants: "81",
-    route: "6684",
-    last_updated: "21/03/2024",
-    last_updated_full: "3/21/2024, 8:10:00 AM",
-    stocks: [
-      { item: "5 gal water", added: 180, delivered: 160, used: 0, damaged: 0, balance: 20, returned: 0 },
-    ],
-  },
-  {
-    id: 10,
-    truck_id: "T6356",
-    in_charge: "38",
-    assistants: "49",
-    route: "6356",
-    last_updated: "21/01/2024",
-    last_updated_full: "1/21/2024, 7:15:00 AM",
-    stocks: [
-      { item: "5 gal water", added: 190, delivered: 170, used: 0, damaged: 0, balance: 20, returned: 0 },
-    ],
-  },
-];
-
-const PRODUCT_SUMMARY_LIST = [
-  { name: "5 gal water", loaded: 4390, delivered: 2281, returned: 0 },
-  { name: "COOLER", loaded: 14, delivered: 504, returned: 0 },
-  { name: "empty bottle", loaded: 4586, delivered: 6876, returned: 0 },
-  { name: "WATER PUMP", loaded: 1, delivered: 53, returned: 0 },
-  { name: "coupon", loaded: 0, delivered: 29, returned: 0 },
-  { name: "used cooler", loaded: 0, delivered: 2, returned: 0 },
-  { name: "STEEL STAND 8", loaded: 2, delivered: 2, returned: 0 },
-  { name: "STEEL STAND 5 BOTTLE", loaded: 0, delivered: 29, returned: 0 },
-  { name: "200 ML CUP", loaded: 214, delivered: 2589, returned: 0 },
-];
 
 export default function UtilitiesPage() {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState("store"); // "store" | "car"
   const [subView, setSubView] = useState("list"); // "list" | "update_inventory" | "add_item" | "view_item" | "add_truck" | "manage_truck"
 
-  const [storeItems, setStoreItems] = useState(INITIAL_STORE_ITEMS);
-  const [trucks, setTrucks] = useState(INITIAL_TRUCKS);
+  const loadLive = useCallback(async () => {
+    const [productsRaw, trucksRaw] = await Promise.all([
+      apiService.getProducts(),
+      apiService.getTrucks(),
+    ]);
+    if (productsRaw == null) return null;
+    const products = listOf(productsRaw);
+    return {
+      storeItems: products.map(storeItemFromApi),
+      trucks: listOf(trucksRaw).map(truckFromApi),
+      products,
+    };
+  }, []);
+  const live = useLiveData(loadLive);
+
+  // Tell the user once when the server becomes unreachable, not on every poll.
+  const [offlineNotified, setOfflineNotified] = useState(false);
+  useEffect(() => {
+    if (live.error && !offlineNotified) {
+      addToast("Cannot reach the CRM server - showing the last loaded data", "error");
+      setOfflineNotified(true);
+    }
+    if (!live.error && offlineNotified) setOfflineNotified(false);
+  }, [live.error, offlineNotified, addToast]);
+
+  const [storeItems, setStoreItems] = useState([]);
+  const [trucks, setTrucks] = useState([]);
+  useEffect(() => {
+    if (!live.data) return;
+    setStoreItems(live.data.storeItems);
+    setTrucks(live.data.trucks);
+    // Keep an open truck's stock panel in step with the refreshed data.
+    setSelectedTruck((prev) => (prev ? live.data.trucks.find((t) => t.id === prev.id) || prev : prev));
+  }, [live.data]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -340,142 +130,145 @@ export default function UtilitiesPage() {
 
   const filteredProductSummary = useMemo(() => {
     const q = summarySearch.trim().toLowerCase();
-    if (!q) return PRODUCT_SUMMARY_LIST;
-    return PRODUCT_SUMMARY_LIST.filter((p) => p.name.toLowerCase().includes(q));
-  }, [summarySearch]);
+    const rows = productSummaryFromTrucks(trucks);
+    if (!q) return rows;
+    return rows.filter((p) => p.name.toLowerCase().includes(q));
+  }, [summarySearch, trucks]);
 
   // Handlers
-  const handleAddInputStock = (e) => {
+  const handleAddInputStock = async (e) => {
     e.preventDefault();
     if (!updateStockForm.item || !updateStockForm.quantity) {
       addToast("Please select an Item and enter Quantity", "error");
       return;
     }
-    const found = storeItems.find((s) => s.item === updateStockForm.item);
-    const entry = {
-      id: Date.now(),
-      date: updateStockForm.date,
-      item_id: found ? found.product_id : "016",
-      item_name: updateStockForm.item,
-      item_type: updateStockForm.itemType,
-      store: updateStockForm.store,
-      quantity: updateStockForm.quantity,
-    };
-    setInputStocks((prev) => [entry, ...prev]);
+    const qty = Number(updateStockForm.quantity) || 0;
+    if (qty <= 0) {
+      addToast("Enter a quantity greater than zero", "error");
+      return;
+    }
+    const product = (live.data?.products || []).find((p) => p.name === updateStockForm.item);
+    if (!product) {
+      addToast(`"${updateStockForm.item}" is not a CRM product`, "error");
+      return;
+    }
+    const newStock = Number(product.stock_quantity || 0) + qty;
+    // Record the movement, then raise the product's stock to match.
+    const record = await apiService.createInventory({
+      product: product.id,
+      batch_no: updateStockForm.date,
+      quantity_in: qty,
+      quantity_out: 0,
+      balance: newStock,
+      location: updateStockForm.store,
+      remarks: updateStockForm.itemType,
+    });
+    if (!record) {
+      addToast("Could not save the stock entry - check the CRM server", "error");
+      return;
+    }
+    const updated = await apiService.updateProduct(product.id, { stock_quantity: newStock });
+    if (!updated) addToast("Stock entry saved, but the product total did not update", "error");
+    setInputStocks((prev) => [
+      {
+        id: record.id,
+        date: updateStockForm.date,
+        item_id: product.code,
+        item_name: product.name,
+        item_type: updateStockForm.itemType,
+        store: updateStockForm.store,
+        quantity: String(qty),
+      },
+      ...prev,
+    ]);
     setUpdateStockForm({ ...updateStockForm, quantity: "" });
-    addToast(`Added ${entry.quantity} of ${entry.item_name} to input stocks`, "success");
+    addToast(`Added ${qty} ${product.name} - stock is now ${newStock}`, "success");
+    await live.refresh();
   };
 
-  const handleSaveNewProduct = (e) => {
+  const handleSaveNewProduct = async (e) => {
     e.preventDefault();
     if (!newItemForm.product_id.trim() || !newItemForm.item.trim()) {
       addToast("Please fill in Product ID and Product Name", "error");
       return;
     }
-    const created = {
-      id: Date.now(),
-      product_id: newItemForm.product_id.trim(),
-      item: newItemForm.item.trim(),
-      description: newItemForm.description.trim() || "new",
-      current_stock: "0",
-      old_stock: "N/A",
-      damaged: "N/A",
-      discarded: "N/A",
-      stock_color: "amber",
-    };
-    setStoreItems((prev) => [created, ...prev]);
-    addToast(`Product "${created.item}" saved successfully`, "success");
+    const created = await apiService.createProduct(productToApi(newItemForm));
+    if (!created) {
+      addToast(`Could not save "${newItemForm.item}" - the Product ID may already exist`, "error");
+      return;
+    }
+    addToast(`Product "${created.name}" saved successfully`, "success");
+    await live.refresh();
     setSubView("list");
   };
 
-  const handleDeleteStoreItem = (row) => {
-    setStoreItems((prev) => prev.filter((i) => i.id !== row.id));
+  const handleDeleteStoreItem = async (row) => {
+    const result = await apiService.deleteProduct(row.id);
+    if (!result) {
+      addToast(`Could not delete "${row.item}" - it may be used on orders`, "error");
+      return;
+    }
     addToast(`Item "${row.item}" deleted`, "info");
+    await live.refresh();
   };
 
-  const handleAddNewTruck = (e) => {
+  const handleAddNewTruck = async (e) => {
     e.preventDefault();
     if (!newTruckForm.truck_id.trim()) {
       addToast("Please enter a Truck ID", "error");
       return;
     }
-    const created = {
-      id: Date.now(),
-      truck_id: newTruckForm.truck_id.trim(),
-      in_charge: "32",
-      assistants: "-",
-      route: newTruckForm.route || "6335",
-      last_updated: "08/09/2026",
-      last_updated_full: "9/8/2026, 10:00:00 AM",
-      stocks: [
-        { item: "5 gal water", added: 0, delivered: 0, used: 0, damaged: 0, balance: 0, returned: 0 },
-      ],
-    };
-    setTrucks((prev) => [created, ...prev]);
-    addToast(`Truck "${created.truck_id}" added successfully`, "success");
+    const created = await apiService.createTruck({
+      plate_no: newTruckForm.truck_id.trim(),
+      truck_name: newTruckForm.truck_id.trim(),
+      route: newTruckForm.route || "",
+      status: "Active",
+    });
+    if (!created) {
+      addToast(`Could not add truck "${newTruckForm.truck_id}" - it may already exist`, "error");
+      return;
+    }
+    addToast(`Truck "${created.plate_no}" added successfully`, "success");
+    await live.refresh();
     setSubView("list");
   };
 
-  const handleAddTruckRecord = (e) => {
+  const handleAddTruckRecord = async (e) => {
     e.preventDefault();
     if (!manageTruckForm.product || !manageTruckForm.quantity || !selectedTruck) {
       addToast("Please select a Product and enter Quantity", "error");
       return;
     }
     const qty = Number(manageTruckForm.quantity) || 0;
-    const updatedTruck = {
-      ...selectedTruck,
-      stocks: [
-        ...selectedTruck.stocks,
-        {
-          item: manageTruckForm.product,
-          added: qty,
-          delivered: 0,
-          used: 0,
-          damaged: 0,
-          balance: qty,
-          returned: 0,
-        },
-      ],
-    };
-    setSelectedTruck(updatedTruck);
-    setTrucks((prev) => prev.map((t) => (t.id === updatedTruck.id ? updatedTruck : t)));
+    if (qty <= 0) {
+      addToast("Enter a quantity greater than zero", "error");
+      return;
+    }
+    // "Add to Truck" loads stock; return/remove actions take it back off.
+    const action = String(manageTruckForm.action || "").toLowerCase();
+    const type = action.includes("return")
+      ? "Return"
+      : action.includes("remove") || action.includes("unload")
+      ? "Unload"
+      : "Load";
+    const result = await apiService.createStockTransaction({
+      truck: selectedTruck.id,
+      transaction_type: type,
+      product_name: manageTruckForm.product,
+      quantity: qty,
+    });
+    if (!result) {
+      addToast("Could not save the truck record - check the CRM server", "error");
+      return;
+    }
     setManageTruckForm({ ...manageTruckForm, quantity: "" });
-    addToast(`Added ${qty} ${manageTruckForm.product} to ${selectedTruck.truck_id}`, "success");
+    addToast(`${type}: ${qty} ${manageTruckForm.product} on ${selectedTruck.truck_id}`, "success");
+    await live.refresh();
   };
 
   return (
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col">
       <Header title="Utilities" subtitle="Manage Inventory" />
-
-      {/* iOS Top Hero Navigation Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-3.5 flex items-center justify-between sticky top-16 z-20">
-        <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight text-[#1C1C1E]">Utilities</span>
-          <Home className="w-3.5 h-3.5 text-[#8E8E93]" />
-          <span className="text-[#8E8E93] text-xs">
-            /{" "}
-            {subView === "update_inventory"
-              ? "Update Inventory"
-              : subView === "add_item"
-              ? "Add New Item"
-              : subView === "add_truck"
-              ? "Add New Truck"
-              : subView === "manage_truck"
-              ? "Manage Truck Stock"
-              : "Manage Inventory"}
-          </span>
-        </div>
-        {subView !== "list" && (
-          <button
-            type="button"
-            onClick={() => setSubView("list")}
-            className="px-4 py-1.5 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition cursor-pointer"
-          >
-            Back to List
-          </button>
-        )}
-      </div>
 
       {/* iOS Segmented Sub-navigation Tabs */}
       {subView === "list" && (
@@ -563,13 +356,19 @@ export default function UtilitiesPage() {
       )}
 
       <div className="p-6 flex-1 space-y-6 max-w-7xl w-full mx-auto">
+        {subView !== "list" && (
+          <BackLink label="Back to List" onClick={() => setSubView("list")} />
+        )}
+
         {/* 1. STORE INVENTORY LIST VIEW */}
         {subView === "list" && activeTab === "store" && (
-          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
-              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Warehouse Inventory</h2>
-              <p className="text-[#8E8E93] text-xs mt-0.5">Stock availability, damages, and replenishment</p>
-            </div>
+          <div className="ios-surface overflow-hidden">
+            <PanelHeader
+                icon={Boxes}
+                title="Warehouse Inventory"
+                subtitle="Stock availability, damages, and replenishment"
+                onAction={() => addToast("Exported inventory records", "success")}
+              />
 
             <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
               <div className="flex items-center gap-2">
@@ -598,9 +397,9 @@ export default function UtilitiesPage() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="ios-table w-full text-left">
                 <thead>
-                  <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                  <tr className="ios-thead">
                     {[
                       "PRODUCT ID",
                       "ITEM",
@@ -614,13 +413,13 @@ export default function UtilitiesPage() {
                       <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
                         <div className="flex items-center justify-between gap-1">
                           <span>{col}</span>
-                          <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70 shrink-0" />
+                          <ArrowUpDown className="w-3 h-3 sort-ico shrink-0" />
                         </div>
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#3C3C43]/10 text-[12.5px] text-[#1C1C1E]">
+                <tbody className="text-[12.5px] text-[#1C1C1E]">
                   {filteredStoreItems.slice(0, entriesPerPage).map((row) => (
                     <tr key={row.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                       <td className="py-3.5 pl-6 pr-4 font-mono font-medium text-[#007AFF]">
@@ -652,7 +451,7 @@ export default function UtilitiesPage() {
                               setSelectedItem(row);
                               setSubView("view_item");
                             }}
-                            className="px-3.5 py-1 rounded-full bg-[#007AFF]/10 hover:bg-[#007AFF] text-[#007AFF] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                            className="px-3.5 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold transition cursor-pointer"
                           >
                             View
                           </button>
@@ -687,13 +486,13 @@ export default function UtilitiesPage() {
 
         {/* 2. CAR STOCK TRANSACTION LIST VIEW */}
         {subView === "list" && activeTab === "car" && (
-          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
-              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
-                Truck Fleet & Vehicle Stock
-              </h2>
-              <p className="text-[#8E8E93] text-xs mt-0.5">Mobile truck stock tracking and route distribution</p>
-            </div>
+          <div className="ios-surface overflow-hidden">
+            <PanelHeader
+                icon={Truck}
+                title="Truck Fleet & Vehicle Stock"
+                subtitle="Mobile truck stock tracking and route distribution"
+                onAction={() => addToast("Exported truck stock records", "success")}
+              />
 
             <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
               <div className="flex items-center gap-2">
@@ -721,9 +520,9 @@ export default function UtilitiesPage() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="ios-table w-full text-left">
                 <thead>
-                  <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                  <tr className="ios-thead">
                     {[
                       "TRUCK ID",
                       "IN-CHARGE",
@@ -736,13 +535,13 @@ export default function UtilitiesPage() {
                       <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
                         <div className="flex items-center justify-between gap-1">
                           <span>{col}</span>
-                          <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70 shrink-0" />
+                          <ArrowUpDown className="w-3 h-3 sort-ico shrink-0" />
                         </div>
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#3C3C43]/10 text-[12.5px] text-[#1C1C1E]">
+                <tbody className="text-[12.5px] text-[#1C1C1E]">
                   {filteredTrucks.slice(0, entriesPerPage).map((truck) => (
                     <tr key={truck.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                       <td className="py-3.5 pl-6 pr-4 font-semibold text-[#1C1C1E]">
@@ -760,7 +559,7 @@ export default function UtilitiesPage() {
                               setSelectedTruck(truck);
                               setTruckModalOpen(true);
                             }}
-                            className="px-3 py-1 rounded-full bg-[#007AFF]/10 hover:bg-[#007AFF] text-[#007AFF] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                            className="px-3 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold transition cursor-pointer"
                           >
                             View
                           </button>
@@ -828,8 +627,8 @@ export default function UtilitiesPage() {
         {/* 3. UPDATE INVENTORY SUB-VIEW (update-inventrery.png) */}
         {subView === "update_inventory" && (
           <div className="space-y-6">
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+            <div className="ios-surface overflow-hidden">
+              <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Update Stock</h2>
               </div>
 
@@ -939,15 +738,15 @@ export default function UtilitiesPage() {
             </div>
 
             {/* Bottom Input Stocks Table Card */}
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+            <div className="ios-surface overflow-hidden">
+              <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Input Stocks</h2>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
                         "DATE",
                         "ITEM ID",
@@ -966,7 +765,7 @@ export default function UtilitiesPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#3C3C43]/10 text-[12px] text-[#1C1C1E]">
+                  <tbody className="text-[12px] text-[#1C1C1E]">
                     {inputStocks.map((st) => (
                       <tr key={st.id} className="hover:bg-[#F2F2F7]/50">
                         <td className="py-3.5 px-6">{st.date}</td>
@@ -1004,8 +803,8 @@ export default function UtilitiesPage() {
 
         {/* 4. ADD NEW ITEM SUB-VIEW (add new item.png) */}
         {subView === "add_item" && (
-          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+          <div className="ios-surface overflow-hidden">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Add / Update Product
               </h2>
@@ -1148,16 +947,16 @@ export default function UtilitiesPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+            <div className="ios-surface overflow-hidden">
+              <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Stock Transaction History - {selectedItem.item} ({selectedItem.product_id})
                 </h2>
               </div>
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {["DATE", "STORE", "ITEM", "ITEM TYPE", "QUANTITY", "UPDATED BY"].map(
                         (col) => (
                           <th key={col} className="py-3 px-6">
@@ -1167,7 +966,7 @@ export default function UtilitiesPage() {
                       )}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
+                  <tbody className="text-xs text-[#1C1C1E]">
                     <tr className="hover:bg-[#F2F2F7]/50">
                       <td className="py-3.5 px-6">{selectedItem.last_updated || "08/09/2026"}</td>
                       <td className="py-3.5 px-6">Al Ain</td>
@@ -1187,8 +986,8 @@ export default function UtilitiesPage() {
 
         {/* 6. ADD NEW TRUCK SUB-VIEW (add-new truck.png) */}
         {subView === "add_truck" && (
-          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+          <div className="ios-surface overflow-hidden">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Add New Truck</h2>
             </div>
 
@@ -1268,8 +1067,8 @@ export default function UtilitiesPage() {
 
         {/* 7. MANAGE TRUCK STOCK SUB-VIEW (truck-manage.png) */}
         {subView === "manage_truck" && selectedTruck && (
-          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+          <div className="ios-surface overflow-hidden">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Manage Truck Stock</h2>
             </div>
 
@@ -1395,9 +1194,9 @@ export default function UtilitiesPage() {
 
               {/* Truck Stock Table inside Manage Truck Stock */}
               <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl overflow-hidden mt-4">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
                         "PRODUCT",
                         "ADDED",
@@ -1413,7 +1212,7 @@ export default function UtilitiesPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
+                  <tbody className="text-xs text-[#1C1C1E]">
                     {selectedTruck.stocks.map((st, idx) => (
                       <tr key={idx} className="hover:bg-[#F2F2F7]/50">
                         <td className="py-3 px-4 font-semibold">{st.item}</td>
@@ -1448,8 +1247,8 @@ export default function UtilitiesPage() {
 
       {/* 8. TRUCK STOCK DETAILS MODAL (truck view.png) */}
       {truckModalOpen && selectedTruck && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
             <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-base font-semibold text-[#1C1C1E]">Truck Stock Details</h3>
               <button
@@ -1476,9 +1275,9 @@ export default function UtilitiesPage() {
               </div>
 
               <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[10px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
                         "ITEM",
                         "ADDED",
@@ -1494,7 +1293,7 @@ export default function UtilitiesPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
+                  <tbody className="text-xs text-[#1C1C1E]">
                     {selectedTruck.stocks.map((st, idx) => (
                       <tr key={idx} className="hover:bg-[#F2F2F7]/50">
                         <td className="py-3 px-3 font-medium">{st.item}</td>
@@ -1534,7 +1333,7 @@ export default function UtilitiesPage() {
 
       {/* 9. TOTAL PRODUCT DELIVERY SUMMARY RIGHT-HAND DRAWER (product-summary.png) */}
       {productSummaryDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/25 backdrop-blur-[6px]">
           <div className="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200 border-l border-[#3C3C43]/10">
             <div className="px-6 py-5 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-[#1C1C1E]">

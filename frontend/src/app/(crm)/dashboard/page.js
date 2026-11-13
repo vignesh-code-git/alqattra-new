@@ -18,7 +18,8 @@ import {
   ArrowRight,
   SlidersHorizontal,
   RotateCcw,
-  Calendar
+  Calendar,
+  Filter
 } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -43,6 +44,36 @@ ChartJS.register(
   LineElement,
   Title
 );
+
+// Canvas text does not inherit CSS, so point Chart.js at the same stack.
+const CHART_FONT =
+  '-apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif';
+ChartJS.defaults.font.family = CHART_FONT;
+ChartJS.defaults.font.size = 11;
+ChartJS.defaults.color = "#8E8E93";
+
+/**
+ * Categorical palette for the payment-method split.
+ * Validated on a white surface with the dataviz validator (adjacent pairlist):
+ * worst adjacent CVD dE 27.6, worst normal-vision dE 35.3, wrap pair
+ * (Credit -> Cash) CVD dE 34.1. Orange and green sit below 3:1 contrast on
+ * white, so the relief rule applies: every slice is directly labelled with its
+ * name and share in the legend beneath the chart.
+ */
+const PAYMENT_SERIES = [
+  { key: "Cash", color: "#007AFF" },
+  { key: "Card", color: "#FF9500" },
+  { key: "Wallet", color: "#AF52DE" },
+  { key: "Credit", color: "#34C759" },
+];
+
+/** Short form for the figure inside a donut's hole, e.g. AED 5.82M */
+function compactAED(n) {
+  const v = Number(n) || 0;
+  if (v >= 1_000_000) return `AED ${(v / 1_000_000).toFixed(2)}M`;
+  if (v >= 10_000) return `AED ${(v / 1_000).toFixed(1)}K`;
+  return `AED ${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+}
 
 export default function DashboardPage() {
   const { addToast } = useToast();
@@ -87,60 +118,108 @@ export default function DashboardPage() {
 
   const m = data.metrics || {};
 
-  // Doughnut chart config
-  const revenueChartData = {
-    labels: ["Cash", "Card", "Wallet", "Credit"],
+  // --- Payment-method split -------------------------------------------------
+  // One hue per entity, used identically in both donuts, so "Cash" is the same
+  // colour everywhere. Order is the validated categorical sequence (worst
+  // adjacent CVD dE 27.6, normal-vision 35.3 on a white surface).
+  const revenueSplit = { Cash: 70, Card: 15, Wallet: 10, Credit: 5 };
+  const collectionsSplit = { Cash: 55, Card: 30, Wallet: 8, Credit: 7 };
+
+  const buildDonut = (split) => ({
+    labels: PAYMENT_SERIES.map((s) => s.key),
     datasets: [
       {
-        data: [70, 15, 10, 5],
-        backgroundColor: ["#10b981", "#6366f1", "#06b6d4", "#f43f5e"],
+        data: PAYMENT_SERIES.map((s) => split[s.key] ?? 0),
+        backgroundColor: PAYMENT_SERIES.map((s) => s.color),
+        // 2px gap in the surface colour separates touching segments
         borderWidth: 2,
-        borderColor: "#ffffff",
+        borderColor: "#FFFFFF",
+        borderAlign: "inner",
+        hoverBorderColor: "#FFFFFF",
+        hoverOffset: 6,
+        spacing: 0,
       },
     ],
-  };
+  });
 
-  const collectionsChartData = {
-    labels: ["Cash", "Card", "Wallet", "Credit"],
-    datasets: [
-      {
-        data: [55, 30, 8, 7],
-        backgroundColor: ["#6366f1", "#10b981", "#06b6d4", "#f43f5e"],
-        borderWidth: 2,
-        borderColor: "#ffffff",
-      },
-    ],
-  };
+  const revenueChartData = buildDonut(revenueSplit);
+  const collectionsChartData = buildDonut(collectionsSplit);
 
-  const doughnutOptions = {
+  const donutOptions = (centerValue, centerLabel) => ({
     responsive: true,
     maintainAspectRatio: false,
-    cutout: "74%",
+    cutout: "68%",
+    layout: { padding: 6 },
+    animation: { animateRotate: true, duration: 600, easing: "easeOutQuart" },
     plugins: {
       legend: { display: false },
+      centerText: { value: centerValue, label: centerLabel },
       tooltip: {
-        backgroundColor: "#0f172a",
-        padding: 10,
-        cornerRadius: 6,
+        backgroundColor: "rgba(28,28,30,0.92)",
+        cornerRadius: 12,
+        padding: { top: 9, bottom: 9, left: 12, right: 12 },
+        displayColors: true,
+        boxWidth: 10,
+        boxHeight: 2,
+        boxPadding: 7,
+        usePointStyle: false,
+        titleColor: "#FFFFFF",
+        titleFont: { size: 13, weight: "600" },
+        bodyColor: "rgba(255,255,255,0.68)",
+        bodyFont: { size: 11, weight: "500" },
+        caretSize: 5,
+        callbacks: {
+          // Value leads, label follows
+          title: (items) => `${items[0].parsed}%`,
+          label: (ctx) => ` ${ctx.label}`,
+        },
       },
+    },
+  });
+
+  // Hero figure drawn in the ring's hole
+  const centerTextPlugin = {
+    id: "centerText",
+    afterDatasetsDraw(chart, _args, opts) {
+      if (!opts || !opts.value) return;
+      const { ctx, chartArea } = chart;
+      const x = (chartArea.left + chartArea.right) / 2;
+      const y = (chartArea.top + chartArea.bottom) / 2;
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#1C1C1E";
+      ctx.font = "600 20px " + CHART_FONT;
+      ctx.fillText(opts.value, x, y - 7);
+      ctx.fillStyle = "#8E8E93";
+      ctx.font = "500 10px " + CHART_FONT;
+      ctx.fillText(String(opts.label || "").toUpperCase(), x, y + 13);
+      ctx.restore();
     },
   };
 
-  // Line Chart config for Sales Trend
+  // Line Chart config for Sales Trend — single series, so no legend box
   const trendData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May"],
     datasets: [
       {
-        label: "Sales Trend (AED)",
+        label: "Sales Trend",
         data: [0, 0.2, 0.5, 0.8, 1.0],
-        borderColor: "#5948DB",
-        backgroundColor: "rgba(89, 72, 219, 0.12)",
-        tension: 0.35,
+        borderColor: "#007AFF",
+        // area wash, not a saturated block
+        backgroundColor: "rgba(0,122,255,0.10)",
+        borderWidth: 2,
+        tension: 0.38,
         fill: true,
-        pointBackgroundColor: "#5948DB",
-        pointBorderColor: "#ffffff",
+        pointBackgroundColor: "#007AFF",
+        // 2px ring in the surface colour
+        pointBorderColor: "#FFFFFF",
         pointBorderWidth: 2,
         pointRadius: 4,
+        pointHoverRadius: 6,
+        pointHoverBorderWidth: 2,
+        // hit target larger than the mark
+        pointHitRadius: 24,
       },
     ],
   };
@@ -148,19 +227,41 @@ export default function DashboardPage() {
   const lineOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
     plugins: {
       legend: { display: false },
+      tooltip: {
+        backgroundColor: "rgba(28,28,30,0.92)",
+        cornerRadius: 12,
+        padding: { top: 9, bottom: 9, left: 12, right: 12 },
+        displayColors: true,
+        boxWidth: 10,
+        boxHeight: 2,
+        boxPadding: 7,
+        titleColor: "rgba(255,255,255,0.68)",
+        titleFont: { size: 11, weight: "500" },
+        bodyColor: "#FFFFFF",
+        bodyFont: { size: 13, weight: "600" },
+        caretSize: 5,
+        callbacks: {
+          label: (ctx) => ` AED ${Number(ctx.parsed.y).toFixed(2)}`,
+        },
+      },
     },
     scales: {
       x: {
-        grid: { color: "#f1f5f9" },
-        ticks: { color: "#64748b", font: { size: 11 } },
+        border: { display: false },
+        grid: { display: false },
+        ticks: { color: "#8E8E93", font: { size: 11 }, padding: 6 },
       },
       y: {
-        grid: { color: "#f1f5f9" },
+        border: { display: false },
+        // hairline, solid, one step off the surface
+        grid: { color: "rgba(60,60,67,0.10)", lineWidth: 1, drawTicks: false },
         ticks: {
-          color: "#64748b",
+          color: "#8E8E93",
           font: { size: 11 },
+          padding: 8,
           callback: (val) => `AED ${val}`,
         },
       },
@@ -169,27 +270,25 @@ export default function DashboardPage() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <Header title="Dashboard Overview" subtitle="Dashboard" />
-
-      {/* iOS Top Hero Navigation Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-3.5 flex items-center justify-between sticky top-16 z-20">
-        <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight text-[#1C1C1E]">Dashboard</span>
-          <span className="text-[#8E8E93] text-xs">/ Overview</span>
-        </div>
-        <button
-          type="button"
-          onClick={() => setShowFilters(true)}
-          className="px-4 py-1.5 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition cursor-pointer shadow-2xs"
-        >
-          Filters
-        </button>
-      </div>
+      <Header
+        title="Dashboard Overview"
+        subtitle="Dashboard"
+        actions={
+          <button
+            type="button"
+            onClick={() => setShowFilters(true)}
+            className="px-3.5 py-1.5 rounded-full bg-[#767680]/12 hover:bg-[#767680]/20 text-[#1C1C1E] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1.5"
+          >
+            <Filter className="w-3.5 h-3.5" />
+            Filters
+          </button>
+        }
+      />
 
       <main className="p-5 space-y-5 flex-1 overflow-y-auto">
         {/* iOS Dashboard Filters Modal */}
         {showFilters && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4">
             <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-[#3C3C43]/10">
               <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
                 <h3 className="text-sm font-bold text-[#1C1C1E]">Dashboard Filters</h3>
@@ -313,12 +412,12 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Revenue Chart */}
           <div className="bg-white rounded-3xl border border-[#3C3C43]/10 p-5 shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+            <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-3 mb-3">
               <div>
-                <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">
+                <span className="text-[10px] text-[#8E8E93] font-extrabold uppercase tracking-wider block">
                   REVENUE
                 </span>
-                <h3 className="text-xs font-bold text-slate-800">By Payment Method</h3>
+                <h3 className="text-xs font-bold text-[#2C2C2E]">By Payment Method</h3>
               </div>
               <select
                 value={selectedMonth}
@@ -326,7 +425,7 @@ export default function DashboardPage() {
                   setSelectedMonth(e.target.value);
                   addToast(`Revenue period: ${e.target.value}`, "info");
                 }}
-                className="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-md text-xs font-semibold text-slate-700 cursor-pointer focus:outline-none"
+                className="px-2.5 py-1 bg-[#F2F2F7] border border-[#E5E5EA] rounded-md text-xs font-semibold text-[#3C3C43] cursor-pointer focus:outline-none"
               >
                 <option value="November 2026">November 2026</option>
                 <option value="October 2026">October 2026</option>
@@ -334,28 +433,30 @@ export default function DashboardPage() {
               </select>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-around gap-4 sm:gap-6 h-auto sm:h-52 py-2 sm:py-0">
-              <div className="w-44 h-44 relative">
-                <Doughnut data={revenueChartData} options={doughnutOptions} />
+            <div className="flex flex-col items-center justify-center py-1">
+              <div className="w-[196px] h-[196px] relative">
+                <Doughnut
+                  data={revenueChartData}
+                  options={donutOptions(
+                    compactAED(m.total_revenue ?? 5817740.39),
+                    "Total revenue"
+                  )}
+                  plugins={[centerTextPlugin]}
+                />
               </div>
 
-              <div className="space-y-2 text-xs w-40">
-                <LegendItem color="bg-emerald-500" label="Cash" value="70%" />
-                <LegendItem color="bg-indigo-500" label="Card" value="15%" />
-                <LegendItem color="bg-cyan-500" label="Wallet" value="10%" />
-                <LegendItem color="bg-rose-500" label="Credit" value="5%" />
-              </div>
+              <SplitLegend split={revenueSplit} />
             </div>
           </div>
 
           {/* Collections Chart */}
           <div className="bg-white rounded-3xl border border-[#3C3C43]/10 p-5 shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+            <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-3 mb-3">
               <div>
-                <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">
+                <span className="text-[10px] text-[#8E8E93] font-extrabold uppercase tracking-wider block">
                   COLLECTIONS
                 </span>
-                <h3 className="text-xs font-bold text-slate-800">By Payment Method</h3>
+                <h3 className="text-xs font-bold text-[#2C2C2E]">By Payment Method</h3>
               </div>
               <select
                 value={selectedMonth}
@@ -363,7 +464,7 @@ export default function DashboardPage() {
                   setSelectedMonth(e.target.value);
                   addToast(`Collections period: ${e.target.value}`, "info");
                 }}
-                className="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-md text-xs font-semibold text-slate-700 cursor-pointer focus:outline-none"
+                className="px-2.5 py-1 bg-[#F2F2F7] border border-[#E5E5EA] rounded-md text-xs font-semibold text-[#3C3C43] cursor-pointer focus:outline-none"
               >
                 <option value="November 2026">November 2026</option>
                 <option value="October 2026">October 2026</option>
@@ -371,17 +472,19 @@ export default function DashboardPage() {
               </select>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-around gap-4 sm:gap-6 h-auto sm:h-52 py-2 sm:py-0">
-              <div className="w-44 h-44 relative">
-                <Doughnut data={collectionsChartData} options={doughnutOptions} />
+            <div className="flex flex-col items-center justify-center py-1">
+              <div className="w-[196px] h-[196px] relative">
+                <Doughnut
+                  data={collectionsChartData}
+                  options={donutOptions(
+                    compactAED(m.total_collection ?? 18613.24),
+                    "Total collected"
+                  )}
+                  plugins={[centerTextPlugin]}
+                />
               </div>
 
-              <div className="space-y-2 text-xs w-40">
-                <LegendItem color="bg-indigo-500" label="Cash" value="55%" />
-                <LegendItem color="bg-emerald-500" label="Card" value="30%" />
-                <LegendItem color="bg-cyan-500" label="Wallet" value="8%" />
-                <LegendItem color="bg-rose-500" label="Credit" value="7%" />
-              </div>
+              <SplitLegend split={collectionsSplit} />
             </div>
           </div>
         </div>
@@ -389,7 +492,7 @@ export default function DashboardPage() {
         {/* Lower Row: Top Products Sales (With Vertical Column Divider Lines) & Performance Trend */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Top Products Table with Column Divider Lines */}
-          <div className="bg-white rounded-3xl border border-[#3C3C43]/10 shadow-sm overflow-hidden flex flex-col justify-between">
+          <div className="ios-surface overflow-hidden flex flex-col justify-between">
             <div>
               <div className="px-5 py-4 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex items-center justify-between">
                 <h3 className="text-xs font-bold text-[#1C1C1E] tracking-tight uppercase">
@@ -405,8 +508,8 @@ export default function DashboardPage() {
               </div>
 
               <div className="overflow-x-auto touch-pan-x">
-                <table className="w-full text-left text-xs border-collapse min-w-[500px]">
-                  <thead className="bg-[#007AFF]/10 text-[11px] text-[#007AFF] border-y border-[#007AFF]/20 font-bold uppercase tracking-wider">
+                <table className="ios-table w-full text-left text-xs border-collapse min-w-[500px]">
+                  <thead className="ios-thead">
                     <tr>
                       <th className="px-4 py-3 font-semibold">PRODUCT</th>
                       <th className="px-4 py-3 font-semibold text-center">LAST MONTH</th>
@@ -414,7 +517,7 @@ export default function DashboardPage() {
                       <th className="px-4 py-3 font-semibold text-right">CHANGE</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#3C3C43]/10 font-medium">
+                  <tbody className="font-medium">
                     {data.top_products.map((p, idx) => (
                       <tr key={idx} className="hover:bg-[#F2F2F7]/50 transition-colors">
                         <td className="px-4 py-3 text-[#1C1C1E] font-semibold">
@@ -443,12 +546,12 @@ export default function DashboardPage() {
 
           {/* Performance Trend */}
           <div className="bg-white rounded-3xl border border-[#3C3C43]/10 p-5 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-2">
+            <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-3 mb-2">
               <div>
-                <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">
+                <span className="text-[10px] text-[#8E8E93] font-extrabold uppercase tracking-wider block">
                   PERFORMANCE
                 </span>
-                <h3 className="text-xs font-bold text-slate-800">Product Sales Trend</h3>
+                <h3 className="text-xs font-bold text-[#2C2C2E]">Product Sales Trend</h3>
               </div>
               <select
                 value={selectedProduct}
@@ -456,7 +559,7 @@ export default function DashboardPage() {
                   setSelectedProduct(e.target.value);
                   addToast(`Trend SKU filtered: ${e.target.value}`, "info");
                 }}
-                className="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-md text-xs font-semibold text-slate-700 cursor-pointer focus:outline-none"
+                className="px-2.5 py-1 bg-[#F2F2F7] border border-[#E5E5EA] rounded-md text-xs font-semibold text-[#3C3C43] cursor-pointer focus:outline-none"
               >
                 <option value="All Products">All Products</option>
                 <option value="5 Gallon Drinking Water">5 Gallon Drinking Water</option>
@@ -476,23 +579,23 @@ export default function DashboardPage() {
 
 function KpiCard({ title, value, icon: Icon, color }) {
   const colorMap = {
-    emerald: "bg-emerald-50 text-emerald-600 border-emerald-200",
-    blue: "bg-blue-50 text-blue-600 border-blue-200",
-    amber: "bg-amber-50 text-amber-600 border-amber-200",
+    emerald: "bg-[#EBFAEF] text-[#34C759] border-[#BCEFC9]",
+    blue: "bg-[#EAF4FF] text-[#007AFF] border-[#BFDDFF]",
+    amber: "bg-[#FFF6E8] text-[#FF9500] border-[#FFE0AD]",
     cyan: "bg-cyan-50 text-cyan-600 border-cyan-200",
     purple: "bg-purple-50 text-purple-600 border-purple-200",
-    rose: "bg-rose-50 text-rose-600 border-rose-200",
-    slate: "bg-slate-100 text-slate-600 border-slate-200",
+    rose: "bg-[#FFF1F0] text-[#FF3B30] border-[#FFD5D2]",
+    slate: "bg-[#F2F2F7] text-[#636366] border-[#E5E5EA]",
     teal: "bg-teal-50 text-teal-600 border-teal-200",
   };
 
   return (
     <div className="bg-white rounded-2xl border border-[#3C3C43]/10 p-3.5 flex flex-col justify-between shadow-xs hover:shadow-md transition-all">
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[10px] font-semibold text-[#8E8E93] tracking-wide uppercase leading-tight line-clamp-1">
+      <div className="flex items-start justify-between gap-1.5 mb-1.5">
+        <span className="text-[9.5px] font-semibold text-[#8E8E93] tracking-[0.02em] uppercase leading-[1.25] min-h-[2.1em]">
           {title}
         </span>
-        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${colorMap[color] || colorMap.slate}`}>
+        <div className={`w-5 h-5 shrink-0 rounded-full flex items-center justify-center ${colorMap[color] || colorMap.slate}`}>
           <Icon className="w-2.5 h-2.5" />
         </div>
       </div>
@@ -503,14 +606,31 @@ function KpiCard({ title, value, icon: Icon, color }) {
   );
 }
 
-function LegendItem({ color, label, value }) {
+/**
+ * Legend + direct labels for a donut. Every slice is named with its share here,
+ * which is what lets the lower-contrast slots (orange, green) ship on a white
+ * surface. Text stays in ink tokens; only the swatch carries the series hue.
+ */
+function SplitLegend({ split }) {
+  const rows = PAYMENT_SERIES.map((s) => ({ ...s, value: split[s.key] ?? 0 }));
   return (
-    <div className="flex items-center justify-between text-xs py-0.5">
-      <div className="flex items-center gap-1.5">
-        <span className={`w-2 h-2 rounded-full ${color}`} />
-        <span className="text-slate-600 font-medium">{label}</span>
-      </div>
-      <span className="text-slate-900 font-bold font-mono">{value}</span>
+    <div className="mt-4 w-full max-w-[280px] space-y-px">
+      {rows.map((r) => (
+        <div
+          key={r.key}
+          className="flex items-center gap-2.5 py-[5px] text-[12px] leading-none"
+        >
+          <span
+            className="w-2.5 h-2.5 rounded-[3px] shrink-0"
+            style={{ backgroundColor: r.color }}
+            aria-hidden="true"
+          />
+          <span className="text-[#3C3C43] font-medium flex-1 min-w-0 truncate">
+            {r.key}
+          </span>
+          <span className="text-[#1C1C1E] font-semibold tabular-nums">{r.value}%</span>
+        </div>
+      ))}
     </div>
   );
 }

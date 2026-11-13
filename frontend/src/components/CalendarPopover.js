@@ -73,12 +73,12 @@ export default function CalendarPopover({
         onClick={() => setIsOpen(!isOpen)}
         className={
           buttonClassName ||
-          "flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-2xs transition-all cursor-pointer active:scale-[0.98]"
+          "flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E5E5EA] rounded-md text-xs font-semibold text-[#3C3C43] hover:bg-[#F2F2F7] hover:border-[#C7C7CC] shadow-2xs transition-all cursor-pointer active:scale-[0.98]"
         }
         title="Open Calendar"
       >
-        <CalendarIcon className="w-3.5 h-3.5 text-blue-600" />
-        <span className="font-medium text-slate-800">{selectedDate || label}</span>
+        <CalendarIcon className="w-3.5 h-3.5 text-[#007AFF]" />
+        <span className="font-medium text-[#2C2C2E]">{selectedDate || label}</span>
       </button>
 
       {isOpen && (
@@ -87,24 +87,24 @@ export default function CalendarPopover({
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-24px)] bg-white border border-slate-200 rounded-md shadow-xl p-3 sm:p-3.5 z-50 animate-in fade-in zoom-in-95 select-none">
+          <div className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-24px)] bg-white border border-[#E5E5EA] rounded-md shadow-xl p-3 sm:p-3.5 z-50 animate-in fade-in zoom-in-95 select-none">
             {/* Calendar Header with Month/Year Navigation */}
-            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100">
-              <span className="text-xs font-bold text-slate-900">
+            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-[#F2F2F7]">
+              <span className="text-xs font-bold text-[#1C1C1E]">
                 {months[currentMonth]} {currentYear}
               </span>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
                   onClick={handlePrevMonth}
-                  className="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+                  className="p-1 rounded hover:bg-[#F2F2F7] text-[#8E8E93] hover:text-[#2C2C2E] transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
                   onClick={handleNextMonth}
-                  className="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+                  className="p-1 rounded hover:bg-[#F2F2F7] text-[#8E8E93] hover:text-[#2C2C2E] transition-colors"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -120,8 +120,8 @@ export default function CalendarPopover({
                   onClick={() => handlePresetClick(p)}
                   className={`px-2 py-0.5 rounded text-[10px] font-semibold border transition-colors duration-150 outline-none focus:outline-none select-none cursor-pointer ${
                     selectedDate === p.value
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
+                      ? "bg-[#007AFF] text-white border-[#007AFF]"
+                      : "bg-[#F2F2F7] text-[#636366] border-[#E5E5EA] hover:bg-[#F2F2F7] hover:text-[#1C1C1E]"
                   }`}
                 >
                   {p.label}
@@ -130,7 +130,7 @@ export default function CalendarPopover({
             </div>
 
             {/* Day of Week Headers */}
-            <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+            <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-[#8E8E93] uppercase tracking-wider mb-1">
               <span>Su</span>
               <span>Mo</span>
               <span>Tu</span>
@@ -163,10 +163,10 @@ export default function CalendarPopover({
                     onClick={() => handleDayClick(dayNum)}
                     className={`h-7 w-7 rounded-sm flex items-center justify-center font-medium border transition-colors duration-150 text-[11px] outline-none focus:outline-none select-none cursor-pointer ${
                       isSelected
-                        ? "bg-blue-600 text-white font-bold border-blue-600 shadow-2xs"
+                        ? "bg-[#007AFF] text-white font-bold border-[#007AFF] shadow-2xs"
                         : isToday
-                        ? "border-blue-400 text-blue-600 font-bold bg-blue-50/50"
-                        : "border-transparent text-slate-700 hover:bg-slate-100"
+                        ? "border-[#4EA6FF] text-[#007AFF] font-bold bg-[#EAF4FF]/50"
+                        : "border-transparent text-[#3C3C43] hover:bg-[#F2F2F7]"
                     }`}
                   >
                     {dayNum}
@@ -176,12 +176,12 @@ export default function CalendarPopover({
             </div>
 
             {/* Footer with Clear/Close */}
-            <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-              <span className="text-slate-400 font-mono">Today: 8 Nov 2026</span>
+            <div className="mt-3 pt-2 border-t border-[#F2F2F7] flex items-center justify-between text-[11px]">
+              <span className="text-[#8E8E93] font-mono">Today: 8 Nov 2026</span>
               <button
                 type="button"
                 onClick={() => handleDayClick(8)}
-                className="text-blue-600 hover:text-blue-700 font-bold"
+                className="text-[#007AFF] hover:text-[#0062CC] font-bold"
               >
                 Go to Today
               </button>

@@ -1,86 +1,38 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
-import { Home, ArrowUpDown } from "lucide-react";
-
-const INITIAL_ZONES = [
-  {
-    id: 1,
-    zone: "INDUSTRIAL AREA 2 LULU",
-    route_id: "6354",
-    creation_date: "2026-07-28T13:45:59.484Z",
-    updated_at: "2026-07-28T13:45:59.484Z",
-  },
-  {
-    id: 2,
-    zone: "Muwaiji-Shaikh Salama",
-    route_id: "6335",
-    creation_date: "2026-05-14T12:16:07.464Z",
-    updated_at: "2026-05-14T12:16:07.464Z",
-  },
-  {
-    id: 3,
-    zone: "KHABISI",
-    route_id: "6335",
-    creation_date: "2025-07-14T08:31:06.303Z",
-    updated_at: "2025-07-14T08:31:06.303Z",
-  },
-  {
-    id: 4,
-    zone: "ASHAREJ",
-    route_id: "6352",
-    creation_date: "2025-07-14T08:16:54.063Z",
-    updated_at: "2025-07-14T08:16:54.063Z",
-  },
-  {
-    id: 5,
-    zone: "MARKHANIA",
-    route_id: "6352",
-    creation_date: "2025-07-14T08:14:18.899Z",
-    updated_at: "2025-07-14T08:14:18.899Z",
-  },
-  {
-    id: 6,
-    zone: "MANAZIF",
-    route_id: "6350",
-    creation_date: "2025-07-14T08:12:35.529Z",
-    updated_at: "2025-07-14T08:12:35.529Z",
-  },
-  {
-    id: 7,
-    zone: "MUTHARID",
-    route_id: "6328",
-    creation_date: "2025-07-14T08:08:11.612Z",
-    updated_at: "2025-07-14T08:08:11.612Z",
-  },
-  {
-    id: 8,
-    zone: "JAHILI",
-    route_id: "6354",
-    creation_date: "2025-07-14T06:34:26.318Z",
-    updated_at: "2025-07-14T06:34:26.318Z",
-  },
-  {
-    id: 9,
-    zone: "SAROOJ",
-    route_id: "6354",
-    creation_date: "2025-07-14T06:33:02.405Z",
-    updated_at: "2025-07-14T06:33:02.405Z",
-  },
-  {
-    id: 10,
-    zone: "SAROOJ NEW",
-    route_id: "6354",
-    creation_date: "2025-07-14T06:32:25.280Z",
-    updated_at: "2025-07-14T06:32:25.280Z",
-  },
-];
+import PanelHeader from "@/components/PanelHeader";
+import { apiService } from "@/services/api";
+import useLiveData from "@/hooks/useLiveData";
+import { listOf, zoneFromApi, makeCode } from "@/services/crmMappers";
+import { Home, ArrowUpDown, MapPin, Plus, ArrowLeft } from "lucide-react";
 
 export default function ZonesPage() {
   const { addToast } = useToast();
-  const [zones, setZones] = useState(INITIAL_ZONES);
+  const loadLive = useCallback(async () => {
+    const [zonesRaw, routesRaw] = await Promise.all([apiService.getZones(), apiService.getRoutes()]);
+    if (zonesRaw == null) return null;
+    const routes = listOf(routesRaw);
+    return { zones: listOf(zonesRaw).map((z) => zoneFromApi(z, routes)), routes };
+  }, []);
+  const live = useLiveData(loadLive);
+
+  // Tell the user once when the server becomes unreachable, not on every poll.
+  const [offlineNotified, setOfflineNotified] = useState(false);
+  useEffect(() => {
+    if (live.error && !offlineNotified) {
+      addToast("Cannot reach the CRM server - showing the last loaded data", "error");
+      setOfflineNotified(true);
+    }
+    if (!live.error && offlineNotified) setOfflineNotified(false);
+  }, [live.error, offlineNotified, addToast]);
+
+  const [zones, setZones] = useState([]);
+  useEffect(() => {
+    if (live.data) setZones(live.data.zones);
+  }, [live.data]);
   const [viewMode, setViewMode] = useState("list"); // "list" | "add"
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -111,63 +63,75 @@ export default function ZonesPage() {
     setViewMode("add");
   };
 
-  const handleAddZone = (e) => {
+  const handleAddZone = async (e) => {
     e.preventDefault();
     if (!zoneName.trim() || !routeId.trim()) {
       addToast("Please enter Zone and Route ID", "error");
       return;
     }
-    const nowIso = new Date().toISOString();
-    const newEntry = {
-      id: Date.now(),
-      zone: zoneName.trim(),
-      route_id: routeId.trim(),
-      creation_date: nowIso,
-      updated_at: nowIso,
-    };
-    setZones((prev) => [newEntry, ...prev]);
-    addToast(`Zone "${zoneName}" added successfully`, "success");
+    const zone = await apiService.createZone({
+      code: makeCode("ZN", zoneName),
+      name: zoneName.trim(),
+      city: "AL AIN",
+    });
+    if (!zone) {
+      addToast(`Could not save zone "${zoneName}" - check the CRM server`, "error");
+      return;
+    }
+    // Attach the route: create it, or report if that code is already taken.
+    const code = routeId.trim();
+    const existing = (live.data?.routes || []).find((r) => r.code === code);
+    if (existing) {
+      addToast(`Zone added. Route ${code} already belongs to ${existing.zone_name || "another zone"}`, "info");
+    } else {
+      const route = await apiService.createRoute({ code, name: `Route ${code}`, zone: zone.id });
+      if (!route) addToast(`Zone added, but route ${code} could not be created`, "error");
+      else addToast(`Zone "${zoneName}" added with route ${code}`, "success");
+    }
+    await live.refresh();
     setViewMode("list");
   };
 
-  const handleDelete = (row) => {
-    setZones((prev) => prev.filter((z) => z.id !== row.id));
+  const handleDelete = async (row) => {
+    // Deleting a zone also deletes its routes on the server, so refuse instead.
+    if (row.route_id) {
+      addToast(`Zone "${row.zone}" still has route ${row.route_id} - delete or move it first`, "error");
+      return;
+    }
+    const result = await apiService.deleteZone(row.id);
+    if (!result) {
+      addToast(`Could not delete zone "${row.zone}" - check the CRM server`, "error");
+      return;
+    }
     addToast(`Zone "${row.zone}" deleted`, "info");
+    await live.refresh();
   };
 
   return (
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col">
       <Header title="Zones" subtitle="Manage Zones" />
 
-      {/* iOS Top Hero Navigation Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-3.5 flex items-center justify-between sticky top-16 z-20">
-        <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight text-[#1C1C1E]">Zones</span>
-          <Home className="w-3.5 h-3.5 text-[#8E8E93]" />
-          <span className="text-[#8E8E93] text-xs">
-            / {viewMode === "add" ? "New Zone" : "Manage Zones"}
-          </span>
-        </div>
-        {viewMode === "list" && (
-          <button
-            type="button"
-            onClick={openAddView}
-            className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#007AFF]/20"
-          >
-            + New Zone
-          </button>
-        )}
-      </div>
-
       <div className="p-6 flex-1 max-w-7xl w-full mx-auto">
         {viewMode === "list" ? (
           /* Main Zones iOS Table Card */
-          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
+          <div className="ios-surface overflow-hidden">
             {/* Header Banner */}
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
-              <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">Manage Delivery Zones</h2>
-              <p className="text-[#8E8E93] text-[11px] mt-0.5">Route mapping and geographic distribution</p>
-            </div>
+            <PanelHeader
+              icon={MapPin}
+              title="Delivery Zones"
+              subtitle="Route mapping and geographic distribution"
+              onAction={() => addToast("Exported zone records", "success")}
+              actions={
+                <button
+                  type="button"
+                  onClick={openAddView}
+                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  New Zone
+                </button>
+              }
+            />
 
             {/* Show Entries & Search Bar */}
             <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
@@ -205,9 +169,9 @@ export default function ZonesPage() {
 
             {/* Exact 5-Column Table */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="ios-table w-full text-left">
                 <thead>
-                  <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] tracking-wider uppercase">
+                  <tr className="ios-thead">
                     <th className="py-3 px-6">
                       <div className="flex items-center justify-between">
                         <span>ZONE</span>
@@ -240,7 +204,7 @@ export default function ZonesPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#3C3C43]/10 text-[12.5px] text-[#1C1C1E]">
+                <tbody className="text-[12.5px] text-[#1C1C1E]">
                   {paginatedRows.map((row) => (
                     <tr key={row.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                       <td className="py-3.5 px-6 font-semibold text-[#1C1C1E]">{row.zone}</td>
@@ -302,8 +266,8 @@ export default function ZonesPage() {
           </div>
         ) : (
           /* Add New Zone iOS Card */
-          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden max-w-2xl mx-auto">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+          <div className="ios-surface overflow-hidden max-w-2xl mx-auto">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
               <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">Add New Zone</h2>
             </div>
 

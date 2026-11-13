@@ -37,6 +37,8 @@ export const apiService = {
   createCustomer: (data) => fetchFromAPI(`/customers/list/`, { method: "POST", body: JSON.stringify(data) }),
   updateCustomer: (id, data) => fetchFromAPI(`/customers/list/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteCustomer: (id) => fetchFromAPI(`/customers/list/${id}/`, { method: "DELETE" }),
+  // Moves a customer to Deleted Customers (status "Deleted"); restore with updateCustomer.
+  softDeleteCustomer: (id) => fetchFromAPI(`/customers/list/${id}/soft_delete/`, { method: "POST" }),
 
   // Orders CRUD
   getOrders: (city = 'ALL') => fetchFromAPI(`/crm/orders/?city=${city}`),
@@ -58,10 +60,17 @@ export const apiService = {
   updateInventory: (id, data) => fetchFromAPI(`/crm/inventory/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteInventory: (id) => fetchFromAPI(`/crm/inventory/${id}/`, { method: "DELETE" }),
   getProducts: () => fetchFromAPI(`/crm/products/`),
+  createProduct: (data) => fetchFromAPI(`/crm/products/`, { method: "POST", body: JSON.stringify(data) }),
+  updateProduct: (id, data) => fetchFromAPI(`/crm/products/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteProduct: (id) => fetchFromAPI(`/crm/products/${id}/`, { method: "DELETE" }),
 
   // Salesmen & Trucks
   getSalesmen: (city = 'ALL') => fetchFromAPI(`/salesman/salesmen/?city=${city}`),
+  createSalesman: (data) => fetchFromAPI(`/salesman/salesmen/`, { method: "POST", body: JSON.stringify(data) }),
+  updateSalesman: (id, data) => fetchFromAPI(`/salesman/salesmen/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
   getTrucks: () => fetchFromAPI(`/salesman/trucks/`),
+  createTruck: (data) => fetchFromAPI(`/salesman/trucks/`, { method: "POST", body: JSON.stringify(data) }),
+  createStockTransaction: (data) => fetchFromAPI(`/salesman/stock-transactions/`, { method: "POST", body: JSON.stringify(data) }),
 
   // Cashier CRUD
   getCashierTransactions: () => fetchFromAPI(`/crm/cashier/`),
@@ -74,10 +83,16 @@ export const apiService = {
   createWallet: (data) => fetchFromAPI(`/crm/wallets/`, { method: "POST", body: JSON.stringify(data) }),
   updateWallet: (id, data) => fetchFromAPI(`/crm/wallets/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteWallet: (id) => fetchFromAPI(`/crm/wallets/${id}/`, { method: "DELETE" }),
+  // Credits the wallet and records the cashier transaction on the server, atomically.
+  createWalletRecharge: (data) => fetchFromAPI(`/crm/wallet-recharges/`, { method: "POST", body: JSON.stringify(data) }),
 
   // Zones & Routes
   getZones: (city = 'ALL') => fetchFromAPI(`/crm/zones/?city=${city}`),
+  createZone: (data) => fetchFromAPI(`/crm/zones/`, { method: "POST", body: JSON.stringify(data) }),
+  deleteZone: (id) => fetchFromAPI(`/crm/zones/${id}/`, { method: "DELETE" }),
   getRoutes: () => fetchFromAPI(`/crm/routes/`),
+  createRoute: (data) => fetchFromAPI(`/crm/routes/`, { method: "POST", body: JSON.stringify(data) }),
+  deleteRoute: (id) => fetchFromAPI(`/crm/routes/${id}/`, { method: "DELETE" }),
 
   // Masters
   getMasters: () => fetchFromAPI(`/crm/masters/`),

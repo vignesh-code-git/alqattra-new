@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -17,9 +18,8 @@ import {
   UserCheck,
   Sliders,
   ShieldCheck,
-  Droplets,
   X,
-  Power,
+  LogOut,
   Check,
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
@@ -42,145 +42,117 @@ const navigationItems = [
   { name: "Privileges", href: "/privileges", icon: ShieldCheck },
 ];
 
+const cities = [
+  { id: "ALL", label: "ALL", short: "ALL" },
+  { id: "AL AIN", label: "AL_AIN", short: "AIN" },
+  { id: "ABU DHABI", label: "ABU_DHABI", short: "AD" },
+];
+
+/* Floating label shown beside the rail while collapsed */
+function Tip({ children }) {
+  return (
+    <span className="absolute left-full ml-2 px-2.5 py-1.5 bg-[#1C1C1E]/92 backdrop-blur-xl text-white text-[11px] font-semibold rounded-xl shadow-xl opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 pointer-events-none transition-all duration-150 whitespace-nowrap z-[120]">
+      <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#1C1C1E]/92 rotate-45" />
+      {children}
+    </span>
+  );
+}
+
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { addToast } = useToast();
   const { isMobileOpen, closeMobileSidebar, isCollapsed, toggleCollapse } = useSidebar();
   const { territory, setTerritory } = useTerritory();
-  const [showTerritoryPopover, setShowTerritoryPopover] = useState(false);
+  const [showCityPopover, setShowCityPopover] = useState(false);
+
+  // On mobile the drawer always shows the full sidebar.
+  const compact = isCollapsed && !isMobileOpen;
+
+  const activeCity = cities.find((c) => c.id === territory) || cities[0];
 
   const handleLogout = () => {
     addToast("Logged out successfully", "info");
     router.push("/login");
   };
 
-  const territoryShortName =
-    territory === "AL AIN" ? "AIN" : territory === "ABU DHABI" ? "AD" : "ALL";
+  const selectCity = (city) => {
+    setTerritory(city.id);
+    setShowCityPopover(false);
+    addToast(`City switched to ${city.label}`, "info");
+  };
 
   return (
     <>
-      {/* Mobile Backdrop Overlay with iOS Frosted Glass */}
       {isMobileOpen && (
         <div
           onClick={closeMobileSidebar}
-          className="fixed inset-0 bg-black/30 backdrop-blur-md z-40 lg:hidden animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/25 backdrop-blur-md z-40 lg:hidden"
           aria-hidden="true"
         />
       )}
 
-      {/* Floating Expand CRM Icon when Sidebar is Collapsed */}
-      {isCollapsed && (
-        <button
-          type="button"
-          onClick={toggleCollapse}
-          title="Expand Sidebar"
-          className="fixed left-3 top-3.5 z-50 w-9 h-9 rounded-2xl bg-white/95 backdrop-blur-xl shadow-md border border-[#007AFF]/25 flex items-center justify-center text-[#007AFF] hover:bg-[#007AFF]/10 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-          aria-label="Expand Sidebar"
-        >
-          <Droplets className="w-5 h-5 text-[#007AFF]" />
-        </button>
-      )}
-
-      {/* iOS Compact Icon-Only Sidebar - Strictly fits 100vh viewport height without scrollbar */}
       <aside
-        className={`w-[4.5rem] bg-white/95 backdrop-blur-2xl border-r border-[#3C3C43]/10 flex flex-col justify-between items-center h-screen max-h-screen fixed left-0 top-0 z-50 select-none shadow-xl lg:shadow-xs transition-transform duration-300 ease-out py-2 overflow-visible ${
-          isCollapsed
-            ? "-translate-x-full"
-            : isMobileOpen
-            ? "translate-x-0"
-            : "-translate-x-full lg:translate-x-0"
-        }`}
+        className={`bg-white/92 backdrop-blur-2xl border-r border-[#3C3C43]/10 flex flex-col h-screen max-h-screen fixed left-0 top-0 z-50 select-none shadow-xl lg:shadow-none transition-[width,transform] duration-300 ease-out ${
+          compact ? "w-[4.5rem]" : "w-[13.5rem]"
+        } ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       >
-        {/* TOP: CRM Icon (No border, click to collapse) + Territory Action Pill */}
-        <div className="flex flex-col items-center gap-1.5 w-full shrink-0 relative overflow-visible">
-          {/* CRM Icon with No Border - Click to collapse sidebar */}
+        {/* Brand — click toggles the rail open/closed */}
+        <div
+          className={`shrink-0 h-[54px] flex items-center border-b border-[#3C3C43]/8 ${
+            compact ? "justify-center px-2" : "justify-between px-3"
+          }`}
+        >
           <button
             type="button"
             onClick={toggleCollapse}
-            title="Click to collapse sidebar"
-            className="w-9 h-9 rounded-xl bg-transparent flex items-center justify-center text-[#007AFF] hover:bg-[#007AFF]/10 active:scale-95 transition-all group relative cursor-pointer outline-none"
-            aria-label="Collapse sidebar"
+            title={compact ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={compact ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!compact}
+            className="group relative flex items-center min-w-0 rounded-xl hover:bg-[#007AFF]/8 active:scale-95 transition-all cursor-pointer p-1 outline-none"
           >
-            <Droplets className="w-6 h-6 text-[#007AFF]" />
-            <span className="absolute left-[4.5rem] ml-2 px-2.5 py-1.5 bg-[#1C1C1E] text-white text-[11px] font-semibold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 pointer-events-none transition-all duration-150 whitespace-nowrap z-[100] border border-white/10">
-              <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#1C1C1E] rotate-45 border-l border-b border-white/10" />
-              Click to collapse
-            </span>
+            {compact ? (
+              <>
+                <Image
+                  src="/alqattara-mark.svg"
+                  alt="Al Qattara"
+                  width={64}
+                  height={64}
+                  priority
+                  className="w-9 h-9"
+                />
+                <Tip>Expand menu</Tip>
+              </>
+            ) : (
+              <Image
+                src="/alqattara-logo.svg"
+                alt="Al Qattara"
+                width={240}
+                height={92}
+                priority
+                className="h-[36px] w-auto"
+              />
+            )}
           </button>
 
-          {/* Close button on mobile */}
-          <button
-            onClick={closeMobileSidebar}
-            className="absolute right-1 top-1 w-6 h-6 rounded-full bg-[#E5E5EA] flex items-center justify-center text-[#8E8E93] hover:text-[#1C1C1E] lg:hidden transition-colors"
-            aria-label="Close sidebar"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-
-          {/* Territory Action Pill */}
-          <div className="relative overflow-visible">
+          {!compact && (
             <button
               type="button"
-              onClick={() => setShowTerritoryPopover(!showTerritoryPopover)}
-              title={`Territory: ${territory} (Click to switch)`}
-              className="px-2 py-0.5 rounded-lg bg-[#F2F2F7] hover:bg-[#E5E5EA] border border-[#3C3C43]/12 flex items-center gap-1 transition-all cursor-pointer shadow-2xs active:scale-95 group relative"
+              onClick={closeMobileSidebar}
+              className="lg:hidden w-7 h-7 rounded-full bg-[#E5E5EA] flex items-center justify-center text-[#8E8E93] shrink-0"
+              aria-label="Close sidebar"
             >
-              <MapPin className="w-2.5 h-2.5 text-[#007AFF]" />
-              <span className="text-[9px] font-bold text-[#1C1C1E] uppercase tracking-tight">
-                {territoryShortName}
-              </span>
-              <span className="absolute left-[4.5rem] ml-2 px-2.5 py-1.5 bg-[#1C1C1E] text-white text-[11px] font-semibold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 pointer-events-none transition-all duration-150 whitespace-nowrap z-[100] border border-white/10">
-                <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#1C1C1E] rotate-45 border-l border-b border-white/10" />
-                Territory: {territory}
-              </span>
+              <X className="w-3.5 h-3.5" />
             </button>
-
-            {/* Territory Action Floating iOS Popover */}
-            {showTerritoryPopover && (
-              <>
-                <div
-                  className="fixed inset-0 z-40"
-                  onClick={() => setShowTerritoryPopover(false)}
-                />
-                <div className="absolute left-16 top-0 z-[110] w-44 bg-white/95 backdrop-blur-2xl border border-[#3C3C43]/15 rounded-2xl shadow-2xl p-2 animate-in fade-in slide-in-from-left-2 duration-150">
-                  <div className="text-[10px] font-bold text-[#8E8E93] uppercase tracking-wider px-2 py-1 flex items-center gap-1.5">
-                    <MapPin className="w-3 h-3 text-[#007AFF]" />
-                    <span>Action Territory</span>
-                  </div>
-                  <div className="space-y-1 mt-1">
-                    {[
-                      { id: "ALL", label: "All Regions" },
-                      { id: "AL AIN", label: "Al Ain" },
-                      { id: "ABU DHABI", label: "Abu Dhabi" },
-                    ].map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => {
-                          setTerritory(item.id);
-                          setShowTerritoryPopover(false);
-                          addToast(`Territory switched to ${item.label}`, "info");
-                        }}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${
-                          territory === item.id
-                            ? "bg-[#007AFF] text-white shadow-xs"
-                            : "text-[#1C1C1E] hover:bg-[#F2F2F7]"
-                        }`}
-                      >
-                        <span>{item.label}</span>
-                        {territory === item.id && <Check className="w-3.5 h-3.5 text-white" />}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+          )}
         </div>
 
-        {/* MIDDLE: 13 Navigation Icons - Perfectly scaled to fit viewport height */}
-        <nav className="flex flex-col items-center gap-1 my-auto w-full overflow-visible">
+        {/* Navigation */}
+        <nav
+          className={`flex-1 min-h-0 overflow-y-auto no-scrollbar py-1.5 ${
+            compact ? "px-2 space-y-0.5" : "px-2.5 space-y-0.5"
+          }`}
+        >
           {navigationItems.map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -192,49 +164,137 @@ export default function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
-                title={item.name}
                 onClick={closeMobileSidebar}
-                className="group relative flex items-center justify-center w-full py-0.5 outline-none select-none overflow-visible"
+                title={compact ? item.name : undefined}
+                className={`group relative flex items-center rounded-[10px] text-[13px] transition-all duration-150 active:scale-[0.97] outline-none ${
+                  compact ? "justify-center h-[34px]" : "gap-2.5 px-2.5 h-[34px]"
+                } ${
+                  isActive
+                    ? "bg-[#007AFF]/10 text-[#007AFF] font-semibold"
+                    : "text-[#3C3C43] font-medium hover:bg-[#3C3C43]/6"
+                }`}
               >
-                {/* Active Left Indicator Notch */}
-                {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-5 rounded-r-full bg-[#007AFF] shadow-sm shadow-[#007AFF]/60" />
+                {isActive && !compact && (
+                  <span className="absolute -left-2.5 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-[#007AFF]" />
                 )}
-
-                <div
-                  className={`w-8.5 h-8.5 rounded-xl flex items-center justify-center transition-all duration-150 active:scale-90 ${
-                    isActive
-                      ? "bg-[#007AFF] text-white shadow-sm shadow-[#007AFF]/30"
-                      : "text-[#8E8E93] hover:text-[#007AFF] hover:bg-[#007AFF]/10"
+                <Icon
+                  className={`w-[17px] h-[17px] shrink-0 ${
+                    isActive ? "text-[#007AFF]" : "text-[#8E8E93]"
                   }`}
-                >
-                  <Icon className="w-4.5 h-4.5 shrink-0" />
-                </div>
-
-                {/* Visible Floating iOS Tooltip with Active Indicator */}
-                <span className="absolute left-[4.5rem] ml-2 px-2.5 py-1.5 bg-[#1C1C1E] text-white text-[11px] font-semibold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 pointer-events-none transition-all duration-150 whitespace-nowrap z-[100] flex items-center gap-1.5 border border-white/10">
-                  <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#1C1C1E] rotate-45 border-l border-b border-white/10" />
-                  {item.name}
-                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#007AFF]" />}
-                </span>
+                />
+                {!compact && <span className="truncate">{item.name}</span>}
+                {compact && <Tip>{item.name}</Tip>}
               </Link>
             );
           })}
         </nav>
 
-        {/* BOTTOM: Power Logout Icon */}
-        <div className="shrink-0 w-full flex items-center justify-center pt-1 border-t border-[#3C3C43]/10 overflow-visible">
+        {/* City switcher + logout */}
+        <div
+          className={`shrink-0 border-t border-[#3C3C43]/8 ${
+            compact ? "px-2 pt-2 pb-2.5 space-y-2" : "px-3 pt-2.5 pb-3 space-y-2.5"
+          }`}
+        >
+          {compact ? (
+            <div className="relative flex justify-center">
+              <button
+                type="button"
+                onClick={() => setShowCityPopover((v) => !v)}
+                title={`City: ${activeCity.label}`}
+                className="group relative w-full h-[26px] rounded-[8px] bg-[#767680]/12 hover:bg-[#767680]/20 flex items-center justify-center gap-0.5 transition-all active:scale-95 cursor-pointer"
+              >
+                <MapPin className="w-[11px] h-[11px] text-[#007AFF] shrink-0" />
+                <span className="text-[9px] font-bold text-[#1C1C1E] tracking-tight">
+                  {activeCity.short}
+                </span>
+                {!showCityPopover && <Tip>City: {activeCity.label}</Tip>}
+              </button>
+
+              {showCityPopover && (
+                <>
+                  <div className="fixed inset-0 z-[90]" onClick={() => setShowCityPopover(false)} />
+                  {/* iOS context menu */}
+                  <div className="absolute left-full bottom-0 ml-2.5 z-[120] w-48 bg-white/88 backdrop-blur-2xl border border-[#3C3C43]/12 rounded-[14px] shadow-[0_12px_40px_-4px_rgba(0,0,0,0.22),0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden animate-in fade-in zoom-in-95 duration-150 origin-bottom-left">
+                    <div className="px-3.5 pt-2.5 pb-1.5 text-[11px] font-semibold text-[#8E8E93]">
+                      Select City
+                    </div>
+                    {cities.map((city, i) => (
+                      <button
+                        key={city.id}
+                        type="button"
+                        onClick={() => selectCity(city)}
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-[13px] transition cursor-pointer hover:bg-[#767680]/[0.1] active:bg-[#767680]/[0.18] ${
+                          i > 0 ? "border-t border-[#3C3C43]/[0.08]" : ""
+                        } ${
+                          territory === city.id
+                            ? "text-[#007AFF] font-semibold"
+                            : "text-[#1C1C1E] font-normal"
+                        }`}
+                      >
+                        <span>{city.label}</span>
+                        {territory === city.id && (
+                          <Check className="w-3.5 h-3.5 text-[#007AFF]" strokeWidth={3} />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <div>
+              <div className="text-[11px] font-normal text-[#8E8E93] mb-1.5 px-0.5">
+                Select City
+              </div>
+              {/* iOS segmented control: sliding selection, hairline dividers */}
+              <div className="relative flex p-[2px] rounded-[9px] bg-[#767680]/12 isolate">
+                <span
+                  className="absolute top-[2px] bottom-[2px] left-[2px] rounded-[7px] bg-white shadow-[0_3px_8px_rgba(0,0,0,0.12),0_1px_1px_rgba(0,0,0,0.04)] transition-transform duration-[250ms] ease-[cubic-bezier(0.32,0.72,0,1)] -z-10"
+                  style={{
+                    width: `calc((100% - 4px) / ${cities.length})`,
+                    transform: `translateX(${
+                      cities.findIndex((c) => c.id === territory) * 100
+                    }%)`,
+                  }}
+                  aria-hidden="true"
+                />
+                {cities.map((city, i) => {
+                  const isActive = territory === city.id;
+                  const prevActive = i > 0 && cities[i - 1].id === territory;
+                  return (
+                    <button
+                      key={city.id}
+                      type="button"
+                      onClick={() => selectCity(city)}
+                      className={`relative flex-1 min-w-0 h-[22px] rounded-[7px] text-[8.5px] font-semibold tracking-[-0.02em] transition-colors duration-150 cursor-pointer active:scale-[0.96] ${
+                        isActive ? "text-[#1C1C1E]" : "text-[#3C3C43]/70 hover:text-[#1C1C1E]"
+                      }`}
+                    >
+                      {i > 0 && (
+                        <span
+                          className={`absolute left-0 top-[4px] bottom-[4px] w-px bg-[#3C3C43]/18 transition-opacity duration-150 ${
+                            isActive || prevActive ? "opacity-0" : "opacity-100"
+                          }`}
+                          aria-hidden="true"
+                        />
+                      )}
+                      <span className="block whitespace-nowrap">{city.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={handleLogout}
-            title="Sign Out"
-            className="group relative w-8.5 h-8.5 rounded-xl bg-[#F2F2F7] hover:bg-[#FF3B30]/10 text-[#8E8E93] hover:text-[#FF3B30] flex items-center justify-center transition-all duration-150 cursor-pointer outline-none active:scale-90"
+            title={compact ? "Log out" : undefined}
+            className={`group relative w-full h-[32px] rounded-[10px] bg-[#FF3B30]/10 hover:bg-[#FF3B30]/18 text-[#FF3B30] text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-[0.97] cursor-pointer`}
           >
-            <Power className="w-4 h-4 transition-colors" />
-            <span className="absolute left-[4.5rem] ml-2 px-2.5 py-1.5 bg-[#FF3B30] text-white text-[11px] font-semibold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 pointer-events-none transition-all duration-150 whitespace-nowrap z-[100] border border-white/10">
-              <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#FF3B30] rotate-45 border-l border-b border-white/10" />
-              Sign Out
-            </span>
+            <LogOut className="w-[14px] h-[14px] shrink-0" />
+            {!compact && "Log out"}
+            {compact && <Tip>Log out</Tip>}
           </button>
         </div>
       </aside>

@@ -3,7 +3,8 @@
 import React, { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
-import { ArrowUpDown, Download } from "lucide-react";
+import PanelHeader from "@/components/PanelHeader";
+import { ArrowUpDown, Download, BarChart3, Users, Truck, Percent } from "lucide-react";
 
 const SALESMAN_REPORT_ROWS = [
   {
@@ -477,23 +478,6 @@ export default function ReportsPage() {
       <Header title="Reports" subtitle="Analytics & Reports" />
 
       {/* iOS Translucent Glass Top Hero Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-4 flex items-center justify-between sticky top-0 z-20 transition-all">
-        <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-semibold text-base text-[#1C1C1E] tracking-tight">Reports</span>
-          <span className="text-[#8E8E93] text-xs">/</span>
-          <span className="text-[#8E8E93] text-xs font-medium">
-            {activeTab === "salesman"
-              ? "Salesman Collection"
-              : activeTab === "customer"
-              ? "Customer Report"
-              : activeTab === "truck"
-              ? "Truck Report"
-              : "Commission Report"}{" "}
-            • ALL
-          </span>
-        </div>
-      </div>
-
       {/* iOS Segmented Sub-tabs */}
       <div className="px-6 pt-5 pb-1 flex">
         <div className="bg-[#E5E5EA]/80 p-1 rounded-full border border-[#3C3C43]/5 inline-flex gap-1 backdrop-blur-md">
@@ -523,7 +507,7 @@ export default function ReportsPage() {
         {/* TAB 1: SALESMAN COLLECTION REPORT (reposrts-salesman.png) */}
         {activeTab === "salesman" && (
           <>
-            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5 space-y-4">
+            <div className="ios-surface p-5 space-y-4">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
@@ -618,24 +602,16 @@ export default function ReportsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
-                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
-                  Salesman Collection Report
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => addToast("Exported Salesman Report CSV", "success")}
-                  className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Export
-                </button>
-              </div>
+            <div className="ios-surface overflow-hidden">
+              <PanelHeader
+                icon={BarChart3}
+                title="Salesman Collection Report"
+                onAction={() => addToast("Exported Salesman Report CSV", "success")}
+              />
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
                         "SALESMAN",
                         "ROUTE",
@@ -683,7 +659,7 @@ export default function ReportsPage() {
         {/* TAB 2: CUSTOMER REPORT (customer report.png) */}
         {activeTab === "customer" && (
           <>
-            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5 space-y-4">
+            <div className="ios-surface p-5 space-y-4">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
@@ -813,22 +789,16 @@ export default function ReportsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
-                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Customer Report</h2>
-                <button
-                  type="button"
-                  onClick={() => addToast("Exported Customer Report", "success")}
-                  className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Export
-                </button>
-              </div>
+            <div className="ios-surface overflow-hidden">
+              <PanelHeader
+                icon={Users}
+                title="Customer Report"
+                onAction={() => addToast("Exported Customer Report", "success")}
+              />
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
                         "ID",
                         "NAME",
@@ -871,7 +841,7 @@ export default function ReportsPage() {
         {/* TAB 3: TRUCK REPORT (truck reposrt.png) */}
         {activeTab === "truck" && (
           <>
-            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5 space-y-4">
+            <div className="ios-surface p-5 space-y-4">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
@@ -971,14 +941,16 @@ export default function ReportsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
-                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Truck Report</h2>
-              </div>
+            <div className="ios-surface overflow-hidden">
+              <PanelHeader
+                icon={Truck}
+                title="Truck Report"
+                onAction={() => addToast("Exported Truck Report", "success")}
+              />
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
                         "TRUCK ID",
                         "SALESMAN",
@@ -1021,7 +993,7 @@ export default function ReportsPage() {
         {/* TAB 4: COMMISSION REPORT (commission repo.png) */}
         {activeTab === "commission" && (
           <>
-            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5 space-y-4">
+            <div className="ios-surface p-5 space-y-4">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
@@ -1091,16 +1063,16 @@ export default function ReportsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
-                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
-                  Commission Report
-                </h2>
-              </div>
+            <div className="ios-surface overflow-hidden">
+              <PanelHeader
+                icon={Percent}
+                title="Commission Report"
+                onAction={() => addToast("Exported Commission Report", "success")}
+              />
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
                         "SALESMAN",
                         "CITY",

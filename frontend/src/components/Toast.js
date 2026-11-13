@@ -30,19 +30,19 @@ export function ToastProvider({ children }) {
             key={t.id}
             className={`pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-xs font-semibold animate-in slide-in-from-bottom-5 transition-all ${
               t.type === "success"
-                ? "bg-white border-emerald-200 text-slate-800 shadow-emerald-500/10"
+                ? "bg-white border-[#BCEFC9] text-[#2C2C2E] shadow-[#34C759]/10"
                 : t.type === "error"
-                ? "bg-white border-red-200 text-slate-800 shadow-red-500/10"
-                : "bg-white border-blue-200 text-slate-800 shadow-blue-500/10"
+                ? "bg-white border-[#FFD5D2] text-[#2C2C2E] shadow-[#FF3B30]/10"
+                : "bg-white border-[#BFDDFF] text-[#2C2C2E] shadow-[#007AFF]/10"
             }`}
           >
-            {t.type === "success" && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />}
-            {t.type === "error" && <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />}
-            {t.type === "info" && <Info className="w-4 h-4 text-blue-600 shrink-0" />}
+            {t.type === "success" && <CheckCircle2 className="w-4 h-4 text-[#34C759] shrink-0" />}
+            {t.type === "error" && <AlertCircle className="w-4 h-4 text-[#FF3B30] shrink-0" />}
+            {t.type === "info" && <Info className="w-4 h-4 text-[#007AFF] shrink-0" />}
             <span className="flex-1 leading-snug">{t.message}</span>
             <button
               onClick={() => removeToast(t.id)}
-              className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+              className="p-1 text-[#8E8E93] hover:text-[#636366] rounded-lg"
             >
               <X className="w-3.5 h-3.5" />
             </button>

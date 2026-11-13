@@ -35,16 +35,138 @@
   }
 }
 
+/* ===========================================================
+   Typography
+   SF Pro on Apple hardware; Inter everywhere else (it is the
+   closest free match to SF's proportions and ships tabular
+   figures). Declared once here and inherited by everything.
+   =========================================================== */
+:root {
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    var(--font-ios), "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+html {
+  font-family: var(--font-ui);
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-ui);
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  letter-spacing: -0.012em;
+  letter-spacing: -0.011em;
+  font-feature-settings: "cv05" 1, "cv08" 1, "ss03" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Controls inherit the UI face rather than the browser default */
+button,
+input,
+select,
+textarea,
+optgroup {
+  font-family: inherit;
+  letter-spacing: inherit;
+}
+
+/* iOS sets figures in the UI face with tabular spacing, not a mono face.
+   Tailwind's font-mono is remapped so amounts and IDs still align. */
+.font-mono {
+  font-family: var(--font-ui) !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.006em;
+}
+
+/* Headings pick up SF Display's tighter tracking at larger sizes */
+h1,
+h2,
+h3,
+h4 {
+  letter-spacing: -0.021em;
+}
+
+/* ===========================================================
+   Premium surface system
+   Lightning-style structure (clear card, titled header, action
+   slot) rendered with iOS materials: hairlines, layered soft
+   shadows, generous radii.
+   =========================================================== */
+:root {
+  --ios-radius-card: 16px;
+  --ios-radius-control: 10px;
+  --ios-hairline: rgba(60, 60, 67, 0.11);
+  --ios-elev-1: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
+  --ios-elev-2: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 18px -6px rgba(0, 0, 0, 0.1);
+  --ios-elev-3: 0 2px 4px rgba(0, 0, 0, 0.04), 0 14px 36px -10px rgba(0, 0, 0, 0.16);
+  --ios-fill: rgba(118, 118, 128, 0.08);
+  --ios-fill-strong: rgba(118, 118, 128, 0.14);
+}
+
+/* Card shell */
+.ios-surface {
+  background: #ffffff;
+  border: 1px solid var(--ios-hairline);
+  border-radius: var(--ios-radius-card);
+  box-shadow: var(--ios-elev-2);
+}
+
+/* Card header: title left, actions right, hairline under */
+.ios-surface-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--ios-hairline);
+}
+.ios-surface-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.014em;
+  color: #1c1c1e;
+  line-height: 1.25;
+}
+.ios-surface-sub {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: #8e8e93;
+  margin-top: 1px;
+}
+
+/* Eyebrow label above a card title */
+.ios-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8e8e93;
+}
+
+/* Stat tile figure */
+.ios-figure {
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #1c1c1e;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+/* Grouped fill used by menus, segmented controls and inset rows */
+.ios-fill {
+  background: var(--ios-fill);
+}
+
+/* Keyboard focus, consistent everywhere */
+:where(a, button, [role="button"], input, select, textarea):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3.5px rgba(0, 122, 255, 0.28);
+  border-radius: var(--ios-radius-control);
 }
 
 /* iOS Frosted Glass Surface Utility */
@@ -192,6 +314,107 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 table {
   border-collapse: separate;
   border-spacing: 0;
+}
+
+/* ===========================================================
+   iOS grouped-list table
+   Plain white rows, hairline inset separators, muted grey
+   header, no heavy rules or tinted zebra striping.
+   =========================================================== */
+.ios-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+}
+
+.ios-table thead th {
+  background: #f7f7fa;
+  color: #6d6d72;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+  text-align: left;
+  padding: 11px 14px;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.13);
+  border-top: 1px solid rgba(60, 60, 67, 0.08);
+}
+
+.ios-table tbody td {
+  padding: 13px 14px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: #1c1c1e;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.08);
+  background-clip: padding-box;
+}
+
+/* Hairline stops short of the edges, the way iOS insets separators */
+.ios-table thead th:first-child,
+.ios-table tbody td:first-child {
+  padding-left: 22px;
+}
+.ios-table thead th:last-child,
+.ios-table tbody td:last-child {
+  padding-right: 22px;
+}
+.ios-table tbody td:first-child {
+  border-bottom-color: transparent;
+  background-image: linear-gradient(
+    to right,
+    transparent 0 22px,
+    rgba(60, 60, 67, 0.08) 22px
+  );
+  background-size: 100% 1px;
+  background-position: bottom left;
+  background-repeat: no-repeat;
+}
+
+.ios-table tbody tr:last-child td {
+  border-bottom-color: transparent;
+}
+.ios-table tbody tr:last-child td:first-child {
+  background-image: none;
+}
+
+.ios-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+.ios-table tbody tr:hover {
+  background-color: rgba(0, 122, 255, 0.045);
+}
+
+.ios-table tbody tr:active {
+  background-color: rgba(0, 122, 255, 0.08);
+}
+
+/* Numeric columns line up the way they do in iOS lists */
+.ios-table .num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sort affordance in the header */
+.ios-table thead th .sort-ico {
+  color: rgba(60, 60, 67, 0.35);
+}
+
+/* Header row marker — all visual styling is on .ios-table thead th */
+.ios-table thead tr.ios-thead {
+  background: transparent;
+}
+
+/* Empty state row */
+.ios-table tbody tr.ios-empty:hover {
+  background-color: transparent;
+}
+
+/* Sticky header for long lists */
+.ios-table.ios-table-sticky thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 /* iOS Modals: Smooth rounded corners & backdrop blur */

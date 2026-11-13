@@ -513,7 +513,7 @@ export default function DataTable({
         {/* Top line: Tabs + Action buttons */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           {filterTabs.length > 0 && (
-            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-medium overflow-x-auto max-w-full border border-slate-200 no-scrollbar">
+            <div className="flex items-center gap-1 bg-[#F2F2F7] p-1 rounded-xl text-xs font-medium overflow-x-auto max-w-full border border-[#E5E5EA] no-scrollbar">
               {filterTabs.map((tab) => (
                 <button
                   key={tab.id}
@@ -525,11 +525,11 @@ export default function DataTable({
                   className={`px-3 py-1.5 rounded-lg border transition-colors duration-150 outline-none focus:outline-none flex items-center gap-1.5 whitespace-nowrap text-xs cursor-pointer select-none ${
                     activeTab === tab.id
                       ? tab.id === "Deleted"
-                        ? "bg-rose-600 text-white border-rose-600 shadow-xs font-semibold"
-                        : "bg-white text-[#5948DB] border-slate-200 shadow-xs font-semibold"
+                        ? "bg-[#FF3B30] text-white border-[#FF3B30] shadow-xs font-semibold"
+                        : "bg-white text-[#007AFF] border-[#E5E5EA] shadow-xs font-semibold"
                       : tab.id === "Deleted"
-                      ? "border-transparent text-rose-600 hover:text-rose-700 hover:bg-rose-50"
-                      : "border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+                      ? "border-transparent text-[#FF3B30] hover:text-[#C62A21] hover:bg-[#FFF1F0]"
+                      : "border-transparent text-[#636366] hover:text-[#1C1C1E] hover:bg-[#E5E5EA]/60"
                   }`}
                 >
                   <span>{tab.label}</span>
@@ -539,10 +539,10 @@ export default function DataTable({
                         activeTab === tab.id
                           ? tab.id === "Deleted"
                             ? "bg-white/20 text-white"
-                            : "bg-[#5948DB]/10 text-[#5948DB]"
+                            : "bg-[#007AFF]/10 text-[#007AFF]"
                           : tab.id === "Deleted"
-                          ? "bg-rose-100 text-rose-700"
-                          : "bg-slate-200/70 text-slate-600"
+                          ? "bg-[#FFE5E3] text-[#C62A21]"
+                          : "bg-[#E5E5EA]/70 text-[#636366]"
                       }`}
                     >
                       {tab.count}
@@ -559,12 +559,12 @@ export default function DataTable({
         </div>
 
         {/* Toolbar: Search with Filter Icon popover, New Style Calendar, Import & Export */}
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200 shadow-2xs">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 bg-[#F2F2F7] p-2.5 rounded-xl border border-[#E5E5EA] shadow-2xs">
           {/* Left: Search input + Column Filter Icon style button */}
           <div className="flex items-center gap-2 flex-1 min-w-0">
             {/* Search Input */}
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="w-3.5 h-3.5 text-[#8E8E93] absolute left-3 top-2.5" />
               <input
                 type="text"
                 placeholder={
@@ -577,13 +577,13 @@ export default function DataTable({
                   setSearch(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full pl-8.5 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#5948DB]/20 focus:border-[#5948DB] shadow-2xs transition-all"
+                className="w-full pl-8.5 pr-8 py-1.5 bg-white border border-[#E5E5EA] rounded-lg text-xs text-[#2C2C2E] placeholder-[#8E8E93] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] shadow-2xs transition-all"
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-2.5 top-2 text-[#8E8E93] hover:text-[#636366]"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -597,19 +597,19 @@ export default function DataTable({
                 onClick={() => setShowFilterPopover(!showFilterPopover)}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-colors duration-150 shadow-2xs cursor-pointer outline-none focus:outline-none select-none ${
                   selectedField !== "ALL"
-                    ? "bg-[#5948DB]/10 border-[#5948DB] text-[#5948DB] font-semibold"
-                    : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                    ? "bg-[#007AFF]/10 border-[#007AFF] text-[#007AFF] font-semibold"
+                    : "bg-white border-[#E5E5EA] text-[#3C3C43] hover:bg-[#F2F2F7] hover:border-[#C7C7CC]"
                 }`}
                 title="Filter by specific column"
               >
-                <Filter className="w-3.5 h-3.5 text-[#5948DB]" />
+                <Filter className="w-3.5 h-3.5 text-[#007AFF]" />
                 <span className="hidden sm:inline">
                   {selectedField === "ALL"
                     ? "Filter"
                     : columns.find((c) => c.key === selectedField)?.label || "Filtered"}
                 </span>
                 {selectedField !== "ALL" && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#5948DB]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#007AFF]" />
                 )}
               </button>
 
@@ -617,16 +617,16 @@ export default function DataTable({
               {showFilterPopover && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowFilterPopover(false)} />
-                  <div className="absolute left-0 mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 space-y-2.5 text-xs">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                      <span className="font-semibold text-slate-800 flex items-center gap-1.5">
-                        <SlidersHorizontal className="w-3.5 h-3.5 text-[#5948DB]" />
+                  <div className="absolute left-0 mt-2 w-64 bg-white border border-[#E5E5EA] rounded-xl shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 space-y-2.5 text-xs">
+                    <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-2">
+                      <span className="font-semibold text-[#2C2C2E] flex items-center gap-1.5">
+                        <SlidersHorizontal className="w-3.5 h-3.5 text-[#007AFF]" />
                         <span>Filter Column Scope</span>
                       </span>
                       <button
                         type="button"
                         onClick={() => setShowFilterPopover(false)}
-                        className="p-1 rounded text-slate-400 hover:text-slate-600"
+                        className="p-1 rounded text-[#8E8E93] hover:text-[#636366]"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -642,8 +642,8 @@ export default function DataTable({
                         }}
                         className={`w-full text-left px-2.5 py-1.5 rounded-lg border flex items-center justify-between text-xs transition-colors duration-150 outline-none focus:outline-none select-none cursor-pointer ${
                           selectedField === "ALL"
-                            ? "bg-[#5948DB] border-[#5948DB] text-white font-semibold"
-                            : "border-transparent text-slate-700 hover:bg-slate-50 font-normal"
+                            ? "bg-[#007AFF] border-[#007AFF] text-white font-semibold"
+                            : "border-transparent text-[#3C3C43] hover:bg-[#F2F2F7] font-normal"
                         }`}
                       >
                         <span>All Columns (Universal)</span>
@@ -663,8 +663,8 @@ export default function DataTable({
                             }}
                             className={`w-full text-left px-2.5 py-1.5 rounded-lg border flex items-center justify-between text-xs transition-colors duration-150 outline-none focus:outline-none select-none cursor-pointer ${
                               selectedField === col.key
-                                ? "bg-[#5948DB] border-[#5948DB] text-white font-semibold"
-                                : "border-transparent text-slate-700 hover:bg-slate-50 font-normal"
+                                ? "bg-[#007AFF] border-[#007AFF] text-white font-semibold"
+                                : "border-transparent text-[#3C3C43] hover:bg-[#F2F2F7] font-normal"
                             }`}
                           >
                             <span>{col.label}</span>
@@ -674,7 +674,7 @@ export default function DataTable({
                     </div>
 
                     {selectedField !== "ALL" && (
-                      <div className="pt-2 border-t border-slate-100 flex justify-end">
+                      <div className="pt-2 border-t border-[#F2F2F7] flex justify-end">
                         <button
                           type="button"
                           onClick={() => {
@@ -682,7 +682,7 @@ export default function DataTable({
                             setShowFilterPopover(false);
                             setCurrentPage(1);
                           }}
-                          className="text-[11px] text-[#5948DB] font-medium hover:underline cursor-pointer"
+                          className="text-[11px] text-[#007AFF] font-medium hover:underline cursor-pointer"
                         >
                           Clear Column Filter
                         </button>
@@ -704,14 +704,14 @@ export default function DataTable({
                   onClick={() => setShowCalendarPopover(!showCalendarPopover)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors duration-150 shadow-2xs cursor-pointer whitespace-nowrap outline-none focus:outline-none select-none ${
                     dateRange !== "ALL"
-                      ? "bg-[#5948DB]/10 border-[#5948DB] text-[#5948DB] font-semibold"
-                      : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                      ? "bg-[#007AFF]/10 border-[#007AFF] text-[#007AFF] font-semibold"
+                      : "bg-white border-[#E5E5EA] text-[#3C3C43] hover:bg-[#F2F2F7] hover:border-[#C7C7CC]"
                   }`}
                   title="Filter by calendar date"
                 >
-                  <CalendarIcon className="w-3.5 h-3.5 text-[#5948DB] shrink-0" />
+                  <CalendarIcon className="w-3.5 h-3.5 text-[#007AFF] shrink-0" />
                   <span>{getCalendarLabel()}</span>
-                  <ChevronDown className="w-3 h-3 text-slate-400 ml-0.5" />
+                  <ChevronDown className="w-3 h-3 text-[#8E8E93] ml-0.5" />
                 </button>
 
                 {/* Modern Calendar Dropdown Popover */}
@@ -721,17 +721,17 @@ export default function DataTable({
                       className="fixed inset-0 z-40"
                       onClick={() => setShowCalendarPopover(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in zoom-in-95 space-y-3.5 text-xs">
+                    <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-[#E5E5EA] rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in zoom-in-95 space-y-3.5 text-xs">
                       {/* Popover Header */}
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                        <div className="flex items-center gap-1.5 font-semibold text-slate-800">
-                          <CalendarIcon className="w-4 h-4 text-[#5948DB]" />
+                      <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-2.5">
+                        <div className="flex items-center gap-1.5 font-semibold text-[#2C2C2E]">
+                          <CalendarIcon className="w-4 h-4 text-[#007AFF]" />
                           <span>Interactive Calendar Filter</span>
                         </div>
                         <button
                           type="button"
                           onClick={() => setShowCalendarPopover(false)}
-                          className="p-1 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+                          className="p-1 rounded text-[#8E8E93] hover:text-[#636366] hover:bg-[#F2F2F7]"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -760,8 +760,8 @@ export default function DataTable({
                               }}
                               className={`px-2 py-1.5 rounded-lg border text-center font-medium transition-colors duration-150 cursor-pointer outline-none focus:outline-none select-none ${
                                 dateRange === p.id
-                                  ? "bg-[#5948DB] border-[#5948DB] text-white font-semibold shadow-xs"
-                                  : "border-transparent bg-slate-100 text-slate-700 hover:bg-slate-200/80"
+                                  ? "bg-[#007AFF] border-[#007AFF] text-white font-semibold shadow-xs"
+                                  : "border-transparent bg-[#F2F2F7] text-[#3C3C43] hover:bg-[#E5E5EA]/80"
                               }`}
                             >
                               {p.label}
@@ -771,30 +771,30 @@ export default function DataTable({
                       </div>
 
                       {/* Modern Interactive Monthly Calendar Picker */}
-                      <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-200/80 space-y-2.5">
+                      <div className="p-3 bg-[#F2F2F7]/70 rounded-xl border border-[#E5E5EA]/80 space-y-2.5">
                         {/* Month Navigation */}
                         <div className="flex items-center justify-between">
                           <button
                             type="button"
                             onClick={handlePrevMonth}
-                            className="p-1 rounded-md text-slate-500 hover:text-slate-900 hover:bg-white border border-transparent hover:border-slate-200 transition-colors"
+                            className="p-1 rounded-md text-[#8E8E93] hover:text-[#1C1C1E] hover:bg-white border border-transparent hover:border-[#E5E5EA] transition-colors"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
-                          <span className="font-semibold text-slate-800 text-xs">
+                          <span className="font-semibold text-[#2C2C2E] text-xs">
                             {monthNames[calendarMonth]} {calendarYear}
                           </span>
                           <button
                             type="button"
                             onClick={handleNextMonth}
-                            className="p-1 rounded-md text-slate-500 hover:text-slate-900 hover:bg-white border border-transparent hover:border-slate-200 transition-colors"
+                            className="p-1 rounded-md text-[#8E8E93] hover:text-[#1C1C1E] hover:bg-white border border-transparent hover:border-[#E5E5EA] transition-colors"
                           >
                             <ChevronRight className="w-4 h-4" />
                           </button>
                         </div>
 
                         {/* Days of Week Header */}
-                        <div className="grid grid-cols-7 text-center text-[10px] font-semibold text-slate-400">
+                        <div className="grid grid-cols-7 text-center text-[10px] font-semibold text-[#8E8E93]">
                           <span>Su</span>
                           <span>Mo</span>
                           <span>Tu</span>
@@ -824,12 +824,12 @@ export default function DataTable({
                                 onClick={() => handleSelectCalendarDay(day)}
                                 className={`h-7 w-full rounded-lg font-medium transition-all text-xs flex items-center justify-center cursor-pointer ${
                                   isStart || isEnd
-                                    ? "bg-[#5948DB] text-white font-bold shadow-xs"
+                                    ? "bg-[#007AFF] text-white font-bold shadow-xs"
                                     : inRange
-                                    ? "bg-[#5948DB]/15 text-[#5948DB] font-semibold"
+                                    ? "bg-[#007AFF]/15 text-[#007AFF] font-semibold"
                                     : isToday
-                                    ? "border border-[#5948DB] text-[#5948DB] font-bold"
-                                    : "text-slate-700 hover:bg-white hover:shadow-2xs"
+                                    ? "border border-[#007AFF] text-[#007AFF] font-bold"
+                                    : "text-[#3C3C43] hover:bg-white hover:shadow-2xs"
                                 }`}
                               >
                                 {day}
@@ -840,7 +840,7 @@ export default function DataTable({
                       </div>
 
                       {/* Selected Range Display & Actions */}
-                      <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-xs">
+                      <div className="flex items-center justify-between pt-1 border-t border-[#F2F2F7] text-xs">
                         <button
                           type="button"
                           onClick={() => {
@@ -850,14 +850,14 @@ export default function DataTable({
                             setShowCalendarPopover(false);
                             setCurrentPage(1);
                           }}
-                          className="text-slate-500 hover:text-slate-700 font-medium cursor-pointer"
+                          className="text-[#8E8E93] hover:text-[#3C3C43] font-medium cursor-pointer"
                         >
                           Clear Date
                         </button>
                         <button
                           type="button"
                           onClick={() => setShowCalendarPopover(false)}
-                          className="px-4 py-1.5 bg-[#5948DB] hover:bg-[#4A3AC9] text-white font-medium rounded-lg shadow-xs cursor-pointer"
+                          className="px-4 py-1.5 bg-[#007AFF] hover:bg-[#0062CC] text-white font-medium rounded-lg shadow-xs cursor-pointer"
                         >
                           Apply Filter
                         </button>
@@ -872,10 +872,10 @@ export default function DataTable({
             <button
               type="button"
               onClick={() => setShowImportModal(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 text-xs font-medium transition-all shadow-2xs cursor-pointer active:scale-[0.98] shrink-0"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-[#E5E5EA] text-[#3C3C43] hover:bg-[#F2F2F7] hover:border-[#C7C7CC] text-xs font-medium transition-all shadow-2xs cursor-pointer active:scale-[0.98] shrink-0"
               title="Import records from a CSV spreadsheet"
             >
-              <Upload className="w-3.5 h-3.5 text-[#5948DB]" />
+              <Upload className="w-3.5 h-3.5 text-[#007AFF]" />
               <span>Import CSV</span>
             </button>
 
@@ -883,10 +883,10 @@ export default function DataTable({
             <button
               type="button"
               onClick={handleDownloadTemplate}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 text-xs font-medium transition-all shadow-2xs cursor-pointer active:scale-[0.98] shrink-0"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-[#E5E5EA] text-[#636366] hover:bg-[#F2F2F7] hover:border-[#C7C7CC] text-xs font-medium transition-all shadow-2xs cursor-pointer active:scale-[0.98] shrink-0"
               title="Download pre-formatted CSV template"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-slate-500" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-[#8E8E93]" />
               <span>Template</span>
             </button>
 
@@ -894,10 +894,10 @@ export default function DataTable({
             <button
               type="button"
               onClick={handleExportCSV}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 text-xs font-medium transition-all shadow-2xs cursor-pointer active:scale-[0.98] shrink-0"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-[#E5E5EA] text-[#3C3C43] hover:bg-[#F2F2F7] hover:border-[#C7C7CC] text-xs font-medium transition-all shadow-2xs cursor-pointer active:scale-[0.98] shrink-0"
               title="Export displayed records to CSV spreadsheet"
             >
-              <Download className="w-3.5 h-3.5 text-emerald-600" />
+              <Download className="w-3.5 h-3.5 text-[#34C759]" />
               <span>Export CSV</span>
             </button>
 
@@ -906,10 +906,10 @@ export default function DataTable({
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 text-xs font-medium transition-all shadow-2xs cursor-pointer shrink-0"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FFF1F0] border border-[#FFD5D2] text-[#C62A21] hover:bg-[#FFE5E3] text-xs font-medium transition-all shadow-2xs cursor-pointer shrink-0"
                 title="Reset all search, field, and date filters"
               >
-                <RotateCcw className="w-3 h-3 text-rose-600" />
+                <RotateCcw className="w-3 h-3 text-[#FF3B30]" />
                 <span>Reset</span>
               </button>
             )}
@@ -918,10 +918,10 @@ export default function DataTable({
       </div>
 
       {/* Grid Table Container - With Red Border Support for Deleted Items */}
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+      <div className="bg-white border border-[#E5E5EA] rounded-xl overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-[#5948DB] text-xs text-white border-b border-[#4A3AC9] font-semibold sticky top-0 z-10 shadow-2xs">
+          <table className="ios-table w-full text-left text-xs border-collapse">
+            <thead className="bg-[#007AFF] text-xs text-white border-b border-[#0062CC] font-semibold sticky top-0 z-10 shadow-2xs">
               <tr>
                 {selectable && (
                   <th className="px-3.5 py-3 text-center border-r border-[#7161F0]/70 select-none w-10">
@@ -932,7 +932,7 @@ export default function DataTable({
                         selectedIds.length === paginatedData.length
                       }
                       onChange={toggleSelectAll}
-                      className="rounded-xs border-white/60 text-[#5948DB] accent-white focus:ring-0 cursor-pointer"
+                      className="rounded-xs border-white/60 text-[#007AFF] accent-white focus:ring-0 cursor-pointer"
                     />
                   </th>
                 )}
@@ -948,7 +948,7 @@ export default function DataTable({
                         : "text-left"
                     } ${
                       col.sortable
-                        ? "cursor-pointer hover:bg-[#4A3AC9] transition-colors"
+                        ? "cursor-pointer hover:bg-[#0062CC] transition-colors"
                         : ""
                     }`}
                     style={{ width: col.width }}
@@ -979,22 +979,22 @@ export default function DataTable({
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 font-medium text-slate-800">
+            <tbody className="divide-y divide-[#E5E5EA] font-medium text-[#2C2C2E]">
               {isLoading ? (
                 Array.from({ length: 6 }).map((_, rIdx) => (
                   <tr key={rIdx} className="animate-pulse">
                     {selectable && (
-                      <td className="px-3.5 py-3.5 text-center border-r border-slate-100">
-                        <div className="w-4 h-4 rounded-xs bg-slate-200 mx-auto" />
+                      <td className="px-3.5 py-3.5 text-center border-r border-[#F2F2F7]">
+                        <div className="w-4 h-4 rounded-xs bg-[#E5E5EA] mx-auto" />
                       </td>
                     )}
                     {columns.map((col, cIdx) => (
                       <td
                         key={col.key || cIdx}
-                        className="px-4 py-3.5 border-r border-slate-100 last:border-r-0"
+                        className="px-4 py-3.5 border-r border-[#F2F2F7] last:border-r-0"
                       >
                         <div
-                          className="h-3.5 bg-slate-200 rounded-xs"
+                          className="h-3.5 bg-[#E5E5EA] rounded-xs"
                           style={{
                             width: `${Math.max(35, 40 + ((cIdx * 19 + rIdx * 7) % 55))}%`,
                           }}
@@ -1007,20 +1007,20 @@ export default function DataTable({
                 <tr>
                   <td
                     colSpan={columns.length + (selectable ? 1 : 0)}
-                    className="px-6 py-12 text-center text-slate-400"
+                    className="px-6 py-12 text-center text-[#8E8E93]"
                   >
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <span className="font-bold text-slate-700 text-sm">
+                      <span className="font-bold text-[#3C3C43] text-sm">
                         {emptyMessage}
                       </span>
-                      <p className="text-xs text-slate-400 max-w-sm">
+                      <p className="text-xs text-[#8E8E93] max-w-sm">
                         No records match the current filter criteria across the selected fields or date range.
                       </p>
                       {hasActiveFilters && (
                         <button
                           type="button"
                           onClick={handleResetFilters}
-                          className="mt-2 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-[#5948DB] text-xs font-semibold hover:bg-blue-100 flex items-center gap-1.5"
+                          className="mt-2 px-3 py-1.5 rounded-lg bg-[#EAF4FF] border border-[#BFDDFF] text-[#007AFF] text-xs font-semibold hover:bg-[#D6EAFF] flex items-center gap-1.5"
                         >
                           <RotateCcw className="w-3 h-3" />
                           <span>Clear All Filters</span>
@@ -1039,21 +1039,21 @@ export default function DataTable({
                       key={row.id || rIdx}
                       className={`transition-colors ${
                         isDeleted
-                          ? "bg-rose-50/60 hover:bg-rose-50/90 border-l-4 border-l-rose-500 border-y-2 border-y-rose-300 text-slate-900"
+                          ? "bg-[#FFF1F0]/60 hover:bg-[#FFF1F0]/90 border-l-4 border-l-rose-500 border-y-2 border-y-rose-300 text-[#1C1C1E]"
                           : isSelected
-                          ? "bg-blue-50/50 hover:bg-blue-50/70"
+                          ? "bg-[#EAF4FF]/50 hover:bg-[#EAF4FF]/70"
                           : rIdx % 2 === 1
-                          ? "bg-slate-50/40 hover:bg-blue-50/30"
-                          : "bg-white hover:bg-blue-50/30"
+                          ? "bg-[#F2F2F7]/40 hover:bg-[#EAF4FF]/30"
+                          : "bg-white hover:bg-[#EAF4FF]/30"
                       }`}
                     >
                       {selectable && (
-                        <td className={`px-3.5 py-3 text-center border-r ${isDeleted ? "border-rose-200" : "border-slate-200"}`}>
+                        <td className={`px-3.5 py-3 text-center border-r ${isDeleted ? "border-[#FFD5D2]" : "border-[#E5E5EA]"}`}>
                           <input
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => toggleSelectOne(row.id)}
-                            className="rounded-xs border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
+                            className="rounded-xs border-[#C7C7CC] text-[#007AFF] focus:ring-0 cursor-pointer"
                           />
                         </td>
                       )}
@@ -1061,7 +1061,7 @@ export default function DataTable({
                         <td
                           key={col.key || cIdx}
                           className={`px-4 py-3 border-r ${
-                            isDeleted ? "border-rose-200" : "border-slate-200"
+                            isDeleted ? "border-[#FFD5D2]" : "border-[#E5E5EA]"
                           } last:border-r-0 ${
                             col.align === "right"
                               ? "text-right"
@@ -1072,13 +1072,13 @@ export default function DataTable({
                         >
                           {col.key === "actions" && isDeleted && onRestore ? (
                             <div className="flex items-center justify-center gap-1.5">
-                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-300 uppercase">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFE5E3] text-[#C62A21] border border-[#FFB3AD] uppercase">
                                 Deleted
                               </span>
                               <button
                                 type="button"
                                 onClick={() => onRestore(row)}
-                                className="px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] shadow-2xs flex items-center gap-1 transition-colors cursor-pointer"
+                                className="px-2.5 py-1 rounded-md bg-[#34C759] hover:bg-[#248A3D] text-white font-semibold text-[11px] shadow-2xs flex items-center gap-1 transition-colors cursor-pointer"
                                 title="Restore this record back to active state"
                               >
                                 <Undo2 className="w-3 h-3" />
@@ -1101,24 +1101,24 @@ export default function DataTable({
         </div>
 
         {/* Footer: Pagination & Item counts */}
-        <div className="px-3 sm:px-4 py-2.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+        <div className="px-3 sm:px-4 py-2.5 bg-[#F2F2F7] border-t border-[#E5E5EA] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#8E8E93]">
           <div>
             Showing{" "}
-            <span className="font-semibold text-slate-800">
+            <span className="font-semibold text-[#2C2C2E]">
               {filteredData.length === 0 ? 0 : (currentPage - 1) * pageSize + 1}
             </span>{" "}
             to{" "}
-            <span className="font-semibold text-slate-800">
+            <span className="font-semibold text-[#2C2C2E]">
               {Math.min(currentPage * pageSize, filteredData.length)}
             </span>{" "}
-            of <span className="font-semibold text-slate-800">{filteredData.length}</span> entries
+            of <span className="font-semibold text-[#2C2C2E]">{filteredData.length}</span> entries
             {hasActiveFilters && (
-              <span className="ml-2 font-semibold text-[#5948DB] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200 text-[11px]">
+              <span className="ml-2 font-semibold text-[#007AFF] bg-[#EAF4FF] px-2 py-0.5 rounded-md border border-[#BFDDFF] text-[11px]">
                 Filtered
               </span>
             )}
             {selectedIds.length > 0 && (
-              <span className="ml-2 font-semibold text-[#5948DB]">({selectedIds.length} selected)</span>
+              <span className="ml-2 font-semibold text-[#007AFF]">({selectedIds.length} selected)</span>
             )}
           </div>
 
@@ -1127,19 +1127,19 @@ export default function DataTable({
               type="button"
               onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
-              className="px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-1 shadow-2xs"
+              className="px-2.5 py-1 rounded-lg border border-[#E5E5EA] bg-white text-[#636366] hover:bg-[#F2F2F7] disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-1 shadow-2xs"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
               <span>Prev</span>
             </button>
-            <span className="px-3 py-1 rounded-lg bg-[#5948DB] text-white font-semibold text-xs shadow-2xs">
+            <span className="px-3 py-1 rounded-lg bg-[#007AFF] text-white font-semibold text-xs shadow-2xs">
               {currentPage}
             </span>
             <button
               type="button"
               onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-1 shadow-2xs"
+              className="px-2.5 py-1 rounded-lg border border-[#E5E5EA] bg-white text-[#636366] hover:bg-[#F2F2F7] disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-1 shadow-2xs"
             >
               <span>Next</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -1150,17 +1150,17 @@ export default function DataTable({
 
       {/* CSV Import Popup Message Modal */}
       {showImportModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white border border-slate-200 rounded-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 bg-[#1C1C1E]/50 backdrop-blur-2xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white border border-[#E5E5EA] rounded-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-lg bg-blue-50 text-[#5948DB] flex items-center justify-center border border-blue-200 shrink-0">
+                <div className="w-9 h-9 rounded-lg bg-[#EAF4FF] text-[#007AFF] flex items-center justify-center border border-[#BFDDFF] shrink-0">
                   <Upload className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900">Import CSV Records</h3>
-                  <p className="text-[11px] text-slate-500 font-normal">
+                  <h3 className="text-sm font-semibold text-[#1C1C1E]">Import CSV Records</h3>
+                  <p className="text-[11px] text-[#8E8E93] font-normal">
                     Upload your CSV file to import records directly into the CRM database.
                   </p>
                 </div>
@@ -1171,7 +1171,7 @@ export default function DataTable({
                   setShowImportModal(false);
                   setImportModalData(null);
                 }}
-                className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="p-1 rounded-md text-[#8E8E93] hover:text-[#636366] hover:bg-[#F2F2F7] transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1182,15 +1182,15 @@ export default function DataTable({
               <div className="space-y-4 py-2">
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-slate-300 hover:border-[#5948DB] rounded-xl p-8 text-center cursor-pointer bg-slate-50/50 hover:bg-blue-50/30 transition-all group"
+                  className="border-2 border-dashed border-[#C7C7CC] hover:border-[#007AFF] rounded-xl p-8 text-center cursor-pointer bg-[#F2F2F7]/50 hover:bg-[#EAF4FF]/30 transition-all group"
                 >
-                  <div className="w-12 h-12 rounded-full bg-blue-100 text-[#5948DB] flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-full bg-[#D6EAFF] text-[#007AFF] flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                     <FileSpreadsheet className="w-6 h-6" />
                   </div>
-                  <h4 className="text-xs font-semibold text-slate-800">
+                  <h4 className="text-xs font-semibold text-[#2C2C2E]">
                     Click to browse or drop your CSV file here
                   </h4>
-                  <p className="text-[11px] text-slate-500 mt-1 font-normal">
+                  <p className="text-[11px] text-[#8E8E93] mt-1 font-normal">
                     Supports standard CSV files with matching column names
                   </p>
                   <button
@@ -1199,23 +1199,23 @@ export default function DataTable({
                       e.stopPropagation();
                       fileInputRef.current?.click();
                     }}
-                    className="mt-4 px-4 py-1.5 rounded-lg bg-[#5948DB] hover:bg-[#4A3AC9] text-white text-xs font-medium shadow-xs"
+                    className="mt-4 px-4 py-1.5 rounded-lg bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-medium shadow-xs"
                   >
                     Select CSV File
                   </button>
                 </div>
 
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center justify-between text-xs">
+                <div className="bg-[#F2F2F7] border border-[#E5E5EA] rounded-lg p-3 flex items-center justify-between text-xs">
                   <div>
-                    <span className="font-medium text-slate-800 block">Need the exact CSV format?</span>
-                    <span className="text-[11px] text-slate-500 font-normal">
+                    <span className="font-medium text-[#2C2C2E] block">Need the exact CSV format?</span>
+                    <span className="text-[11px] text-[#8E8E93] font-normal">
                       Download our template with pre-filled headers and sample row.
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={handleDownloadTemplate}
-                    className="px-3 py-1.5 rounded-md border border-slate-200 hover:bg-white text-[#5948DB] hover:text-[#4A3AC9] font-medium text-xs flex items-center gap-1.5 transition-colors shrink-0"
+                    className="px-3 py-1.5 rounded-md border border-[#E5E5EA] hover:bg-white text-[#007AFF] hover:text-[#0062CC] font-medium text-xs flex items-center gap-1.5 transition-colors shrink-0"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Download Template</span>
@@ -1225,13 +1225,13 @@ export default function DataTable({
             ) : (
               /* If file parsed: show Preview & Confirmation */
               <div className="space-y-3">
-                <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-xs">
+                <div className="flex items-center justify-between bg-[#EBFAEF] border border-[#BCEFC9] rounded-lg px-3 py-2 text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="font-semibold text-emerald-900">
+                    <span className="w-2 h-2 rounded-full bg-[#34C759] animate-pulse" />
+                    <span className="font-semibold text-[#165526]">
                       File: {importModalData.filename}
                     </span>
-                    <span className="text-[11px] text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-medium">
+                    <span className="text-[11px] text-[#248A3D] bg-[#DCF7E3] px-2 py-0.5 rounded-full font-medium">
                       {importModalData.count} Records Ready
                     </span>
                   </div>
@@ -1241,28 +1241,28 @@ export default function DataTable({
                       setImportModalData(null);
                       fileInputRef.current?.click();
                     }}
-                    className="text-[11px] font-medium text-[#5948DB] hover:underline"
+                    className="text-[11px] font-medium text-[#007AFF] hover:underline"
                   >
                     Choose Different File
                   </button>
                 </div>
 
                 <div className="space-y-1.5">
-                  <span className="text-xs font-semibold text-slate-700">Previewing First 5 Records:</span>
-                  <div className="border border-slate-200 rounded-lg overflow-x-auto max-h-56">
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead className="bg-slate-100 text-[10px] text-slate-700 uppercase font-semibold border-b border-slate-200">
+                  <span className="text-xs font-semibold text-[#3C3C43]">Previewing First 5 Records:</span>
+                  <div className="border border-[#E5E5EA] rounded-lg overflow-x-auto max-h-56">
+                    <table className="ios-table w-full text-left text-xs border-collapse">
+                      <thead className="bg-[#F2F2F7] text-[10px] text-[#3C3C43] uppercase font-semibold border-b border-[#E5E5EA]">
                         <tr>
                           {importModalData.headerCols.map((col, idx) => (
-                            <th key={idx} className="px-3 py-2 border-r border-slate-200 last:border-r-0 whitespace-nowrap">
+                            <th key={idx} className="px-3 py-2 border-r border-[#E5E5EA] last:border-r-0 whitespace-nowrap">
                               {col}
                             </th>
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-[#F2F2F7]">
                         {importModalData.preview.map((row, rIdx) => (
-                          <tr key={rIdx} className="hover:bg-slate-50">
+                          <tr key={rIdx} className="hover:bg-[#F2F2F7]">
                             {importModalData.headerCols.map((col, cIdx) => {
                               const matchedCol = columns.find(
                                 (c) =>
@@ -1271,7 +1271,7 @@ export default function DataTable({
                               );
                               const k = matchedCol ? matchedCol.key : col.toLowerCase().replace(/\s+/g, "_");
                               return (
-                                <td key={cIdx} className="px-3 py-1.5 border-r border-slate-100 last:border-r-0 text-slate-700 whitespace-nowrap">
+                                <td key={cIdx} className="px-3 py-1.5 border-r border-[#F2F2F7] last:border-r-0 text-[#3C3C43] whitespace-nowrap">
                                   {row[k] || "-"}
                                 </td>
                               );
@@ -1286,11 +1286,11 @@ export default function DataTable({
             )}
 
             {/* Footer Buttons */}
-            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+            <div className="flex items-center justify-between pt-3 border-t border-[#F2F2F7]">
               <button
                 type="button"
                 onClick={handleDownloadTemplate}
-                className="text-xs font-medium text-[#5948DB] hover:text-[#4A3AC9] flex items-center gap-1"
+                className="text-xs font-medium text-[#007AFF] hover:text-[#0062CC] flex items-center gap-1"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Template</span>
@@ -1302,7 +1302,7 @@ export default function DataTable({
                     setShowImportModal(false);
                     setImportModalData(null);
                   }}
-                  className="px-3.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium text-xs transition-colors"
+                  className="px-3.5 py-1.5 rounded-lg border border-[#E5E5EA] hover:bg-[#F2F2F7] text-[#3C3C43] font-medium text-xs transition-colors"
                 >
                   Cancel
                 </button>
@@ -1310,7 +1310,7 @@ export default function DataTable({
                   <button
                     type="button"
                     onClick={handleConfirmImport}
-                    className="px-4 py-1.5 rounded-lg bg-[#5948DB] hover:bg-[#4A3AC9] text-white font-medium text-xs shadow-xs flex items-center gap-1.5 transition-colors"
+                    className="px-4 py-1.5 rounded-lg bg-[#007AFF] hover:bg-[#0062CC] text-white font-medium text-xs shadow-xs flex items-center gap-1.5 transition-colors"
                   >
                     <Upload className="w-3.5 h-3.5" />
                     <span>Confirm & Import Records</span>

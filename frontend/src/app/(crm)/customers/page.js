@@ -1,8 +1,19 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import BackLink from "@/components/BackLink";
+import PanelHeader from "@/components/PanelHeader";
+import { apiService } from "@/services/api";
+import useLiveData from "@/hooks/useLiveData";
+import {
+  listOf,
+  buildContext,
+  customerFromApi,
+  deletedCustomerFromApi,
+  customerToApi,
+} from "@/services/crmMappers";
 import {
   Home,
   ArrowUpDown,
@@ -16,403 +27,10 @@ import {
   CheckCircle2,
   Clock,
   Filter,
+  RotateCcw,
+  Plus,
+  Users,
 } from "lucide-react";
-
-const INITIAL_CUSTOMERS = [
-  {
-    id: 1,
-    name: "AL NEBRAS SCHOOL",
-    customer_id: "197301",
-    contact: "+971 55 727 2628",
-    alt_contact: "N/A",
-    registered_on: "08/09/2026",
-    recent_order: "08/09/2026",
-    city: "AL_AIN",
-    zone: "SCHOOL AREA",
-    route: "6347",
-    address: "Falaj hazza",
-    apartment: "-",
-    location: "24.1806642, 55.7369889",
-    delivery_day: "Sunday",
-    language: "EN",
-    created_by: "47",
-    representative: "N/A",
-    is_company: false,
-    is_credit: false,
-    is_verified: false,
-    wallet_balance: 0,
-    coupon_available: 10,
-    pending_payment: "0.00",
-    pricing: [{ product: "5 gal water", price: "5" }],
-  },
-  {
-    id: 2,
-    name: "Ameen",
-    customer_id: "197300",
-    contact: "055 655 3977",
-    alt_contact: "N/A",
-    registered_on: "08/09/2026",
-    recent_order: "08/09/2026",
-    city: "AL_AIN",
-    zone: "KHABISI",
-    route: "6335",
-    address: "Al Jimi",
-    apartment: "Villa 12",
-    location: "24.2075, 55.7447",
-    delivery_day: "Monday",
-    language: "AR",
-    created_by: "56",
-    representative: "56 - ANAS",
-    is_company: false,
-    is_credit: false,
-    is_verified: true,
-    wallet_balance: 0,
-    coupon_available: 0,
-    pending_payment: "0.00",
-    pricing: [{ product: "5 gal water", price: "5" }],
-  },
-  {
-    id: 3,
-    name: "SUHAIL ALI",
-    customer_id: "197299",
-    contact: "0561900562",
-    alt_contact: "N/A",
-    registered_on: "08/09/2026",
-    recent_order: "08/09/2026",
-    city: "AL_AIN",
-    zone: "MANAZIF",
-    route: "6350",
-    address: "Manazif St",
-    apartment: "14",
-    location: "24.2150, 55.7520",
-    delivery_day: "Saturday",
-    language: "AR",
-    created_by: "56",
-    representative: "56 - ANAS",
-    is_company: false,
-    is_credit: false,
-    is_verified: true,
-    wallet_balance: 0,
-    coupon_available: 20,
-    pending_payment: "0.00",
-    pricing: [{ product: "5 gal water", price: "5" }],
-  },
-  {
-    id: 4,
-    name: "KHALID AL BLOOSHI",
-    customer_id: "197298",
-    contact: "0504412390",
-    alt_contact: "N/A",
-    registered_on: "08/09/2026",
-    recent_order: "08/09/2026",
-    city: "AL_AIN",
-    zone: "SAROOJ",
-    route: "6354",
-    address: "Sarooj Area",
-    apartment: "8",
-    location: "24.1980, 55.7600",
-    delivery_day: "Tuesday",
-    language: "AR",
-    created_by: "47",
-    representative: "47 - RAHMAN",
-    is_company: false,
-    is_credit: false,
-    is_verified: true,
-    wallet_balance: 0,
-    coupon_available: 5,
-    pending_payment: "0.00",
-    pricing: [{ product: "5 gal water", price: "5" }],
-  },
-  {
-    id: 5,
-    name: "NOORA AL KAABI",
-    customer_id: "197297",
-    contact: "0528891023",
-    alt_contact: "N/A",
-    registered_on: "08/09/2026",
-    recent_order: "08/09/2026",
-    city: "AL_AIN",
-    zone: "JAHILI",
-    route: "6354",
-    address: "Al Jahili",
-    apartment: "22",
-    location: "24.2100, 55.7500",
-    delivery_day: "Wednesday",
-    language: "AR",
-    created_by: "47",
-    representative: "47 - RAHMAN",
-    is_company: false,
-    is_credit: false,
-    is_verified: true,
-    wallet_balance: 0,
-    coupon_available: 0,
-    pending_payment: "0.00",
-    pricing: [{ product: "5 gal water", price: "5" }],
-  },
-  {
-    id: 6,
-    name: "ROYAL PALACE HOTEL",
-    customer_id: "197296",
-    contact: "037665544",
-    alt_contact: "N/A",
-    registered_on: "07/09/2026",
-    recent_order: "08/09/2026",
-    city: "AL_AIN",
-    zone: "ASHAREJ",
-    route: "6352",
-    address: "Asharej Main Rd",
-    apartment: "-",
-    location: "24.1900, 55.7300",
-    delivery_day: "Thursday",
-    language: "EN",
-    created_by: "32",
-    representative: "32 - NOOR",
-    is_company: true,
-    is_credit: true,
-    is_verified: true,
-    wallet_balance: 0,
-    coupon_available: 0,
-    pending_payment: "120.00",
-    pricing: [{ product: "5 gal water", price: "5" }],
-  },
-  {
-    id: 7,
-    name: "SALEM RASHID",
-    customer_id: "197295",
-    contact: "0509988112",
-    alt_contact: "N/A",
-    registered_on: "07/09/2026",
-    recent_order: "08/09/2026",
-    city: "ABU_DHABI",
-    zone: "MARKHANIA",
-    route: "6352",
-    address: "Markhania",
-    apartment: "5",
-    location: "24.4539, 54.3773",
-    delivery_day: "Sunday",
-    language: "AR",
-    created_by: "57",
-    representative: "57 - ISAHAQ",
-    is_company: false,
-    is_credit: false,
-    is_verified: true,
-    wallet_balance: 0,
-    coupon_available: 15,
-    pending_payment: "0.00",
-    pricing: [{ product: "5 gal water", price: "5" }],
-  },
-  {
-    id: 8,
-    name: "MARIAM AL DHAHERI",
-    customer_id: "197294",
-    contact: "0553322119",
-    alt_contact: "N/A",
-    registered_on: "07/09/2026",
-    recent_order: "08/09/2026",
-    city: "AL_AIN",
-    zone: "MUTHARID",
-    route: "6328",
-    address: "Mutharid",
-    apartment: "19",
-    location: "24.2050, 55.7480",
-    delivery_day: "Monday",
-    language: "AR",
-    created_by: "32",
-    representative: "32 - NOOR",
-    is_company: false,
-    is_credit: false,
-    is_verified: true,
-    wallet_balance: 0,
-    coupon_available: 0,
-    pending_payment: "0.00",
-    pricing: [{ product: "5 gal water", price: "5" }],
-  },
-  {
-    id: 9,
-    name: "ABDULLAH HASSAN",
-    customer_id: "197293",
-    contact: "0564455667",
-    alt_contact: "N/A",
-    registered_on: "06/09/2026",
-    recent_order: "07/09/2026",
-    city: "ABU_DHABI",
-    zone: "KHABISI",
-    route: "3115",
-    address: "Abu Dhabi Sector 4",
-    apartment: "3",
-    location: "24.4600, 54.3700",
-    delivery_day: "Saturday",
-    language: "AR",
-    created_by: "119",
-    representative: "119 - KRISHNADAS",
-    is_company: false,
-    is_credit: false,
-    is_verified: true,
-    wallet_balance: 0,
-    coupon_available: 10,
-    pending_payment: "0.00",
-    pricing: [{ product: "5 gal water", price: "5" }],
-  },
-  {
-    id: 10,
-    name: "ZAYED MEDICAL CLINIC",
-    customer_id: "197292",
-    contact: "026554433",
-    alt_contact: "N/A",
-    registered_on: "06/09/2026",
-    recent_order: "07/09/2026",
-    city: "ABU_DHABI",
-    zone: "ASHAREJ",
-    route: "9302",
-    address: "Corniche Road",
-    apartment: "Bldg 9",
-    location: "24.4700, 54.3600",
-    delivery_day: "Tuesday",
-    language: "EN",
-    created_by: "136",
-    representative: "136 - HARIS",
-    is_company: true,
-    is_credit: true,
-    is_verified: true,
-    wallet_balance: 0,
-    coupon_available: 0,
-    pending_payment: "0.00",
-    pricing: [{ product: "5 gal water", price: "5" }],
-  },
-];
-
-const INITIAL_DELETED_CUSTOMERS = [
-  {
-    id: 101,
-    name: "Ahmed Baloshi",
-    customer_id: "197285",
-    contact: "+971 50 499 4449",
-    registered_on: "02/09/2026",
-    recent_delivery: "02/09/2026",
-    wallet_balance: "0",
-    city: "AL_AIN",
-    address: "Al Jimi",
-    status: "Inactive",
-    caption: "No Bottle",
-  },
-  {
-    id: 102,
-    name: "FIYMING",
-    customer_id: "112606",
-    contact: "0566078671",
-    registered_on: "12/07/2025",
-    recent_delivery: "29/11/2025",
-    wallet_balance: "0",
-    city: "AL_AIN",
-    address: "falaj hazza",
-    status: "Inactive",
-    caption: "No Bottle",
-  },
-  {
-    id: 103,
-    name: "Ali juma",
-    customer_id: "197258",
-    contact: "0506635325",
-    registered_on: "26/08/2026",
-    recent_delivery: "26/08/2026",
-    wallet_balance: "0",
-    city: "AL_AIN",
-    address: "Muwaiji",
-    status: "Inactive",
-    caption: "No Bottle",
-  },
-  {
-    id: 104,
-    name: "Yasir Khan 117570",
-    customer_id: "17864",
-    contact: "0555966824",
-    registered_on: "12/05/2024",
-    recent_delivery: "15/06/2026",
-    wallet_balance: "0",
-    city: "ABU_DHABI",
-    address: "Mussafah",
-    status: "Inactive",
-    caption: "No Bottle",
-  },
-  {
-    id: 105,
-    name: "Monudeen",
-    customer_id: "296398",
-    contact: "0525915022",
-    registered_on: "18/11/2025",
-    recent_delivery: "01/08/2026",
-    wallet_balance: "0",
-    city: "ABU_DHABI",
-    address: "Baniyas",
-    status: "Inactive",
-    caption: "No Bottle",
-  },
-  {
-    id: 106,
-    name: "Chantilly lace fashion LLC",
-    customer_id: "296032",
-    contact: "0506165352",
-    registered_on: "25/08/2025",
-    recent_delivery: "12/04/2026",
-    wallet_balance: "0",
-    city: "ABU_DHABI",
-    address: "Khalidiya",
-    status: "Inactive",
-    caption: "No Bottle",
-  },
-  {
-    id: 107,
-    name: "Waleedh Ibrahim 117825",
-    customer_id: "18200",
-    contact: "0508214780",
-    registered_on: "12/05/2024",
-    recent_delivery: "19/05/2026",
-    wallet_balance: "0",
-    city: "ABU_DHABI",
-    address: "Shabiya",
-    status: "Inactive",
-    caption: "No Bottle",
-  },
-  {
-    id: 108,
-    name: "Muhammad saleem",
-    customer_id: "296275",
-    contact: "0557941328",
-    registered_on: "14/10/2025",
-    recent_delivery: "22/07/2026",
-    wallet_balance: "0",
-    city: "ABU_DHABI",
-    address: "Muroor",
-    status: "Inactive",
-    caption: "No Bottle",
-  },
-  {
-    id: 109,
-    name: "ARJ WATER TECHNOLOGY L.L.C.",
-    customer_id: "110969",
-    contact: "0501239874",
-    registered_on: "12/07/2025",
-    recent_delivery: "10/03/2026",
-    wallet_balance: "0",
-    city: "AL_AIN",
-    address: "Sanaiya",
-    status: "Inactive",
-    caption: "No Bottle",
-  },
-  {
-    id: 110,
-    name: "Mohammed Afdal",
-    customer_id: "197191",
-    contact: "0568831920",
-    registered_on: "10/08/2026",
-    recent_delivery: "18/08/2026",
-    wallet_balance: "0",
-    city: "AL_AIN",
-    address: "Zakhir",
-    status: "Inactive",
-    caption: "No Bottle",
-  },
-];
 
 const RECHARGE_COUPON_CODES = [
   "F-bb84f862-f2eb-4bf3-8826-ab2435fc55c3",
@@ -429,8 +47,49 @@ const RECHARGE_COUPON_CODES = [
 
 export default function CustomersPage() {
   const { addToast } = useToast();
-  const [customers, setCustomers] = useState(INITIAL_CUSTOMERS);
-  const [deletedCustomers, setDeletedCustomers] = useState(INITIAL_DELETED_CUSTOMERS);
+  // Customers come from the shared CRM API - the same records the mobile app
+  // reads and writes - and re-sync every 15s and whenever the tab regains focus.
+  const loadCustomers = useCallback(async () => {
+    const [customersRaw, walletsRaw, ordersRaw] = await Promise.all([
+      apiService.getCustomers(),
+      apiService.getWallets(),
+      apiService.getOrders(),
+    ]);
+    if (customersRaw == null) return null;
+    const apiCustomers = listOf(customersRaw);
+    const context = buildContext({
+      customers: apiCustomers,
+      wallets: listOf(walletsRaw),
+      orders: listOf(ordersRaw),
+    });
+    return {
+      active: apiCustomers
+        .filter((c) => c.status !== "Deleted")
+        .map((c) => customerFromApi(c, context)),
+      deleted: apiCustomers
+        .filter((c) => c.status === "Deleted")
+        .map((c) => deletedCustomerFromApi(c, context)),
+    };
+  }, []);
+  const live = useLiveData(loadCustomers);
+
+  const [customers, setCustomers] = useState([]);
+  const [deletedCustomers, setDeletedCustomers] = useState([]);
+  useEffect(() => {
+    if (!live.data) return;
+    setCustomers(live.data.active);
+    setDeletedCustomers(live.data.deleted);
+  }, [live.data]);
+
+  // Tell the user once when the server becomes unreachable, not on every poll.
+  const [offlineNotified, setOfflineNotified] = useState(false);
+  useEffect(() => {
+    if (live.error && !offlineNotified) {
+      addToast("Cannot reach the CRM server - showing the last loaded data", "error");
+      setOfflineNotified(true);
+    }
+    if (!live.error && offlineNotified) setOfflineNotified(false);
+  }, [live.error, offlineNotified, addToast]);
 
   // "list" | "deleted" | "new" | "edit" | "transactions"
   const [viewMode, setViewMode] = useState("list");
@@ -470,13 +129,26 @@ export default function CustomersPage() {
     pricing: [{ product: "5 gal water", price: "5" }],
   });
 
-  const [customerFilters, setCustomerFilters] = useState({
+  const emptyCustomerFilters = {
+    customerType: "",
+    deliveryDay: "",
+    lendProducts: "",
+    productLendType: "",
+    language: "",
     from: "",
     to: "",
+    orderStatus: "",
+    company: "",
+    creditCustomer: "",
+    route: "",
+    zone: "",
+    createdBy: "",
+    representative: "",
     customer: "",
     city: "",
-    zone: "",
-  });
+  };
+
+  const [customerFilters, setCustomerFilters] = useState(emptyCustomerFilters);
 
   const filteredCustomers = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -512,6 +184,26 @@ export default function CustomersPage() {
       ) {
         return false;
       }
+      if (
+        customerFilters.deliveryDay &&
+        (c.delivery_day || "").toLowerCase() !== customerFilters.deliveryDay.toLowerCase()
+      ) {
+        return false;
+      }
+      if (
+        customerFilters.route &&
+        !(c.route || "").toLowerCase().includes(customerFilters.route.toLowerCase())
+      ) {
+        return false;
+      }
+      if (
+        customerFilters.representative &&
+        !(c.representative || "")
+          .toLowerCase()
+          .includes(customerFilters.representative.toLowerCase())
+      ) {
+        return false;
+      }
       if (customerFilters.from && c.registered_on) {
         const fromDate = new Date(customerFilters.from);
         const parts = c.registered_on.split("/");
@@ -532,6 +224,13 @@ export default function CustomersPage() {
     });
   }, [customers, searchQuery, customerFilters]);
 
+  // Real pagination over the live list.
+  const [page, setPage] = useState(1);
+  const pageCount = Math.max(1, Math.ceil(filteredCustomers.length / entriesPerPage));
+  const currentPage = Math.min(page, pageCount);
+  const pageStart = (currentPage - 1) * entriesPerPage;
+  useEffect(() => setPage(1), [searchQuery, customerFilters, entriesPerPage]);
+
   const filteredDeleted = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return deletedCustomers;
@@ -548,7 +247,7 @@ export default function CustomersPage() {
       name: "",
       contact: "",
       alt_contact: "",
-      customer_id: String(197302 + customers.length),
+      customer_id: "",
       language: "EN",
       created_by: "Rouda",
       is_company: false,
@@ -593,273 +292,319 @@ export default function CustomersPage() {
     setViewMode("edit");
   };
 
-  const handleSaveCustomer = (e) => {
+  const handleSaveCustomer = async (e) => {
     e.preventDefault();
     if (!customerForm.name.trim() || !customerForm.contact.trim()) {
       addToast("Please fill in Full Name and Mobile Number", "error");
       return;
     }
-    if (viewMode === "edit" && selectedCustomer) {
-      setCustomers((prev) =>
-        prev.map((c) =>
-          c.id === selectedCustomer.id
-            ? {
-                ...c,
-                ...customerForm,
-                alt_contact: customerForm.alt_contact || "N/A",
-                representative: customerForm.representative || "N/A",
-              }
-            : c
-        )
-      );
-      addToast(`Customer "${customerForm.name}" updated successfully`, "success");
-    } else {
-      const created = {
-        id: Date.now(),
-        ...customerForm,
-        alt_contact: customerForm.alt_contact || "N/A",
-        registered_on: "08/09/2026",
-        recent_order: "08/09/2026",
-        city: customerForm.city || "AL_AIN",
-        delivery_day: customerForm.delivery_day || "Sunday",
-        wallet_balance: 0,
-        coupon_available: 0,
-        pending_payment: "0.00",
-      };
-      setCustomers((prev) => [created, ...prev]);
-      addToast(`Customer "${created.name}" created successfully`, "success");
+    const editing = viewMode === "edit" && selectedCustomer;
+    const result = editing
+      ? await apiService.updateCustomer(selectedCustomer.id, customerToApi(customerForm))
+      : await apiService.createCustomer(customerToApi(customerForm, { isNew: true }));
+    if (!result) {
+      addToast(`Could not save "${customerForm.name}" - check the CRM server`, "error");
+      return;
     }
+    addToast(
+      `Customer "${customerForm.name}" ${editing ? "updated" : "created"} successfully`,
+      "success"
+    );
+    await live.refresh();
     setViewMode("list");
   };
 
-  const handleDeleteCustomer = (cust) => {
+  const handleDeleteCustomer = async (cust) => {
     setDetailsModalOpen(false);
-    setCustomers((prev) => prev.filter((c) => c.id !== cust.id));
-    setDeletedCustomers((prev) => [
-      {
-        id: cust.id,
-        name: cust.name,
-        customer_id: cust.customer_id,
-        contact: cust.contact,
-        registered_on: cust.registered_on,
-        recent_delivery: cust.recent_order,
-        wallet_balance: String(cust.wallet_balance || 0),
-        city: cust.city,
-        address: cust.address || "Al Ain",
-        status: "Inactive",
-        caption: "No Bottle",
-      },
-      ...prev,
-    ]);
+    const result = await apiService.softDeleteCustomer(cust.id);
+    if (!result) {
+      addToast(`Could not delete "${cust.name}" - check the CRM server`, "error");
+      return;
+    }
     addToast(`Customer "${cust.name}" moved to Deleted Customers`, "info");
+    await live.refresh();
   };
 
-  const handleRestoreCustomer = (delCust) => {
-    setDeletedCustomers((prev) => prev.filter((c) => c.id !== delCust.id));
-    setCustomers((prev) => [
-      {
-        id: delCust.id,
-        name: delCust.name,
-        customer_id: delCust.customer_id,
-        contact: delCust.contact,
-        alt_contact: "N/A",
-        registered_on: delCust.registered_on,
-        recent_order: delCust.recent_delivery,
-        city: delCust.city,
-        zone: "KHABISI",
-        route: "6335",
-        address: delCust.address,
-        apartment: "-",
-        location: "24.2075, 55.7447",
-        delivery_day: "Sunday",
-        language: "EN",
-        created_by: "47",
-        representative: "N/A",
-        is_company: false,
-        is_credit: false,
-        is_verified: false,
-        wallet_balance: 0,
-        coupon_available: 0,
-        pending_payment: "0.00",
-        pricing: [{ product: "5 gal water", price: "5" }],
-      },
-      ...prev,
-    ]);
+  const handleRestoreCustomer = async (delCust) => {
+    const result = await apiService.updateCustomer(delCust.id, { status: "Active" });
+    if (!result) {
+      addToast(`Could not restore "${delCust.name}" - check the CRM server`, "error");
+      return;
+    }
     addToast(`Restored customer "${delCust.name}"`, "success");
+    await live.refresh();
   };
 
   return (
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col font-[-apple-system,BlinkMacSystemFont,'SF_Pro_Text','SF_Pro_Display',sans-serif]">
       <Header title="Customer Dashboard" subtitle="Manage Customers" />
 
-      {/* iOS Top Hero Navigation Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-4 flex items-center justify-between sticky top-16 z-20">
-        <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-semibold text-base tracking-tight text-[#1C1C1E]">
-            {viewMode === "list"
-              ? "Customer Dashboard"
-              : viewMode === "transactions"
-              ? "Transaction History"
-              : "Customers"}
-          </span>
-          <Home className="w-3.5 h-3.5 text-[#8E8E93]" />
-          <span className="text-[#8E8E93] text-xs">
-            /{" "}
-            {viewMode === "new"
-              ? "New Customer"
-              : viewMode === "edit"
-              ? "Edit Customer"
-              : viewMode === "transactions"
-              ? "Customer Transactions"
-              : "Manage Customers"}{" "}
-            / ALL
-          </span>
-        </div>
-
-        {viewMode === "list" ? (
-          <div className="flex items-center gap-2.5">
-            <button
-              type="button"
-              onClick={() => setViewMode("deleted")}
-              className="px-4 py-2 rounded-full bg-[#8E8E93]/20 hover:bg-[#8E8E93]/30 text-[#1C1C1E] text-xs font-semibold transition cursor-pointer active:scale-95"
-            >
-              Deleted Customer
-            </button>
-            <button
-              type="button"
-              onClick={openNewCustomerView}
-              className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition cursor-pointer shadow-sm active:scale-95"
-            >
-              + New Customer
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setViewMode("list")}
-            className="px-4 py-2 rounded-full bg-[#8E8E93]/20 hover:bg-[#8E8E93]/30 text-[#1C1C1E] text-xs font-semibold transition cursor-pointer active:scale-95"
-          >
-            Back to Customers
-          </button>
-        )}
-      </div>
-
       <div className="p-6 flex-1 space-y-6">
+        {viewMode !== "list" && (
+          <BackLink label="Back to Customers" onClick={() => setViewMode("list")} />
+        )}
+
         {/* 1. MAIN CUSTOMERS LIST (customers.png) */}
         {viewMode === "list" && (
           <>
             {/* Filter Customers iOS Card */}
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-5">
-              <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-4">
-                Filter Customers
+            <div className="ios-surface p-5">
+              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider mb-4 flex items-center gap-1.5">
+                <Filter className="w-3.5 h-3.5 text-[#007AFF]" />
+                Filter Orders
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-3.5 text-xs">
                 <div>
-                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    From
-                  </label>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Customer Type</label>
+                  <select
+                    value={customerFilters.customerType}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, customerType: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  >
+                    <option value="">Select type</option>
+                    <option value="Individual">Individual</option>
+                    <option value="Company">Company</option>
+                    <option value="School">School</option>
+                    <option value="Government">Government</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Delivery Day</label>
+                  <select
+                    value={customerFilters.deliveryDay}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, deliveryDay: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  >
+                    <option value="">Select Day</option>
+                    <option value="Sunday">Sunday</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Lend Products</label>
+                  <input
+                    type="text"
+                    placeholder="Select commission schem"
+                    value={customerFilters.lendProducts}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, lendProducts: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Product LendType</label>
+                  <select
+                    value={customerFilters.productLendType}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, productLendType: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  >
+                    <option value="">Select LendType</option>
+                    <option value="Sold">Sold</option>
+                    <option value="Lend">Lend</option>
+                    <option value="Free">Free</option>
+                    <option value="Replacement">Replacement</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Language</label>
+                  <select
+                    value={customerFilters.language}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, language: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  >
+                    <option value="">Select Language</option>
+                    <option value="English">English</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Urdu">Urdu</option>
+                    <option value="Malayalam">Malayalam</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">From</label>
                   <input
                     type="date"
                     value={customerFilters.from}
-                    onChange={(e) => setCustomerFilters({ ...customerFilters, from: e.target.value })}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, from: e.target.value })
+                    }
                     className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    To
-                  </label>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">To</label>
                   <input
                     type="date"
                     value={customerFilters.to}
-                    onChange={(e) => setCustomerFilters({ ...customerFilters, to: e.target.value })}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, to: e.target.value })
+                    }
                     className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Customer
-                  </label>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Order status</label>
+                  <select
+                    value={customerFilters.orderStatus}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, orderStatus: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  >
+                    <option value="">Select Order Status</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Company</label>
+                  <select
+                    value={customerFilters.company}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, company: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  >
+                    <option value="">Select type</option>
+                    <option value="Al Qattara">Al Qattara</option>
+                    <option value="Partner">Partner</option>
+                    <option value="Third Party">Third Party</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Credit Customer</label>
+                  <select
+                    value={customerFilters.creditCustomer}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, creditCustomer: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  >
+                    <option value="">Select type</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Route</label>
                   <input
                     type="text"
-                    placeholder="Search name or ID..."
-                    value={customerFilters.customer}
-                    onChange={(e) => setCustomerFilters({ ...customerFilters, customer: e.target.value })}
+                    placeholder="Choose A Route.."
+                    value={customerFilters.route}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, route: e.target.value })
+                    }
                     className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    City
-                  </label>
-                  <select
-                    value={customerFilters.city}
-                    onChange={(e) => setCustomerFilters({ ...customerFilters, city: e.target.value })}
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Zone</label>
+                  <input
+                    type="text"
+                    placeholder="Search zone..."
+                    value={customerFilters.zone}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, zone: e.target.value })
+                    }
                     className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
-                  >
-                    <option value="">All Cities</option>
-                    <option value="AL_AIN">AL_AIN</option>
-                    <option value="ABU_DHABI">ABU_DHABI</option>
-                  </select>
+                  />
                 </div>
                 <div>
-                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Zone
-                  </label>
-                  <select
-                    value={customerFilters.zone}
-                    onChange={(e) => setCustomerFilters({ ...customerFilters, zone: e.target.value })}
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Created By</label>
+                  <input
+                    type="text"
+                    placeholder="Select Sales Rep"
+                    value={customerFilters.createdBy}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, createdBy: e.target.value })
+                    }
                     className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
-                  >
-                    <option value="">All Zones</option>
-                    <option value="SCHOOL AREA">SCHOOL AREA</option>
-                    <option value="KHABISI">KHABISI</option>
-                    <option value="MANAZIF">MANAZIF</option>
-                  </select>
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">Representative</label>
+                  <input
+                    type="text"
+                    placeholder="Select Sales Rep"
+                    value={customerFilters.representative}
+                    onChange={(e) =>
+                      setCustomerFilters({ ...customerFilters, representative: e.target.value })
+                    }
+                    className="w-full border border-[#3C3C43]/15 rounded-xl px-3 py-2 bg-[#F2F2F7] text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  />
                 </div>
               </div>
-              <div className="flex justify-end gap-2.5 mt-4">
+              <div className="flex items-center gap-4 mt-4">
                 <button
                   type="button"
-                  onClick={() => {
-                    setCustomerFilters({ from: "", to: "", customer: "", city: "", zone: "" });
-                    setSearchQuery("");
-                    addToast("Filters reset", "info");
-                  }}
-                  className="px-4 py-2 rounded-full bg-[#8E8E93]/20 hover:bg-[#8E8E93]/30 text-[#1C1C1E] text-xs font-semibold cursor-pointer active:scale-95 transition"
+                  onClick={() =>
+                    addToast(
+                      `Customer filters applied: ${filteredCustomers.length} records found`,
+                      "success"
+                    )
+                  }
+                  className="px-5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition inline-flex items-center gap-1.5"
                 >
-                  Reset
+                  <Filter className="w-3 h-3" />
+                  Apply
                 </button>
                 <button
                   type="button"
-                  onClick={() => addToast(`Customer filters applied: ${filteredCustomers.length} records found`, "success")}
-                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
+                  onClick={() => {
+                    setCustomerFilters(emptyCustomerFilters);
+                    setSearchQuery("");
+                    addToast("Filters reset", "info");
+                  }}
+                  className="text-[#007AFF] hover:text-[#0062cc] text-xs font-semibold cursor-pointer inline-flex items-center gap-1.5"
                 >
-                  Apply
+                  <RotateCcw className="w-3 h-3" />
+                  Reset
                 </button>
               </div>
             </div>
 
             {/* Customer Management Table Card */}
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
-                <div>
-                  <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
-                    Customer Management
-                  </h2>
-                  <p className="text-[#8E8E93] text-xs mt-0.5">
-                    Live customer directory, deliveries and transactions
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => addToast("Exported customer records", "success")}
-                  className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-[0_2px_8px_rgba(0,122,255,0.25)] active:scale-95 transition"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Export
-                </button>
-              </div>
+            <div className="ios-surface overflow-hidden">
+              <PanelHeader
+                icon={Users}
+                title="Customer List"
+                subtitle="Live customer directory, deliveries and transactions"
+                onAction={() => addToast("Exported customer records", "success")}
+                actions={
+                  <>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("deleted")}
+                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95"
+                  >
+                    Deleted Customer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openNewCustomerView}
+                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    New Customer
+                  </button>
+                </>
+                }
+              />
 
               <div className="px-6 py-4 bg-[#F2F2F7]/50 border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
                 <div className="flex items-center gap-2">
@@ -887,9 +632,9 @@ export default function CustomersPage() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
                         "CUSTOMER NAME",
                         "CUSTOMER ID",
@@ -903,14 +648,14 @@ export default function CustomersPage() {
                         <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70 shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 sort-ico shrink-0" />
                           </div>
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#3C3C43]/10 text-[12px] text-[#1C1C1E]">
-                    {filteredCustomers.slice(0, entriesPerPage).map((cust) => (
+                  <tbody className="text-[12px] text-[#1C1C1E]">
+                    {filteredCustomers.slice(pageStart, pageStart + entriesPerPage).map((cust) => (
                       <tr key={cust.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                         <td className="py-3.5 pl-6 pr-4 font-semibold text-[#1C1C1E]">{cust.name}</td>
                         <td className="py-3.5 px-4 text-[#8E8E93] font-mono">{cust.customer_id}</td>
@@ -927,7 +672,7 @@ export default function CustomersPage() {
                                 setSelectedCustomer(cust);
                                 setDetailsModalOpen(true);
                               }}
-                              className="px-3 py-1 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-[11px] font-semibold cursor-pointer shadow-xs active:scale-95 transition"
+                              className="px-3 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               Details
                             </button>
@@ -952,15 +697,25 @@ export default function CustomersPage() {
 
               <div className="px-6 py-4 border-t border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
                 <div>
-                  Showing 1 to {Math.min(entriesPerPage, filteredCustomers.length)} of 12,845
-                  entries
+                  {filteredCustomers.length === 0
+                    ? "No entries"
+                    : `Showing ${pageStart + 1} to ${Math.min(
+                        pageStart + entriesPerPage,
+                        filteredCustomers.length
+                      )} of ${filteredCustomers.length} entries`}
+                  {live.lastUpdated ? (
+                    <span className="ml-3 text-[#34C759]">
+                      ● Live · synced {live.lastUpdated.toLocaleTimeString()}
+                    </span>
+                  ) : null}
                 </div>
                 <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((p) => (
+                  {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
                     <button
                       key={p}
+                      onClick={() => setPage(p)}
                       className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center ${
-                        p === 1 ? "bg-[#007AFF] text-white shadow-xs" : "text-[#8E8E93] hover:bg-[#F2F2F7]"
+                        p === currentPage ? "bg-[#007AFF] text-white shadow-xs" : "text-[#8E8E93] hover:bg-[#F2F2F7]"
                       }`}
                     >
                       {p}
@@ -974,8 +729,8 @@ export default function CustomersPage() {
 
         {/* 2. DELETED CUSTOMERS SUB-VIEW (delt-customers.png) */}
         {viewMode === "deleted" && (
-          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
+          <div className="ios-surface overflow-hidden">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white flex items-center justify-between">
               <div>
                 <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                   Deleted Customer Details
@@ -1007,9 +762,9 @@ export default function CustomersPage() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="ios-table w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                  <tr className="ios-thead">
                     {[
                       "CUSTOMER NAME",
                       "CUSTOMER ID",
@@ -1026,13 +781,13 @@ export default function CustomersPage() {
                       <th key={col} className="py-3 px-3.5 first:pl-6 last:pr-6 whitespace-nowrap">
                         <div className="flex items-center justify-between gap-1">
                           <span>{col}</span>
-                          <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70 shrink-0" />
+                          <ArrowUpDown className="w-3 h-3 sort-ico shrink-0" />
                         </div>
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#3C3C43]/10 text-[11.5px] text-[#1C1C1E]">
+                <tbody className="text-[11.5px] text-[#1C1C1E]">
                   {filteredDeleted.map((row) => (
                     <tr key={row.id} className="hover:bg-[#F2F2F7]/50">
                       <td className="py-3.5 pl-6 pr-3.5 font-semibold text-[#1C1C1E]">{row.name}</td>
@@ -1053,7 +808,7 @@ export default function CustomersPage() {
                         <button
                           type="button"
                           onClick={() => handleRestoreCustomer(row)}
-                          className="px-3.5 py-1 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-[11px] font-semibold cursor-pointer shadow-xs active:scale-95 transition"
+                          className="px-3.5 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                         >
                           Restore
                         </button>
@@ -1084,8 +839,8 @@ export default function CustomersPage() {
 
         {/* 3. NEW CUSTOMER & EDIT CUSTOMER SUB-VIEWS (new customer.png & edit customer.png) */}
         {(viewMode === "new" || viewMode === "edit") && (
-          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+          <div className="ios-surface overflow-hidden">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 {viewMode === "edit"
                   ? `Edit Customer - ${selectedCustomer?.name || ""}`
@@ -1416,7 +1171,7 @@ export default function CustomersPage() {
                       pricing: [...customerForm.pricing, { product: "", price: "" }],
                     })
                   }
-                  className="px-4 py-2 rounded-full bg-[#007AFF]/10 hover:bg-[#007AFF] text-[#007AFF] hover:text-white text-xs font-semibold cursor-pointer active:scale-95 transition"
+                  className="px-4 py-2 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-xs font-semibold cursor-pointer active:scale-95 transition"
                 >
                   + Add Product Price
                 </button>
@@ -1538,16 +1293,16 @@ export default function CustomersPage() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+                <div className="ios-surface overflow-hidden">
+                  <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Asset History of {selectedCustomer.customer_id}
                     </h2>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="ios-table w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                        <tr className="ios-thead">
                           {[
                             "CREATED AT",
                             "ASSET TYPE",
@@ -1564,7 +1319,7 @@ export default function CustomersPage() {
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
+                      <tbody className="text-xs text-[#1C1C1E]">
                         <tr className="hover:bg-[#F2F2F7]/50">
                           <td className="py-3.5 pl-6 pr-4">{selectedCustomer.registered_on || "08/09/2026"}</td>
                           <td className="py-3.5 px-4 font-semibold">WATER PUMP</td>
@@ -1583,7 +1338,7 @@ export default function CustomersPage() {
                                   deposit: 0,
                                 })
                               }
-                              className="px-3.5 py-1 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-[11px] font-semibold cursor-pointer shadow-xs active:scale-95 transition"
+                              className="px-3.5 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
@@ -1607,7 +1362,7 @@ export default function CustomersPage() {
                                   deposit: 60,
                                 })
                               }
-                              className="px-3.5 py-1 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-[11px] font-semibold cursor-pointer shadow-xs active:scale-95 transition"
+                              className="px-3.5 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
@@ -1670,16 +1425,16 @@ export default function CustomersPage() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+                <div className="ios-surface overflow-hidden">
+                  <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Order History of {selectedCustomer.customer_id}
                     </h2>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="ios-table w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                        <tr className="ios-thead">
                           {[
                             "CREATED AT",
                             "TRUCK ID",
@@ -1696,7 +1451,7 @@ export default function CustomersPage() {
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
+                      <tbody className="text-xs text-[#1C1C1E]">
                         <tr className="hover:bg-[#F2F2F7]/50">
                           <td className="py-3.5 pl-6 pr-4">{selectedCustomer.registered_on || "08/09/2026"}</td>
                           <td className="py-3.5 px-4 font-mono text-[#8E8E93]">T6347</td>
@@ -1713,7 +1468,7 @@ export default function CustomersPage() {
                             <button
                               type="button"
                               onClick={() => setTxOrderModalOpen(true)}
-                              className="px-3.5 py-1 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-[11px] font-semibold cursor-pointer shadow-xs active:scale-95 transition"
+                              className="px-3.5 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
@@ -1756,16 +1511,16 @@ export default function CustomersPage() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+                <div className="ios-surface overflow-hidden">
+                  <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Payment History of {selectedCustomer.customer_id}
                     </h2>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="ios-table w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                        <tr className="ios-thead">
                           {[
                             "ORDER ID",
                             "DATE",
@@ -1780,13 +1535,13 @@ export default function CustomersPage() {
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
+                      <tbody className="text-xs text-[#1C1C1E]">
                         <tr className="hover:bg-[#F2F2F7]/50">
                           <td className="py-3.5 pl-6 pr-4 font-mono font-semibold">DN-T6347-09911</td>
                           <td className="py-3.5 px-4 text-[#8E8E93]">08/09/2026</td>
                           <td className="py-3.5 px-4 text-[#8E8E93]">47</td>
                           <td className="py-3.5 px-4">
-                            <span className="px-2.5 py-0.5 rounded-full bg-[#007AFF]/10 text-[#007AFF] text-[10.5px] font-semibold">
+                            <span className="px-2.5 py-0.5 rounded-full bg-[#007AFF]/12 text-[#0062CC] text-[10.5px] font-semibold">
                               Card
                             </span>
                           </td>
@@ -1830,16 +1585,16 @@ export default function CustomersPage() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+                <div className="ios-surface overflow-hidden">
+                  <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
                     <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                       Wallet Recharge of {selectedCustomer.customer_id}
                     </h2>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="ios-table w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                        <tr className="ios-thead">
                           {[
                             "UPDATED AT",
                             "RECHARGE CODE",
@@ -1857,7 +1612,7 @@ export default function CustomersPage() {
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
+                      <tbody className="text-xs text-[#1C1C1E]">
                         <tr className="hover:bg-[#F2F2F7]/50">
                           <td className="py-3.5 pl-6 pr-4 text-[#8E8E93]">08/09/2026</td>
                           <td className="py-3.5 px-4 font-mono font-semibold">mts7z0ld</td>
@@ -1871,7 +1626,7 @@ export default function CustomersPage() {
                             <button
                               type="button"
                               onClick={() => setRechargeModalOpen(true)}
-                              className="px-3.5 py-1 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-[11px] font-semibold cursor-pointer shadow-xs active:scale-95 transition"
+                              className="px-3.5 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
@@ -1889,8 +1644,8 @@ export default function CustomersPage() {
 
       {/* CUSTOMER DETAILS MODAL (detail.png) */}
       {detailsModalOpen && selectedCustomer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
             <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-base font-semibold text-[#1C1C1E]">Customer Details</h3>
               <button
@@ -2064,8 +1819,8 @@ export default function CustomersPage() {
 
       {/* RETURN ASSET MODAL (asset hist-view.png) */}
       {returnAssetModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-[#3C3C43]/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-md overflow-hidden border border-[#3C3C43]/10">
             <div className="px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-[15px] font-semibold text-[#1C1C1E]">Return Asset</h3>
               <button
@@ -2155,8 +1910,8 @@ export default function CustomersPage() {
 
       {/* CUSTOMER ORDER DETAILS MODAL (view order.png) */}
       {txOrderModalOpen && selectedCustomer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
             <div className="px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-[15px] font-semibold text-[#1C1C1E]">
                 Order Details - DN-T6347-09911
@@ -2215,9 +1970,9 @@ export default function CustomersPage() {
               </div>
 
               <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       <th className="py-2.5 px-3.5">PRODUCT</th>
                       <th className="py-2.5 px-3.5">LEND TYPE</th>
                       <th className="py-2.5 px-3.5">QUANTITY</th>
@@ -2273,8 +2028,8 @@ export default function CustomersPage() {
 
       {/* RECHARGE DETAILS COUPONS MODAL (wallet charge view.png) */}
       {rechargeModalOpen && selectedCustomer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
             <div className="px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-[15px] font-semibold text-[#1C1C1E]">
                 Recharge Details - {selectedCustomer.customer_id}
@@ -2290,9 +2045,9 @@ export default function CustomersPage() {
 
             <div className="p-6 max-h-[70vh] overflow-y-auto">
               <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       <th className="py-3 px-3.5">COUPON CODE</th>
                       <th className="py-3 px-3.5">PRODUCT</th>
                       <th className="py-3 px-3.5">TYPE</th>
@@ -2336,7 +2091,7 @@ export default function CustomersPage() {
 
       {/* ASSET SUMMARY RIGHT-HAND SLIDE-OVER DRAWER (asset summary.png) */}
       {assetSummaryDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/30 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/25 backdrop-blur-[6px]">
           <div className="bg-white w-full max-w-xs h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200 rounded-l-3xl border-l border-[#3C3C43]/10">
             <div className="px-5 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-sm font-semibold text-[#1C1C1E]">Product Delivery Details</h3>

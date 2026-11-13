@@ -1,8 +1,13 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import { apiService } from "@/services/api";
+import useLiveData from "@/hooks/useLiveData";
+import { listOf, salesmanCollectionsFromApi, collectedPaymentFromApi, customerCreditsFromApi, collectionToApi } from "@/services/crmMappers";
+import BackLink from "@/components/BackLink";
+import PanelHeader from "@/components/PanelHeader";
 import {
   Home,
   ArrowUpDown,
@@ -14,315 +19,55 @@ import {
   CreditCard,
   X,
   Search,
+  Receipt,
 } from "lucide-react";
-
-const INITIAL_SALESMAN_COLLECTIONS = [
-  {
-    id: 1,
-    salesman_id: "109",
-    salesman_name: "ALTHAF",
-    route_id: "6329",
-    total_orders: 145,
-    total_amount: "4520.00",
-    received_amount: "2500.00",
-    pending_amount: "2020.00",
-    last_updated: "08/09/2026",
-  },
-  {
-    id: 2,
-    salesman_id: "110",
-    salesman_name: "SHIBIL",
-    route_id: "1234",
-    total_orders: 210,
-    total_amount: "6840.50",
-    received_amount: "4000.00",
-    pending_amount: "2840.50",
-    last_updated: "08/09/2026",
-  },
-  {
-    id: 3,
-    salesman_id: "111",
-    salesman_name: "AMJATH",
-    route_id: "6335",
-    total_orders: 188,
-    total_amount: "5410.00",
-    received_amount: "3200.00",
-    pending_amount: "2210.00",
-    last_updated: "08/09/2026",
-  },
-  {
-    id: 4,
-    salesman_id: "112",
-    salesman_name: "MALAKA",
-    route_id: "6350",
-    total_orders: 265,
-    total_amount: "8445.31",
-    received_amount: "5000.00",
-    pending_amount: "3445.31",
-    last_updated: "08/09/2026",
-  },
-  {
-    id: 5,
-    salesman_id: "113",
-    salesman_name: "SAGAR",
-    route_id: "6352",
-    total_orders: 194,
-    total_amount: "6517.77",
-    received_amount: "3500.00",
-    pending_amount: "3017.77",
-    last_updated: "08/09/2026",
-  },
-  {
-    id: 6,
-    salesman_id: "114",
-    salesman_name: "RAYAN",
-    route_id: "6354",
-    total_orders: 176,
-    total_amount: "6437.22",
-    received_amount: "3000.00",
-    pending_amount: "3437.22",
-    last_updated: "08/09/2026",
-  },
-  {
-    id: 7,
-    salesman_id: "115",
-    salesman_name: "SAMUEL",
-    route_id: "6356",
-    total_orders: 160,
-    total_amount: "6218.05",
-    received_amount: "2450.00",
-    pending_amount: "3768.05",
-    last_updated: "08/09/2026",
-  },
-  {
-    id: 8,
-    salesman_id: "116",
-    salesman_name: "HABTAMU",
-    route_id: "6357",
-    total_orders: 112,
-    total_amount: "2890.00",
-    received_amount: "1000.00",
-    pending_amount: "1890.00",
-    last_updated: "07/09/2026",
-  },
-  {
-    id: 9,
-    salesman_id: "117",
-    salesman_name: "ARSLAN",
-    route_id: "6358",
-    total_orders: 98,
-    total_amount: "2499.84",
-    received_amount: "500.00",
-    pending_amount: "1999.84",
-    last_updated: "07/09/2026",
-  },
-  {
-    id: 10,
-    salesman_id: "118",
-    salesman_name: "NURANOWAR",
-    route_id: "8066",
-    total_orders: 85,
-    total_amount: "2300.00",
-    received_amount: "500.00",
-    pending_amount: "1800.00",
-    last_updated: "07/09/2026",
-  },
-];
-
-const INITIAL_COLLECTED_PAYMENTS = [
-  {
-    id: 1,
-    date: "08/09/2026",
-    salesman_id: "38",
-    amount: "AED 475.35",
-    method: "Cash",
-    from: "Salesman",
-    note: "-",
-  },
-  {
-    id: 2,
-    date: "08/09/2026",
-    salesman_id: "56",
-    amount: "AED 551.40",
-    method: "Cash",
-    from: "Salesman",
-    note: "-",
-  },
-  {
-    id: 3,
-    date: "08/09/2026",
-    salesman_id: "32",
-    amount: "AED 1230.00",
-    method: "Cash",
-    from: "Salesman",
-    note: "-",
-  },
-  {
-    id: 4,
-    date: "08/09/2026",
-    salesman_id: "47",
-    amount: "AED 890.50",
-    method: "Cash",
-    from: "Salesman",
-    note: "-",
-  },
-  {
-    id: 5,
-    date: "07/09/2026",
-    salesman_id: "53",
-    amount: "AED 640.00",
-    method: "Cash",
-    from: "Salesman",
-    note: "-",
-  },
-  {
-    id: 6,
-    date: "07/09/2026",
-    salesman_id: "40",
-    amount: "AED 410.25",
-    method: "Cash",
-    from: "Salesman",
-    note: "-",
-  },
-  {
-    id: 7,
-    date: "07/09/2026",
-    salesman_id: "48",
-    amount: "AED 1120.00",
-    method: "Cash",
-    from: "Salesman",
-    note: "-",
-  },
-  {
-    id: 8,
-    date: "07/09/2026",
-    salesman_id: "84",
-    amount: "AED 780.00",
-    method: "Cash",
-    from: "Salesman",
-    note: "-",
-  },
-  {
-    id: 9,
-    date: "06/09/2026",
-    salesman_id: "57",
-    amount: "AED 950.00",
-    method: "Cash",
-    from: "Salesman",
-    note: "-",
-  },
-  {
-    id: 10,
-    date: "06/09/2026",
-    salesman_id: "119",
-    amount: "AED 10.00",
-    method: "Card",
-    from: "Customer",
-    note: "-",
-  },
-];
-
-const INITIAL_CUSTOMER_CREDITS = [
-  {
-    id: 1,
-    customer_id: "18146",
-    name: "Hamoud Al Amry",
-    mobile: "0504471122",
-    total_due: "140.00",
-    last_pending: "25/05/2026",
-    pending_orders: 4,
-  },
-  {
-    id: 2,
-    customer_id: "112347",
-    name: "Naser Jumah",
-    mobile: "0506632211",
-    total_due: "85.00",
-    last_pending: "12/06/2026",
-    pending_orders: 2,
-  },
-  {
-    id: 3,
-    customer_id: "113164",
-    name: "HAlAM",
-    mobile: "0553319900",
-    total_due: "210.00",
-    last_pending: "18/07/2026",
-    pending_orders: 6,
-  },
-  {
-    id: 4,
-    customer_id: "112467",
-    name: "Cure Plus Medical Centre",
-    mobile: "037551122",
-    total_due: "1450.00",
-    last_pending: "01/08/2026",
-    pending_orders: 15,
-  },
-  {
-    id: 5,
-    customer_id: "114890",
-    name: "Saeed Al Darmaki",
-    mobile: "0509981234",
-    total_due: "65.00",
-    last_pending: "14/08/2026",
-    pending_orders: 2,
-  },
-  {
-    id: 6,
-    customer_id: "115201",
-    name: "Al Jimi Pharmacy",
-    mobile: "037623344",
-    total_due: "520.00",
-    last_pending: "20/08/2026",
-    pending_orders: 8,
-  },
-  {
-    id: 7,
-    customer_id: "116044",
-    name: "Rashid Al Nuaimi",
-    mobile: "0521145566",
-    total_due: "95.00",
-    last_pending: "22/08/2026",
-    pending_orders: 3,
-  },
-  {
-    id: 8,
-    customer_id: "116892",
-    name: "Golden Star Restaurant",
-    mobile: "037649988",
-    total_due: "890.00",
-    last_pending: "28/08/2026",
-    pending_orders: 11,
-  },
-  {
-    id: 9,
-    customer_id: "117310",
-    name: "Fatima Al Shamsi",
-    mobile: "0507765432",
-    total_due: "45.00",
-    last_pending: "02/09/2026",
-    pending_orders: 1,
-  },
-  {
-    id: 10,
-    customer_id: "118005",
-    name: "Dar Al Shifa Clinic",
-    mobile: "026334455",
-    total_due: "1120.00",
-    last_pending: "05/09/2026",
-    pending_orders: 12,
-  },
-];
 
 export default function CashierPage() {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState("salesman"); // "salesman" | "credits" | "statement"
   const [showCollectedView, setShowCollectedView] = useState(false);
 
-  const [salesmanRows, setSalesmanRows] = useState(INITIAL_SALESMAN_COLLECTIONS);
-  const [collectedPayments, setCollectedPayments] = useState(INITIAL_COLLECTED_PAYMENTS);
-  const [customerCredits, setCustomerCredits] = useState(INITIAL_CUSTOMER_CREDITS);
+  const loadLive = useCallback(async () => {
+    const [salesmenRaw, ordersRaw, cashierRaw, customersRaw] = await Promise.all([
+      apiService.getSalesmen(),
+      apiService.getOrders(),
+      apiService.getCashierTransactions(),
+      apiService.getCustomers(),
+    ]);
+    if (cashierRaw == null) return null;
+    const salesmen = listOf(salesmenRaw);
+    const orders = listOf(ordersRaw);
+    const cashier = listOf(cashierRaw);
+    const customers = listOf(customersRaw);
+    const salesmenById = new Map(salesmen.map((s) => [s.id, s]));
+    return {
+      salesmanRows: salesmanCollectionsFromApi({ salesmen, orders, cashier }),
+      collectedPayments: cashier.map((t) => collectedPaymentFromApi(t, salesmenById)),
+      customerCredits: customerCreditsFromApi({ customers, orders }),
+      customers,
+    };
+  }, []);
+  const live = useLiveData(loadLive);
+
+  // Tell the user once when the server becomes unreachable, not on every poll.
+  const [offlineNotified, setOfflineNotified] = useState(false);
+  useEffect(() => {
+    if (live.error && !offlineNotified) {
+      addToast("Cannot reach the CRM server - showing the last loaded data", "error");
+      setOfflineNotified(true);
+    }
+    if (!live.error && offlineNotified) setOfflineNotified(false);
+  }, [live.error, offlineNotified, addToast]);
+
+  const [salesmanRows, setSalesmanRows] = useState([]);
+  const [collectedPayments, setCollectedPayments] = useState([]);
+  const [customerCredits, setCustomerCredits] = useState([]);
+  useEffect(() => {
+    if (!live.data) return;
+    setSalesmanRows(live.data.salesmanRows);
+    setCollectedPayments(live.data.collectedPayments);
+    setCustomerCredits(live.data.customerCredits);
+  }, [live.data]);
 
   const [paymentFilters, setPaymentFilters] = useState({
     fromDate: "",
@@ -411,53 +156,45 @@ export default function CashierPage() {
     );
   }, [customerCredits, searchQuery]);
 
-  const handleConfirmCollect = (e) => {
+  const handleConfirmCollect = async (e) => {
     e.preventDefault();
     if (!collectModal || !collectAmount) return;
     const amt = Number(collectAmount) || 0;
-
-    if (collectModal.type === "salesman") {
-      setSalesmanRows((prev) =>
-        prev.map((s) =>
-          s.id === collectModal.row.id
-            ? {
-                ...s,
-                received_amount: (Number(s.received_amount) + amt).toFixed(2),
-                pending_amount: Math.max(0, Number(s.pending_amount) - amt).toFixed(2),
-              }
-            : s
-        )
-      );
-      setCollectedPayments((prev) => [
-        {
-          id: Date.now(),
-          date: "08/09/2026",
-          salesman_id: collectModal.row.salesman_id,
-          amount: `AED ${amt.toFixed(2)}`,
-          method: collectMethod,
-          from: "Salesman",
-          note: collectNote || "-",
-        },
-        ...prev,
-      ]);
-      addToast(
-        `Collected AED ${amt.toFixed(2)} from Salesman ${collectModal.row.salesman_name}`,
-        "success"
-      );
-    } else {
-      setCustomerCredits((prev) =>
-        prev.map((c) =>
-          c.id === collectModal.row.id
-            ? {
-                ...c,
-                total_due: Math.max(0, Number(c.total_due) - amt).toFixed(2),
-              }
-            : c
-        )
-      );
-      addToast(`Collected AED ${amt.toFixed(2)} from ${collectModal.row.name}`, "success");
+    if (amt <= 0) {
+      addToast("Enter an amount greater than zero", "error");
+      return;
     }
+    const fromSalesman = collectModal.type === "salesman";
+    const row = collectModal.row;
+
+    const recorded = await apiService.createCashier(
+      collectionToApi({
+        amount: amt,
+        method: collectMethod,
+        note: collectNote,
+        salesmanPk: fromSalesman ? row.salesman_pk : null,
+        customerPk: fromSalesman ? null : row.customer_pk,
+      })
+    );
+    if (!recorded) {
+      addToast("Could not record the collection - check the CRM server", "error");
+      return;
+    }
+    // A customer payment also reduces what that customer owes.
+    if (!fromSalesman) {
+      const customer = (live.data?.customers || []).find((c) => c.id === row.customer_pk);
+      const owed = Number(customer?.current_balance || row.total_due || 0);
+      const updated = await apiService.updateCustomer(row.customer_pk, {
+        current_balance: Math.max(0, owed - amt).toFixed(2),
+      });
+      if (!updated) addToast("Payment recorded, but the customer balance did not update", "error");
+    }
+    addToast(
+      `Collected AED ${amt.toFixed(2)} from ${fromSalesman ? `Salesman ${row.salesman_name}` : row.name}`,
+      "success"
+    );
     setCollectModal(null);
+    await live.refresh();
   };
 
   return (
@@ -465,41 +202,6 @@ export default function CashierPage() {
       <Header title="Cashier" subtitle="Salesman Collection" />
 
       {/* iOS Translucent Glass Top Hero Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-4 flex items-center justify-between sticky top-0 z-20 transition-all">
-        <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-semibold text-base text-[#1C1C1E] tracking-tight">Cashier</span>
-          <span className="text-[#8E8E93] text-xs">/</span>
-          <span className="text-[#8E8E93] text-xs font-medium">
-            {showCollectedView
-              ? "Collected Payments"
-              : activeTab === "salesman"
-              ? "Salesman Collection"
-              : activeTab === "credits"
-              ? "Customer Credits"
-              : "Customer Statement"}{" "}
-            • ALL
-          </span>
-        </div>
-
-        {showCollectedView ? (
-          <button
-            type="button"
-            onClick={() => setShowCollectedView(false)}
-            className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-all cursor-pointer"
-          >
-            Back to Cashier
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setShowCollectedView(true)}
-            className="px-4 py-2 rounded-full bg-[#FF9500] hover:bg-[#E08500] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(255,149,0,0.25)] transition-all cursor-pointer"
-          >
-            Collected Payments
-          </button>
-        )}
-      </div>
-
       {/* iOS Segmented Tabs */}
       {!showCollectedView && (
         <div className="px-6 pt-5 pb-1 flex">
@@ -530,10 +232,14 @@ export default function CashierPage() {
       )}
 
       <div className="p-6 flex-1 space-y-6">
+        {showCollectedView && (
+          <BackLink label="Back to Cashier" onClick={() => setShowCollectedView(false)} />
+        )}
+
         {/* COLLECTED PAYMENTS SUB-VIEW (collected payments.png) */}
         {showCollectedView ? (
           <>
-            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5 space-y-4">
+            <div className="ios-surface p-5 space-y-4">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Payments
               </h3>
@@ -679,16 +385,16 @@ export default function CashierPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
-                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
-                  Payment Collection Details
-                </h2>
-              </div>
+            <div className="ios-surface overflow-hidden">
+              <PanelHeader
+                icon={Receipt}
+                title="Payment Collection Details"
+                onAction={() => addToast("Exported collection details", "success")}
+              />
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
                         "DATE",
                         "SALESMAN ID",
@@ -760,10 +466,21 @@ export default function CashierPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
-                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Pending Payments</h2>
-              </div>
+            <div className="ios-surface overflow-hidden">
+              <PanelHeader
+                icon={CreditCard}
+                title="Pending Payments"
+                onAction={() => addToast("Exported pending payments", "success")}
+                actions={
+                  <button
+                    type="button"
+                    onClick={() => setShowCollectedView(true)}
+                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95"
+                  >
+                    Collected Payments
+                  </button>
+                }
+              />
 
               <div className="px-6 py-3.5 bg-[#F2F2F7]/50 border-b border-[#E5E5EA] flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
                 <div className="flex items-center gap-2">
@@ -793,9 +510,9 @@ export default function CashierPage() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
                         "SALESMAN ID",
                         "SALESMAN NAME",
@@ -842,7 +559,7 @@ export default function CashierPage() {
                               setCollectMethod("Cash");
                               setCollectNote("");
                             }}
-                            className="px-3.5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-[11px] font-semibold shadow-[0_2px_6px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
+                            className="px-3.5 py-1.5 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold transition cursor-pointer"
                           >
                             Collect
                           </button>
@@ -891,10 +608,12 @@ export default function CashierPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 flex items-center justify-between">
-                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Customer Credits</h2>
-              </div>
+            <div className="ios-surface overflow-hidden">
+              <PanelHeader
+                icon={Users}
+                title="Customer Credits"
+                onAction={() => addToast("Exported customer credits", "success")}
+              />
 
               <div className="px-6 py-3.5 bg-[#F2F2F7]/50 border-b border-[#E5E5EA] flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
                 <div className="flex items-center gap-2">
@@ -917,9 +636,9 @@ export default function CashierPage() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
                         "CUSTOMER ID",
                         "NAME",
@@ -958,7 +677,7 @@ export default function CashierPage() {
                               setCollectMethod("Cash");
                               setCollectNote("");
                             }}
-                            className="px-3.5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-[11px] font-semibold shadow-[0_2px_6px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
+                            className="px-3.5 py-1.5 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold transition cursor-pointer"
                           >
                             Collect
                           </button>
@@ -973,7 +692,7 @@ export default function CashierPage() {
         ) : (
           /* TAB 3: CUSTOMER STATEMENT (custm -statement.png) */
           <>
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 p-6 space-y-4">
+            <div className="ios-surface p-6 space-y-4">
               <h3 className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wider">
                 Statement Parameters
               </h3>
@@ -1063,7 +782,7 @@ export default function CashierPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
+            <div className="ios-surface overflow-hidden">
               <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4 flex items-center justify-between">
                 <h2 className="text-white font-semibold text-base tracking-tight">
                   Customer Statement
@@ -1079,8 +798,8 @@ export default function CashierPage() {
 
       {/* COLLECT PAYMENT MODAL */}
       {collectModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-[#3C3C43]/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-md overflow-hidden border border-[#3C3C43]/10">
             <div className="px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-[15px] font-semibold text-[#1C1C1E]">
                 Collect Payment -{" "}

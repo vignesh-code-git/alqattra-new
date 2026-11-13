@@ -1,8 +1,13 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import { apiService } from "@/services/api";
+import useLiveData from "@/hooks/useLiveData";
+import { listOf, buildContext, invoiceFromApi, nonBilledFromApi, invoiceForOrder } from "@/services/crmMappers";
+import BackLink from "@/components/BackLink";
+import PanelHeader from "@/components/PanelHeader";
 import {
   Home,
   ArrowUpDown,
@@ -11,148 +16,60 @@ import {
   CheckCircle2,
   Clock,
   DollarSign,
+  Filter,
+  RotateCcw,
+  Plus,
+  Download,
+  Hourglass,
+  Wallet,
+  Receipt,
 } from "lucide-react";
-
-const INITIAL_INVOICES = [
-  {
-    id: 1,
-    invoice_no: "IN-T6329/029272",
-    customer_name: "khalifa",
-    customer_id: "114734",
-    salesman_name: "51",
-    order_date: "07/09/2026",
-    truck: "T6329",
-    zone: "MARKHANIA",
-    status: "Delivered",
-    total_amount: "5.00",
-    items: [{ product: "5 gal water", lend_type: "Sold", quantity: 1, unit_price: 5.0 }],
-  },
-  {
-    id: 2,
-    invoice_no: "IN-T6350/032178",
-    customer_name: "SAAED RASHED",
-    customer_id: "102755",
-    salesman_name: "56 - ANAS",
-    order_date: "08/09/2026",
-    truck: "T6350",
-    zone: "MANAZIF",
-    status: "Delivered",
-    total_amount: "12.60",
-    items: [{ product: "5 gal water", lend_type: "Sold", quantity: 2, unit_price: 6.3 }],
-  },
-  {
-    id: 3,
-    invoice_no: "IN-T6350/032177",
-    customer_name: "SABIR",
-    customer_id: "114284",
-    salesman_name: "56 - ANAS",
-    order_date: "08/09/2026",
-    truck: "T6350",
-    zone: "HILI INDUSTRIAL",
-    status: "Delivered",
-    total_amount: "10.50",
-    items: [{ product: "5 gal water", lend_type: "Sold", quantity: 2, unit_price: 5.25 }],
-  },
-  {
-    id: 4,
-    invoice_no: "IN-T6356/032584",
-    customer_name: "Asmaa Muhammad al-Jilani 118052",
-    customer_id: "18623",
-    salesman_name: "38 - NISAR",
-    order_date: "08/09/2026",
-    truck: "T6356",
-    zone: "JAHILI",
-    status: "Delivered",
-    total_amount: "12.60",
-    items: [{ product: "5 gal water", lend_type: "Sold", quantity: 2, unit_price: 6.3 }],
-  },
-  {
-    id: 5,
-    invoice_no: "IN-T6335/033994",
-    customer_name: "AL NEBRAS SCHOOL",
-    customer_id: "197301",
-    salesman_name: "32 - NOOR",
-    order_date: "08/09/2026",
-    truck: "T6335",
-    zone: "KHABISI",
-    status: "Delivered",
-    total_amount: "123.00",
-    items: [{ product: "5 gal water", lend_type: "Sold", quantity: 20, unit_price: 6.15 }],
-  },
-  {
-    id: 6,
-    invoice_no: "IN-T6348/033290",
-    customer_name: "AL REEM MEDICAL CENTER",
-    customer_id: "110452",
-    salesman_name: "53 - SHAFEEQ",
-    order_date: "08/09/2026",
-    truck: "T6348",
-    zone: "ASHAREJ",
-    status: "Delivered",
-    total_amount: "52.50",
-    items: [{ product: "5 gal water", lend_type: "Sold", quantity: 10, unit_price: 5.25 }],
-  },
-  {
-    id: 7,
-    invoice_no: "IN-T6354/031880",
-    customer_name: "FATIMA KHALIFA",
-    customer_id: "108934",
-    salesman_name: "47 - RAHMAN",
-    order_date: "08/09/2026",
-    truck: "T6354",
-    zone: "SAROOJ",
-    status: "Delivered",
-    total_amount: "21.00",
-    items: [{ product: "5 gal water", lend_type: "Sold", quantity: 4, unit_price: 5.25 }],
-  },
-  {
-    id: 8,
-    invoice_no: "IN-T6350/032176",
-    customer_name: "SAEED KHALEEL",
-    customer_id: "114843",
-    salesman_name: "56 - ANAS",
-    order_date: "08/09/2026",
-    truck: "T6350",
-    zone: "HILI INDUSTRIAL",
-    status: "Delivered",
-    total_amount: "10.50",
-    items: [{ product: "5 gal water", lend_type: "Sold", quantity: 2, unit_price: 5.25 }],
-  },
-  {
-    id: 9,
-    invoice_no: "IN-T6684/027411",
-    customer_name: "OASIS HOSPITAL",
-    customer_id: "100219",
-    salesman_name: "48 - JASEEM",
-    order_date: "08/09/2026",
-    truck: "T6684",
-    zone: "MARKHANIA",
-    status: "Delivered",
-    total_amount: "84.00",
-    items: [{ product: "5 gal water", lend_type: "Sold", quantity: 16, unit_price: 5.25 }],
-  },
-  {
-    id: 10,
-    invoice_no: "IN-T6357/025109",
-    customer_name: "HAMAD AL ZAABI",
-    customer_id: "109412",
-    salesman_name: "84 - MUNEEB",
-    order_date: "08/09/2026",
-    truck: "T6357",
-    zone: "ABU DHABI CENTRAL",
-    status: "Delivered",
-    total_amount: "19.80",
-    items: [{ product: "5 gal water", lend_type: "Sold", quantity: 3, unit_price: 6.6 }],
-  },
-];
 
 export default function InvoicesPage() {
   const { addToast } = useToast();
-  const [invoices, setInvoices] = useState(INITIAL_INVOICES);
+  const loadLive = useCallback(async () => {
+    const [invoicesRaw, ordersRaw, customersRaw, salesmenRaw] = await Promise.all([
+      apiService.getInvoices(),
+      apiService.getOrders(),
+      apiService.getCustomers(),
+      apiService.getSalesmen(),
+    ]);
+    if (invoicesRaw == null) return null;
+    const apiInvoices = listOf(invoicesRaw);
+    const apiOrders = listOf(ordersRaw);
+    const context = {
+      ...buildContext({ customers: listOf(customersRaw), salesmen: listOf(salesmenRaw) }),
+      orderById: new Map(apiOrders.map((o) => [o.id, o])),
+    };
+    return {
+      invoices: apiInvoices.map((inv) => invoiceFromApi(inv, context)),
+      nonBilled: nonBilledFromApi(apiOrders, apiInvoices, context),
+      count: apiInvoices.length,
+    };
+  }, []);
+  const live = useLiveData(loadLive);
+
+  // Tell the user once when the server becomes unreachable, not on every poll.
+  const [offlineNotified, setOfflineNotified] = useState(false);
+  useEffect(() => {
+    if (live.error && !offlineNotified) {
+      addToast("Cannot reach the CRM server - showing the last loaded data", "error");
+      setOfflineNotified(true);
+    }
+    if (!live.error && offlineNotified) setOfflineNotified(false);
+  }, [live.error, offlineNotified, addToast]);
+
+  const [invoices, setInvoices] = useState([]);
+  useEffect(() => {
+    if (live.data) setInvoices(live.data.invoices);
+  }, [live.data]);
   const [viewMode, setViewMode] = useState("list"); // "list" | "generate"
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [viewModalInvoice, setViewModalInvoice] = useState(null);
+
+  const invoiceQuantity = (inv) =>
+    (inv.items || []).reduce((sum, it) => sum + (Number(it.quantity) || 0), 0);
 
   const [invoiceFilters, setInvoiceFilters] = useState({
     customer: "",
@@ -229,57 +146,64 @@ export default function InvoicesPage() {
     });
   }, [invoices, searchQuery, invoiceFilters]);
 
+  const invoiceStats = useMemo(() => {
+    const pendingRows = filteredInvoices.filter((inv) => inv.status !== "Delivered");
+    return {
+      total: filteredInvoices.length,
+      amount: filteredInvoices.reduce((sum, inv) => sum + (Number(inv.total_amount) || 0), 0),
+      pending: pendingRows.length,
+      pendingAmount: pendingRows.reduce((sum, inv) => sum + (Number(inv.total_amount) || 0), 0),
+    };
+  }, [filteredInvoices]);
+
   const handleGetAllNonBilled = () => {
-    setNonBilledList([
-      {
-        id: 101,
-        customer_name: "AL NEBRAS SCHOOL",
-        customer_id: "197301",
-        truck_id: "T6335",
-        pending_orders: 2,
-        total_amount: "123.00",
-      },
-      {
-        id: 102,
-        customer_name: "SAAED RASHED",
-        customer_id: "102755",
-        truck_id: "T6350",
-        pending_orders: 1,
-        total_amount: "12.60",
-      },
-    ]);
-    addToast("Loaded non-billed customer orders", "info");
+    // Orders that have no invoice yet, grouped per customer.
+    const code = billingFilter.customer_code.trim().toLowerCase();
+    const truck = billingFilter.truck_id.trim().toLowerCase();
+    const list = (live.data?.nonBilled || []).filter(
+      (b) =>
+        (!code || b.customer_id.toLowerCase().includes(code) || b.customer_name.toLowerCase().includes(code)) &&
+        (!truck || b.truck_id.toLowerCase().includes(truck))
+    );
+    setNonBilledList(list);
+    addToast(
+      list.length ? `Found ${list.length} customer(s) with non-billed orders` : "Every order is already billed",
+      "info"
+    );
   };
 
-  const handleSelectBill = (bill) => {
-    const newInvoice = {
-      id: Date.now(),
-      invoice_no: `IN-${bill.truck_id}/034${Math.floor(100 + Math.random() * 899)}`,
-      customer_name: bill.customer_name,
-      customer_id: bill.customer_id,
-      salesman_name: "32 - NOOR",
-      order_date: "08/09/2026",
-      truck: bill.truck_id,
-      zone: "MARKHANIA",
-      status: "Delivered",
-      total_amount: bill.total_amount,
-      items: [
-        {
-          product: "5 gal water",
-          lend_type: "Sold",
-          quantity: bill.pending_orders,
-          unit_price: Number(bill.total_amount) / bill.pending_orders,
-        },
-      ],
-    };
-    setInvoices((prev) => [newInvoice, ...prev]);
-    addToast(`Generated invoice ${newInvoice.invoice_no}`, "success");
+  const handleSelectBill = async (bill) => {
+    // One invoice per order, numbered after the existing ones.
+    let sequence = (live.data?.count || 0) + 1;
+    let created = 0;
+    for (const order of bill.orders) {
+      const result = await apiService.createInvoice(invoiceForOrder(order, sequence));
+      if (result) {
+        created += 1;
+        sequence += 1;
+      }
+    }
+    if (!created) {
+      addToast("Could not generate the invoice - check the CRM server", "error");
+      return;
+    }
+    addToast(
+      `Generated ${created} invoice${created === 1 ? "" : "s"} for ${bill.customer_name}`,
+      created === bill.orders.length ? "success" : "info"
+    );
+    setNonBilledList((prev) => prev.filter((b) => b.id !== bill.id));
+    await live.refresh();
     setViewMode("list");
   };
 
-  const handleDeleteInvoice = (inv) => {
-    setInvoices((prev) => prev.filter((x) => x.id !== inv.id));
+  const handleDeleteInvoice = async (inv) => {
+    const result = await apiService.deleteInvoice(inv.id);
+    if (!result) {
+      addToast(`Could not delete invoice ${inv.invoice_no} - check the CRM server`, "error");
+      return;
+    }
     addToast(`Invoice ${inv.invoice_no} deleted`, "info");
+    await live.refresh();
   };
 
   return (
@@ -287,45 +211,54 @@ export default function InvoicesPage() {
       <Header title="Invoice Dashboard" subtitle="Manage Invoices" />
 
       {/* iOS Hero Header Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-semibold text-base tracking-tight text-[#1C1C1E]">
-            {viewMode === "generate" ? "Orders" : "Invoice Dashboard"}
-          </span>
-          <Home className="w-3.5 h-3.5 text-[#8E8E93]" />
-          <span className="text-[#8E8E93] text-xs">
-            / {viewMode === "generate" ? "Create Order" : "Manage Invoices"} / ALL
-          </span>
-        </div>
-
-        {viewMode === "list" ? (
-          <button
-            type="button"
-            onClick={() => setViewMode("generate")}
-            className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition cursor-pointer shadow-sm active:scale-98"
-          >
-            + Generate Invoice
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setViewMode("list")}
-            className="px-4 py-2 rounded-full bg-[#8E8E93]/20 hover:bg-[#8E8E93]/30 text-[#1C1C1E] text-xs font-semibold transition cursor-pointer active:scale-98"
-          >
-            Back to Invoices
-          </button>
-        )}
-      </div>
-
       <div className="p-6 flex-1 space-y-6">
+        {viewMode !== "list" && (
+          <BackLink label="Back to Invoices" onClick={() => setViewMode("list")} />
+        )}
+
         {viewMode === "list" ? (
           <>
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <InvoiceStat
+                label="TOTAL INVOICE"
+                value={invoiceStats.total.toLocaleString()}
+                icon={Receipt}
+                tone="bg-[#FF6B4A]"
+              />
+              <InvoiceStat
+                label="INVOICE AMOUNT"
+                value={invoiceStats.amount.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+                icon={Wallet}
+                tone="bg-[#34C759]"
+              />
+              <InvoiceStat
+                label="PENDING INVOICE"
+                value={invoiceStats.pending.toLocaleString()}
+                icon={Hourglass}
+                tone="bg-[#FF9500]"
+              />
+              <InvoiceStat
+                label="TOTAL PENDING"
+                value={invoiceStats.pendingAmount.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+                icon={DollarSign}
+                tone="bg-[#5856D6]"
+              />
+            </div>
+
             {/* Filter Invoices iOS Card (invoices.png) */}
-            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5">
-              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider mb-4">
-                Filter Invoices
+            <div className="ios-surface p-5">
+              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider mb-4 flex items-center gap-1.5">
+                <Filter className="w-3.5 h-3.5 text-[#007AFF]" />
+                Filter Orders
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                 <div>
                   <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     Customer
@@ -409,97 +342,55 @@ export default function InvoicesPage() {
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-2.5 pt-4 mt-2 border-t border-[#3C3C43]/5">
+              <div className="flex items-center gap-4 mt-4">
                 <button
                   type="button"
                   onClick={() =>
+                    addToast(`Filters applied: ${filteredInvoices.length} invoices found`, "success")
+                  }
+                  className="px-5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition inline-flex items-center gap-1.5"
+                >
+                  <Filter className="w-3 h-3" />
+                  Apply
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
                     setInvoiceFilters({
                       customer: "",
                       salesman: "",
                       truck: "",
                       fromDate: "",
                       toDate: "",
-                    })
-                  }
-                  className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-colors cursor-pointer"
+                    });
+                    addToast("Filters reset", "info");
+                  }}
+                  className="text-[#007AFF] hover:text-[#0062cc] text-xs font-semibold cursor-pointer inline-flex items-center gap-1.5"
                 >
+                  <RotateCcw className="w-3 h-3" />
                   Reset
                 </button>
-                <button
-                  type="button"
-                  onClick={() => addToast("Applied invoice filters", "info")}
-                  className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-
-            {/* 4 KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold tracking-wider text-[#8E8E93] uppercase">
-                    TOTAL INVOICES
-                  </div>
-                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">
-                    {filteredInvoices.length}
-                  </div>
-                  <div className="text-[11px] text-[#34C759] font-medium mt-0.5">Invoices found</div>
-                </div>
-                <div className="w-11 h-11 rounded-2xl bg-[#FF9500]/15 text-[#FF9500] flex items-center justify-center">
-                  <FileSpreadsheet className="w-5 h-5" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold tracking-wider text-[#8E8E93] uppercase">DELIVERED</div>
-                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">
-                    {filteredInvoices.length}
-                  </div>
-                  <div className="text-[11px] text-[#34C759] font-medium mt-0.5">Completed invoices</div>
-                </div>
-                <div className="w-11 h-11 rounded-2xl bg-[#34C759]/15 text-[#34C759] flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold tracking-wider text-[#8E8E93] uppercase">PENDING</div>
-                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">0</div>
-                  <div className="text-[11px] text-[#FF9500] font-medium mt-0.5">Awaiting settlement</div>
-                </div>
-                <div className="w-11 h-11 rounded-2xl bg-[#FFCC00]/20 text-[#D4A000] flex items-center justify-center">
-                  <Clock className="w-5 h-5" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold tracking-wider text-[#8E8E93] uppercase">REVENUE</div>
-                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">
-                    AED{" "}
-                    {filteredInvoices
-                      .reduce((sum, inv) => sum + (Number(inv.total_amount) || 0), 0)
-                      .toFixed(2)}
-                  </div>
-                  <div className="text-[11px] text-[#5856D6] font-medium mt-0.5">Total billed value</div>
-                </div>
-                <div className="w-11 h-11 rounded-2xl bg-[#5856D6]/15 text-[#5856D6] flex items-center justify-center">
-                  <DollarSign className="w-5 h-5" />
-                </div>
               </div>
             </div>
 
             {/* Invoices Management Table Card */}
-            <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
-                <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
-                  Invoices Management
-                </h2>
-              </div>
+            <div className="ios-surface overflow-hidden">
+              <PanelHeader
+                icon={FileSpreadsheet}
+                title="Recent Invoice"
+                subtitle="Issued invoices, VAT and billing records"
+                onAction={() => addToast("Exported invoice records", "success")}
+                actions={
+                  <button
+                  type="button"
+                  onClick={() => setViewMode("generate")}
+                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Generate Invoice
+                </button>
+                }
+              />
 
               <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
                 <div className="flex items-center gap-2">
@@ -527,30 +418,29 @@ export default function InvoicesPage() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       {[
-                        "INVOICE NO.",
-                        "CUSTOMER NAME",
+                        "INVOICE ID",
+                        "CUSTOMER",
                         "CUSTOMER ID",
-                        "SALESMAN NAME",
-                        "ORDER DATE",
+                        "DATE",
                         "TRUCK",
-                        "STATUS",
-                        "TOTAL AMOUNT",
+                        "QUANTITY",
+                        "TOTAL",
                         "ACTIONS",
                       ].map((col) => (
                         <th key={col} className="py-3 px-4 first:pl-6 last:pr-6">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70 shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 sort-ico shrink-0" />
                           </div>
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#3C3C43]/10 text-[12px] text-[#1C1C1E]">
+                  <tbody className="text-[12px] text-[#1C1C1E]">
                     {filteredInvoices.slice(0, entriesPerPage).map((inv) => (
                       <tr key={inv.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                         <td className="py-3.5 pl-6 pr-4 font-semibold text-[#1C1C1E]">
@@ -559,16 +449,17 @@ export default function InvoicesPage() {
                         <td className="py-3.5 px-4 font-medium text-[#1C1C1E]">
                           {inv.customer_name}
                         </td>
-                        <td className="py-3.5 px-4 text-[#8E8E93]">{inv.customer_id}</td>
-                        <td className="py-3.5 px-4 text-[#8E8E93]">{inv.salesman_name}</td>
-                        <td className="py-3.5 px-4 text-[#8E8E93]">{inv.order_date}</td>
-                        <td className="py-3.5 px-4 text-[#8E8E93]">{inv.truck}</td>
-                        <td className="py-3.5 px-4">
-                          <span className="px-2.5 py-1 rounded-full bg-[#34C759]/10 text-[#34C759] text-[11px] font-semibold">
-                            {inv.status}
-                          </span>
+                        <td className="py-3.5 px-4 text-[#8E8E93] font-mono">{inv.customer_id}</td>
+                        <td className="py-3.5 px-4 text-[#8E8E93] whitespace-nowrap">
+                          {inv.order_date}
                         </td>
-                        <td className="py-3.5 px-4 font-bold text-[#1C1C1E]">
+                        <td className="py-3.5 px-4 font-mono text-[#007AFF] font-medium">
+                          {inv.truck}
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-[#1C1C1E]">
+                          {invoiceQuantity(inv)}
+                        </td>
+                        <td className="py-3.5 px-4 font-bold text-[#1C1C1E] font-mono whitespace-nowrap">
                           AED {inv.total_amount}
                         </td>
                         <td className="py-3.5 pl-4 pr-6">
@@ -576,14 +467,14 @@ export default function InvoicesPage() {
                             <button
                               type="button"
                               onClick={() => setViewModalInvoice(inv)}
-                              className="px-3 py-1 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-[11px] font-semibold cursor-pointer shadow-xs active:scale-95 transition"
+                              className="px-3 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
                             <button
                               type="button"
                               onClick={() => handleDeleteInvoice(inv)}
-                              className="px-3 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30]/20 text-[#FF3B30] text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                              className="px-3 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               Delete
                             </button>
@@ -610,8 +501,8 @@ export default function InvoicesPage() {
           </>
         ) : (
           /* GENERATE INVOICE SUB-VIEW (generate-invoices.png) */
-          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+          <div className="ios-surface overflow-hidden">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Billing Information</h2>
             </div>
 
@@ -702,9 +593,9 @@ export default function InvoicesPage() {
                   </div>
                 </div>
                 <div className="overflow-x-auto border-x border-b border-[#3C3C43]/10 rounded-b-2xl">
-                  <table className="w-full text-left border-collapse">
+                  <table className="ios-table w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                      <tr className="ios-thead">
                         {[
                           "CUSTOMER NAME",
                           "CUSTOMER ID",
@@ -723,7 +614,7 @@ export default function InvoicesPage() {
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
+                    <tbody className="text-xs text-[#1C1C1E]">
                       {nonBilledList.map((bill) => (
                         <tr key={bill.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                           <td className="py-3 px-4 font-semibold">{bill.customer_name}</td>
@@ -740,7 +631,7 @@ export default function InvoicesPage() {
                                   "info"
                                 )
                               }
-                              className="px-3 py-1 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-[11px] font-semibold cursor-pointer shadow-xs active:scale-95 transition"
+                              className="px-3 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
@@ -749,7 +640,7 @@ export default function InvoicesPage() {
                             <button
                               type="button"
                               onClick={() => handleSelectBill(bill)}
-                              className="px-3.5 py-1 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-[11px] font-semibold cursor-pointer shadow-xs active:scale-95 transition"
+                              className="px-3.5 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               Generate
                             </button>
@@ -774,8 +665,8 @@ export default function InvoicesPage() {
 
       {/* VIEW INVOICE DETAILS MODAL (view invoice.png) */}
       {viewModalInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
             <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-base font-semibold text-[#1C1C1E]">
                 Order Details - {viewModalInvoice.invoice_no}
@@ -830,9 +721,9 @@ export default function InvoicesPage() {
               <div>
                 <div className="font-semibold text-[#1C1C1E] mb-2 text-xs">Order Items</div>
                 <div className="border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
-                  <table className="w-full text-left border-collapse">
+                  <table className="ios-table w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[10px] font-bold text-[#007AFF] uppercase tracking-wider">
+                      <tr className="ios-thead">
                         <th className="py-2.5 px-3">PRODUCT</th>
                         <th className="py-2.5 px-3">LEND TYPE</th>
                         <th className="py-2.5 px-3">QUANTITY</th>
@@ -840,7 +731,7 @@ export default function InvoicesPage() {
                         <th className="py-2.5 px-3">TOTAL</th>
                       </tr>
                     </thead>
-                  <tbody className="divide-y divide-[#3C3C43]/10">
+                  <tbody className="">
                     {(viewModalInvoice.items || []).map((it, idx) => (
                       <tr key={idx}>
                         <td className="py-2.5 px-3 font-medium">{it.product}</td>
@@ -888,6 +779,24 @@ export default function InvoicesPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function InvoiceStat({ label, value, icon: Icon, tone }) {
+  return (
+    <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between gap-3">
+      <div className="min-w-0">
+        <div className="text-[10px] font-semibold tracking-wide text-[#8E8E93] uppercase">
+          {label}
+        </div>
+        <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono truncate">{value}</div>
+      </div>
+      <div
+        className={`w-11 h-11 shrink-0 rounded-full text-white flex items-center justify-center shadow-sm ${tone}`}
+      >
+        <Icon className="w-5 h-5" />
+      </div>
     </div>
   );
 }

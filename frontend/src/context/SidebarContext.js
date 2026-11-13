@@ -8,14 +8,33 @@ const SidebarContext = createContext({
   toggleMobileSidebar: () => {},
   closeMobileSidebar: () => {},
   openMobileSidebar: () => {},
-  isCollapsed: false,
+  isCollapsed: true,
   toggleCollapse: () => {},
   setIsCollapsed: () => {},
 });
 
 export function SidebarProvider({ children }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // Collapsed = compact icon rail (the default); expanded shows labels.
+  const [isCollapsed, setIsCollapsed] = useState(true);
+
+  // Remember the rail/expanded choice across reloads
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("aq.sidebarCollapsed");
+      if (saved !== null) setIsCollapsed(saved === "1");
+    } catch {
+      // storage unavailable - keep the icon rail default
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("aq.sidebarCollapsed", isCollapsed ? "1" : "0");
+    } catch {
+      // ignore
+    }
+  }, [isCollapsed]);
   const pathname = usePathname();
 
   // Close mobile sidebar on route change

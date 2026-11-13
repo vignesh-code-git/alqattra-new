@@ -1,142 +1,14 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
-import { ArrowUpDown, X } from "lucide-react";
-
-const INITIAL_WALLETS = [
-  {
-    id: 1,
-    recharge_id: "mtsa6cyk",
-    customer_id: "114721",
-    coupon: "BOOK-20",
-    quantity: 20,
-    amount: 100,
-    salesman: "56",
-    used_coupons: 0,
-    remaining: 20,
-    balance: 100,
-    updated_on: "08/09/2026",
-  },
-  {
-    id: 2,
-    recharge_id: "mtsa55op",
-    customer_id: "114340",
-    coupon: "BOOK-20",
-    quantity: 20,
-    amount: 100,
-    salesman: "56",
-    used_coupons: 0,
-    remaining: 20,
-    balance: 100,
-    updated_on: "08/09/2026",
-  },
-  {
-    id: 3,
-    recharge_id: "mts9ywo7",
-    customer_id: "107008",
-    coupon: "BOOK-20",
-    quantity: 20,
-    amount: 100,
-    salesman: "38",
-    used_coupons: 0,
-    remaining: 20,
-    balance: 100,
-    updated_on: "08/09/2026",
-  },
-  {
-    id: 4,
-    recharge_id: "mts9hs4p",
-    customer_id: "102187",
-    coupon: "BOOK-20",
-    quantity: 20,
-    amount: 100,
-    salesman: "32",
-    used_coupons: 0,
-    remaining: 20,
-    balance: 100,
-    updated_on: "08/09/2026",
-  },
-  {
-    id: 5,
-    recharge_id: "mts9h73h",
-    customer_id: "116412",
-    coupon: "BOOK-20",
-    quantity: 20,
-    amount: 100,
-    salesman: "47",
-    used_coupons: 0,
-    remaining: 20,
-    balance: 100,
-    updated_on: "08/09/2026",
-  },
-  {
-    id: 6,
-    recharge_id: "mts8o331",
-    customer_id: "107232",
-    coupon: "BOOK-20",
-    quantity: 20,
-    amount: 100,
-    salesman: "53",
-    used_coupons: 0,
-    remaining: 20,
-    balance: 100,
-    updated_on: "08/09/2026",
-  },
-  {
-    id: 7,
-    recharge_id: "mts8m725",
-    customer_id: "102000",
-    coupon: "BOOK-20",
-    quantity: 20,
-    amount: 100,
-    salesman: "40",
-    used_coupons: 0,
-    remaining: 20,
-    balance: 100,
-    updated_on: "08/09/2026",
-  },
-  {
-    id: 8,
-    recharge_id: "mts8iozr",
-    customer_id: "116326",
-    coupon: "BOOK-20",
-    quantity: 20,
-    amount: 100,
-    salesman: "48",
-    used_coupons: 0,
-    remaining: 20,
-    balance: 100,
-    updated_on: "08/09/2026",
-  },
-  {
-    id: 9,
-    recharge_id: "mts7z0ld",
-    customer_id: "197301",
-    coupon: "FREE-10",
-    quantity: 10,
-    amount: 0,
-    salesman: "47",
-    used_coupons: 0,
-    remaining: 10,
-    balance: 0,
-    updated_on: "08/09/2026",
-  },
-  {
-    id: 10,
-    recharge_id: "mtrf86jw",
-    customer_id: "115030",
-    coupon: "BOOK-20",
-    quantity: 20,
-    amount: 100,
-    salesman: "84",
-    used_coupons: 2,
-    remaining: 18,
-    balance: 90,
-    updated_on: "07/09/2026",
-  },
-];
+import { apiService } from "@/services/api";
+import useLiveData from "@/hooks/useLiveData";
+import { listOf, walletRowsFromApi } from "@/services/crmMappers";
+import BackLink from "@/components/BackLink";
+import PanelHeader from "@/components/PanelHeader";
+import { ArrowUpDown, X, Wallet } from "lucide-react";
 
 const COUPON_UUID_LIST = [
   "P-620cc76e-61c6-421c-82ab-fe2008d0fc2e",
@@ -153,7 +25,31 @@ const COUPON_UUID_LIST = [
 
 export default function WalletPage() {
   const { addToast } = useToast();
-  const [wallets, setWallets] = useState(INITIAL_WALLETS);
+  const loadLive = useCallback(async () => {
+    const [walletsRaw, customersRaw] = await Promise.all([
+      apiService.getWallets(),
+      apiService.getCustomers(),
+    ]);
+    if (walletsRaw == null) return null;
+    const apiWallets = listOf(walletsRaw);
+    return { rows: walletRowsFromApi(apiWallets), wallets: apiWallets, customers: listOf(customersRaw) };
+  }, []);
+  const live = useLiveData(loadLive);
+
+  // Tell the user once when the server becomes unreachable, not on every poll.
+  const [offlineNotified, setOfflineNotified] = useState(false);
+  useEffect(() => {
+    if (live.error && !offlineNotified) {
+      addToast("Cannot reach the CRM server - showing the last loaded data", "error");
+      setOfflineNotified(true);
+    }
+    if (!live.error && offlineNotified) setOfflineNotified(false);
+  }, [live.error, offlineNotified, addToast]);
+
+  const [wallets, setWallets] = useState([]);
+  useEffect(() => {
+    if (live.data) setWallets(live.data.rows);
+  }, [live.data]);
   const [viewMode, setViewMode] = useState("list"); // "list" | "recharge"
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -183,32 +79,44 @@ export default function WalletPage() {
     );
   }, [wallets, searchQuery]);
 
-  const handleRechargeSubmit = (e) => {
+  const handleRechargeSubmit = async (e) => {
     e.preventDefault();
     if (!rechargeForm.customer_code.trim()) {
       addToast("Please enter or select Customer Code", "error");
       return;
     }
-    const qty = Number(rechargeForm.book_count || 1) * 20;
-    const amt = Number(rechargeForm.book_count || 1) * 100;
-    const newEntry = {
-      id: Date.now(),
-      recharge_id: `mts${Math.random().toString(36).substring(2, 7)}`,
-      customer_id: rechargeForm.customer_code.trim(),
-      coupon: rechargeForm.coupon_code || "BOOK-20",
-      quantity: qty,
-      amount: amt,
-      salesman: rechargeForm.salesman_id || "56",
-      used_coupons: 0,
-      remaining: qty,
-      balance: amt,
-      updated_on: "08/09/2026",
-    };
-    setWallets((prev) => [newEntry, ...prev]);
-    addToast(
-      `Wallet recharged (${newEntry.recharge_id}) for customer ${newEntry.customer_id}`,
-      "success"
+    const code = rechargeForm.customer_code.trim().toLowerCase();
+    const customer = (live.data?.customers || []).find(
+      (c) => c.customer_code.toLowerCase() === code
     );
+    if (!customer) {
+      addToast(`No CRM customer has the code "${rechargeForm.customer_code}"`, "error");
+      return;
+    }
+    // A customer's first recharge opens their wallet.
+    let wallet = (live.data?.wallets || []).find((w) => w.customer === customer.id);
+    if (!wallet) {
+      wallet = await apiService.createWallet({ customer: customer.id });
+      if (!wallet) {
+        addToast("Could not open a wallet for this customer - check the CRM server", "error");
+        return;
+      }
+    }
+    // Coupon books are 20 coupons for AED 100.
+    const books = Number(rechargeForm.book_count || 1);
+    const recharge = await apiService.createWalletRecharge({
+      wallet: wallet.id,
+      amount: (books * 100).toFixed(2),
+      bonus: "0.00",
+      payment_method: rechargeForm.payment_method || "Cash",
+      transaction_ref: `${rechargeForm.coupon_code || "BOOK-20"} x${books}`,
+    });
+    if (!recharge) {
+      addToast("Could not save the recharge - check the CRM server", "error");
+      return;
+    }
+    addToast(`Wallet recharged AED ${(books * 100).toFixed(2)} for ${customer.name}`, "success");
+    await live.refresh();
     setViewMode("list");
   };
 
@@ -217,43 +125,29 @@ export default function WalletPage() {
       <Header title="Wallet" subtitle="Manage Wallet" />
 
       {/* iOS Translucent Glass Top Hero Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-4 flex items-center justify-between sticky top-0 z-20 transition-all">
-        <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-semibold text-base text-[#1C1C1E] tracking-tight">Wallet</span>
-          <span className="text-[#8E8E93] text-xs">/</span>
-          <span className="text-[#8E8E93] text-xs font-medium">
-            {viewMode === "recharge" ? "Recharge Wallet" : "Manage Wallet"} • ALL
-          </span>
-        </div>
-
-        {viewMode === "list" ? (
-          <button
-            type="button"
-            onClick={() => setViewMode("recharge")}
-            className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
-          >
-            Wallet Recharge
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setViewMode("list")}
-            className="px-4 py-2 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition-all cursor-pointer"
-          >
-            Back to Wallet
-          </button>
-        )}
-      </div>
-
       <div className="p-6 flex-1">
+        {viewMode !== "list" && (
+          <BackLink label="Back to Wallet" onClick={() => setViewMode("list")} />
+        )}
+
         {viewMode === "list" ? (
           /* Main Wallet Table Card (wallets.png) */
-          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
-              <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
-                Wallet Management
-              </h2>
-            </div>
+          <div className="ios-surface overflow-hidden">
+            <PanelHeader
+              icon={Wallet}
+              title="Wallet Management"
+              subtitle="Customer wallets, coupons and recharges"
+              onAction={() => addToast("Exported wallet records", "success")}
+              actions={
+                <button
+                  type="button"
+                  onClick={() => setViewMode("recharge")}
+                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95"
+                >
+                  Wallet Recharge
+                </button>
+              }
+            />
 
             <div className="px-6 py-3.5 bg-[#F2F2F7]/50 border-b border-[#E5E5EA] flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
               <div className="flex items-center gap-2">
@@ -281,9 +175,9 @@ export default function WalletPage() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="ios-table w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                  <tr className="ios-thead">
                     {[
                       "RECHARGE ID",
                       "CUSTOMER ID",
@@ -300,7 +194,7 @@ export default function WalletPage() {
                       <th key={col} className="py-3.5 px-4 first:pl-6 last:pr-6 whitespace-nowrap">
                         <div className="flex items-center justify-between gap-1">
                           <span>{col}</span>
-                          <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70 shrink-0" />
+                          <ArrowUpDown className="w-3 h-3 sort-ico shrink-0" />
                         </div>
                       </th>
                     ))}
@@ -329,7 +223,7 @@ export default function WalletPage() {
                         <button
                           type="button"
                           onClick={() => setCouponModalRow(row)}
-                          className="px-3.5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-[11px] font-semibold shadow-[0_2px_6px_rgba(0,122,255,0.25)] transition-all cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold transition cursor-pointer"
                         >
                           View Coupons
                         </button>
@@ -360,8 +254,8 @@ export default function WalletPage() {
           </div>
         ) : (
           /* WALLET RECHARGE SUB-VIEW (wallet recharge.png) */
-          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden max-w-4xl mx-auto">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+          <div className="ios-surface overflow-hidden max-w-4xl mx-auto">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Create Wallet Recharge Order
               </h2>
@@ -510,8 +404,8 @@ export default function WalletPage() {
 
       {/* COUPON DETAILS MODAL (view coupons.png & view coupons-1.png) */}
       {couponModalRow && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
             <div className="px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-[15px] font-semibold text-[#1C1C1E]">Coupon Details</h3>
               <button
@@ -562,9 +456,9 @@ export default function WalletPage() {
 
               {/* Coupon List Table */}
               <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
-                <table className="w-full text-left border-collapse">
+                <table className="ios-table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                    <tr className="ios-thead">
                       <th className="py-2.5 px-3.5">COUPON ID</th>
                       <th className="py-2.5 px-3.5">AMOUNT</th>
                       <th className="py-2.5 px-3.5">TYPE</th>

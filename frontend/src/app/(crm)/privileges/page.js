@@ -3,7 +3,8 @@
 import React, { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
-import { Home, ArrowUpDown, ChevronDown, X } from "lucide-react";
+import PanelHeader from "@/components/PanelHeader";
+import { Home, ArrowUpDown, ChevronDown, X, ShieldCheck, Plus } from "lucide-react";
 
 const ALL_MODULES = [
   "dashboard",
@@ -160,37 +161,27 @@ export default function PrivilegesPage() {
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col">
       <Header title="Previlages" subtitle="Manage Previlages" />
 
-      {/* iOS Top Hero Navigation Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-3.5 flex items-center justify-between sticky top-16 z-20">
-        <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight text-[#1C1C1E]">Previlages</span>
-          <Home className="w-3.5 h-3.5 text-[#8E8E93]" />
-          <span className="text-[#8E8E93] text-xs">
-            / {viewMode === "add" ? "Create Previlages" : "Manage Previlages"}
-          </span>
-        </div>
-        {viewMode === "list" && (
-          <button
-            type="button"
-            onClick={openAddView}
-            className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#007AFF]/20"
-          >
-            + Add New
-          </button>
-        )}
-      </div>
-
       <div className="p-6 flex-1 max-w-7xl w-full mx-auto">
         {viewMode === "list" ? (
           /* Main Privileges iOS Table Card */
-          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
+          <div className="ios-surface overflow-hidden">
             {/* Header Banner */}
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
-              <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">
-                Control and Customize User Access Levels
-              </h2>
-              <p className="text-[#8E8E93] text-[11px] mt-0.5">Role-based permission matrix across all modules</p>
-            </div>
+            <PanelHeader
+              icon={ShieldCheck}
+              title="User Access Levels"
+              subtitle="Role-based permission matrix across all modules"
+              actions={
+                <button
+                  type="button"
+                  onClick={openAddView}
+                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Add New
+                </button>
+              }
+              onAction={() => addToast("Exported privilege records", "success")}
+            />
 
             {/* Show Entries & Search Bar */}
             <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
@@ -228,9 +219,9 @@ export default function PrivilegesPage() {
 
             {/* Exact 4-Column Table */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="ios-table w-full text-left">
                 <thead>
-                  <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] tracking-wider uppercase">
+                  <tr className="ios-thead">
                     <th className="py-3 px-6">
                       <div className="flex items-center justify-between">
                         <span>CLASS NAME</span>
@@ -257,7 +248,7 @@ export default function PrivilegesPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#3C3C43]/10 text-[12.5px] text-[#1C1C1E]">
+                <tbody className="text-[12.5px] text-[#1C1C1E]">
                   {paginatedRows.map((row) => (
                     <tr key={row.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                       <td className="py-3.5 px-6 font-semibold text-[#1C1C1E]">{row.class_name}</td>
@@ -304,8 +295,8 @@ export default function PrivilegesPage() {
           </div>
         ) : (
           /* Previlage Class Registration Card */
-          <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-visible max-w-3xl mx-auto">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10 rounded-t-3xl">
+          <div className="ios-surface overflow-visible max-w-3xl mx-auto">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white rounded-t-3xl">
               <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-tight">
                 Previlage Class Registration
               </h2>
@@ -367,7 +358,7 @@ export default function PrivilegesPage() {
                           type="checkbox"
                           checked={readOnlyModules.includes(mod)}
                           onChange={() => toggleModule(readOnlyModules, setReadOnlyModules, mod)}
-                          className="rounded border-slate-300 text-[#007AFF]"
+                          className="rounded border-[#C7C7CC] text-[#007AFF]"
                         />
                         <span>{mod}</span>
                       </label>
@@ -392,7 +383,7 @@ export default function PrivilegesPage() {
                       {writeModules.map((mod) => (
                         <span
                           key={mod}
-                          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#007AFF]/10 text-[#007AFF] text-[11px] font-semibold"
+                          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#007AFF]/12 text-[#0062CC] text-[11px] font-semibold"
                         >
                           {mod}
                           <X
@@ -420,7 +411,7 @@ export default function PrivilegesPage() {
                           type="checkbox"
                           checked={writeModules.includes(mod)}
                           onChange={() => toggleModule(writeModules, setWriteModules, mod)}
-                          className="rounded border-slate-300 text-[#007AFF]"
+                          className="rounded border-[#C7C7CC] text-[#007AFF]"
                         />
                         <span>{mod}</span>
                       </label>

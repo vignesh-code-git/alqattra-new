@@ -3,7 +3,7 @@
 export function Skeleton({ className = "", ...props }) {
   return (
     <div
-      className={`animate-pulse bg-slate-200/80 rounded-md ${className}`}
+      className={`animate-pulse bg-[#E5E5EA]/80 rounded-md ${className}`}
       {...props}
     />
   );
@@ -15,7 +15,7 @@ export function MetricCardsSkeleton({ count = 4 }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="bg-white border border-slate-200/90 rounded-md p-4 shadow-2xs space-y-3"
+          className="bg-white border border-[#E5E5EA]/90 rounded-md p-4 shadow-2xs space-y-3"
         >
           <div className="flex items-center justify-between">
             <Skeleton className="h-3 w-24" />
@@ -41,7 +41,7 @@ export function TableSkeleton({
   return (
     <div className="flex-1 flex flex-col min-h-0 space-y-5 p-6 animate-in fade-in duration-200">
       {/* Top Header Placeholder */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2 border-b border-slate-200/70">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2 border-b border-[#E5E5EA]/70">
         <div className="space-y-1.5">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-3.5 w-64" />
@@ -56,7 +56,7 @@ export function TableSkeleton({
       {showCards && <MetricCardsSkeleton count={4} />}
 
       {/* Toolbar Filter Skeleton */}
-      <div className="bg-slate-50 p-3 rounded-md border border-slate-200 shadow-2xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+      <div className="bg-[#F2F2F7] p-3 rounded-md border border-[#E5E5EA] shadow-2xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-1">
           <Skeleton className="h-8 w-32 rounded-md" />
           <Skeleton className="h-8 flex-1 max-w-sm rounded-md" />
@@ -69,9 +69,9 @@ export function TableSkeleton({
       </div>
 
       {/* Grid Table Skeleton */}
-      <div className="bg-white rounded-md border border-slate-200 shadow-2xs overflow-hidden">
+      <div className="bg-white rounded-md border border-[#E5E5EA] shadow-2xs overflow-hidden">
         {/* Table Thead Skeleton */}
-        <div className="bg-[#5948DB] px-4 py-3 flex items-center border-b border-[#4A3AC9]">
+        <div className="bg-[#007AFF] px-4 py-3 flex items-center border-b border-[#0062CC]">
           <div className="w-8 shrink-0">
             <div className="w-4 h-4 rounded-xs bg-white/40 animate-pulse" />
           </div>
@@ -86,11 +86,11 @@ export function TableSkeleton({
         </div>
 
         {/* Shimmer Table Rows */}
-        <div className="divide-y divide-slate-100 font-medium">
+        <div className="divide-y divide-[#F2F2F7] font-medium">
           {Array.from({ length: rows }).map((_, rIdx) => (
             <div
               key={rIdx}
-              className="px-4 py-3.5 flex items-center hover:bg-slate-50/50 transition-colors"
+              className="px-4 py-3.5 flex items-center hover:bg-[#F2F2F7]/50 transition-colors"
             >
               <div className="w-8 shrink-0">
                 <Skeleton className="w-4 h-4 rounded-xs" />
@@ -124,7 +124,7 @@ export function TableSkeleton({
         </div>
 
         {/* Pagination Bar Skeleton */}
-        <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+        <div className="px-4 py-3 bg-[#F2F2F7] border-t border-[#E5E5EA] flex items-center justify-between">
           <Skeleton className="h-3.5 w-40" />
           <div className="flex items-center gap-1.5">
             <Skeleton className="h-7 w-16 rounded-md" />

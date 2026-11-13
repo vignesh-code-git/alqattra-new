@@ -1,8 +1,19 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import BackLink from "@/components/BackLink";
+import PanelHeader from "@/components/PanelHeader";
+import { apiService } from "@/services/api";
+import useLiveData from "@/hooks/useLiveData";
+import {
+  listOf,
+  buildContext,
+  orderFromApi,
+  newOrderToApi,
+  orderUpdateToApi,
+} from "@/services/crmMappers";
 import {
   Home,
   ArrowUpDown,
@@ -14,216 +25,52 @@ import {
   Clock,
   DollarSign,
   Filter,
+  BarChart3,
+  Plus,
+  RotateCcw,
+  Hourglass,
+  Wallet,
+  FileSpreadsheet,
 } from "lucide-react";
-
-const INITIAL_ORDERS = [
-  {
-    id: 1,
-    delivery_note: "DN-T6350-16652",
-    invoice_no: "IN-T6350/032178",
-    customer_name: "SAAED RASHED",
-    customer_id: "102755",
-    salesman_name: "56 - ANAS",
-    order_date: "08/09/2026",
-    truck: "T6350",
-    zone: "MANAZIF",
-    status: "Delivered",
-    total_amount: "12.60",
-    balance: "0.00",
-    payment_method: "Cash",
-    payment_status: "PAID",
-    items: [
-      { product: "5 gal water", lend_type: "Sold", quantity: 2, unit_price: 6.0, coupon_qty: 0 },
-    ],
-  },
-  {
-    id: 2,
-    delivery_note: "DN-T6350-16651",
-    invoice_no: "IN-T6350/032177",
-    customer_name: "SABIR",
-    customer_id: "114284",
-    salesman_name: "56 - ANAS",
-    order_date: "08/09/2026",
-    truck: "T6350",
-    zone: "HILI INDUSTRIAL",
-    status: "Delivered",
-    total_amount: "10.50",
-    balance: "0.00",
-    payment_method: "Cash",
-    payment_status: "PAID",
-    items: [
-      { product: "5 gal water", lend_type: "Sold", quantity: 2, unit_price: 5.0, coupon_qty: 0 },
-    ],
-  },
-  {
-    id: 3,
-    delivery_note: "DN-T6356-15330",
-    invoice_no: "IN-T6356/032584",
-    customer_name: "Asmaa Muhammad al-Jilani 118052",
-    customer_id: "18623",
-    salesman_name: "38 - NISAR",
-    order_date: "08/09/2026",
-    truck: "T6356",
-    zone: "JAHILI",
-    status: "Delivered",
-    total_amount: "12.60",
-    balance: "0.00",
-    payment_method: "Cash",
-    payment_status: "PAID",
-    items: [
-      { product: "5 gal water", lend_type: "Sold", quantity: 2, unit_price: 6.0, coupon_qty: 0 },
-    ],
-  },
-  {
-    id: 4,
-    delivery_note: "DN-T6335-20400",
-    invoice_no: "IN-T6335/033994",
-    customer_name: "AL NEBRAS SCHOOL",
-    customer_id: "197301",
-    salesman_name: "32 - NOOR",
-    order_date: "08/09/2026",
-    truck: "T6335",
-    zone: "KHABISI",
-    status: "Delivered",
-    total_amount: "123.00",
-    balance: "0.00",
-    payment_method: "Card",
-    payment_status: "PAID",
-    items: [
-      { product: "5 gal water", lend_type: "Sold", quantity: 20, unit_price: 6.0, coupon_qty: 0 },
-    ],
-  },
-  {
-    id: 5,
-    delivery_note: "DN-T6348-16736",
-    invoice_no: "IN-T6348/033290",
-    customer_name: "AL REEM MEDICAL CENTER",
-    customer_id: "110452",
-    salesman_name: "53 - SHAFEEQ",
-    order_date: "08/09/2026",
-    truck: "T6348",
-    zone: "ASHAREJ",
-    status: "Delivered",
-    total_amount: "52.50",
-    balance: "0.00",
-    payment_method: "Cash",
-    payment_status: "PAID",
-    items: [
-      { product: "5 gal water", lend_type: "Sold", quantity: 10, unit_price: 5.0, coupon_qty: 0 },
-    ],
-  },
-  {
-    id: 6,
-    delivery_note: "DN-T6354-19912",
-    invoice_no: "IN-T6354/031880",
-    customer_name: "FATIMA KHALIFA",
-    customer_id: "108934",
-    salesman_name: "47 - RAHMAN",
-    order_date: "08/09/2026",
-    truck: "T6354",
-    zone: "SAROOJ",
-    status: "Delivered",
-    total_amount: "21.00",
-    balance: "0.00",
-    payment_method: "Wallet",
-    payment_status: "PAID",
-    items: [
-      { product: "5 gal water", lend_type: "Sold", quantity: 4, unit_price: 5.0, coupon_qty: 4 },
-    ],
-  },
-  {
-    id: 7,
-    delivery_note: "DN-T6329-18204",
-    invoice_no: "IN-T6329/029272",
-    customer_name: "khalifa",
-    customer_id: "114734",
-    salesman_name: "40 - BASHEER",
-    order_date: "08/09/2026",
-    truck: "T6329",
-    zone: "MUTHARID",
-    status: "Delivered",
-    total_amount: "5.25",
-    balance: "0.00",
-    payment_method: "Cash",
-    payment_status: "PAID",
-    items: [
-      { product: "5 gal water", lend_type: "Sold", quantity: 1, unit_price: 5.0, coupon_qty: 0 },
-    ],
-  },
-  {
-    id: 8,
-    delivery_note: "DN-T6350-16650",
-    invoice_no: "IN-T6350/032176",
-    customer_name: "SAEED KHALEEL",
-    customer_id: "114843",
-    salesman_name: "56 - ANAS",
-    order_date: "08/09/2026",
-    truck: "T6350",
-    zone: "HILI INDUSTRIAL",
-    status: "Delivered",
-    total_amount: "10.50",
-    balance: "0.00",
-    payment_method: "Cash",
-    payment_status: "PAID",
-    items: [
-      { product: "5 gal water", lend_type: "Sold", quantity: 2, unit_price: 5.0, coupon_qty: 0 },
-    ],
-  },
-  {
-    id: 9,
-    delivery_note: "DN-T6684-14110",
-    invoice_no: "IN-T6684/027411",
-    customer_name: "OASIS HOSPITAL",
-    customer_id: "100219",
-    salesman_name: "48 - JASEEM",
-    order_date: "08/09/2026",
-    truck: "T6684",
-    zone: "MARKHANIA",
-    status: "Delivered",
-    total_amount: "84.00",
-    balance: "0.00",
-    payment_method: "Card",
-    payment_status: "PAID",
-    items: [
-      { product: "5 gal water", lend_type: "Sold", quantity: 16, unit_price: 5.0, coupon_qty: 0 },
-    ],
-  },
-  {
-    id: 10,
-    delivery_note: "DN-T6357-11890",
-    invoice_no: "IN-T6357/025109",
-    customer_name: "HAMAD AL ZAABI",
-    customer_id: "109412",
-    salesman_name: "84 - MUNEEB",
-    order_date: "08/09/2026",
-    truck: "T6357",
-    zone: "ABU DHABI CENTRAL",
-    status: "Delivered",
-    total_amount: "19.80",
-    balance: "0.00",
-    payment_method: "Cash",
-    payment_status: "PAID",
-    items: [
-      { product: "5 gal water", lend_type: "Sold", quantity: 3, unit_price: 6.3, coupon_qty: 0 },
-    ],
-  },
-];
-
-const ORDER_SUMMARY_PRODUCTS = [
-  { name: "ALAIN STILL 330ML", ordered: 116, delivered: 116, pending: 0 },
-  { name: "200 ML BOTTLE", ordered: 5, delivered: 5, pending: 0 },
-  { name: "200 ML CUP", ordered: 81411, delivered: 81411, pending: 0 },
-  { name: "200 ML CUP", ordered: 100, delivered: 100, pending: 0 },
-  { name: "200 ml cup", ordered: 11, delivered: 11, pending: 0 },
-  { name: "330ml PET Bottles", ordered: 140, delivered: 140, pending: 0 },
-  { name: "5 gal water", ordered: 1228823, delivered: 1228823, pending: 0 },
-  { name: "500ml PET Bottles", ordered: 470, delivered: 470, pending: 0 },
-  { name: "ALAIN REGULAR 330ML", ordered: 410, delivered: 410, pending: 0 },
-];
 
 export default function OrdersPage() {
   const { addToast } = useToast();
-  const [orders, setOrders] = useState(INITIAL_ORDERS);
+  // Orders come from the shared CRM API - including every order the mobile
+  // app submits - and re-sync every 15s and whenever the tab regains focus.
+  const loadOrders = useCallback(async () => {
+    const [ordersRaw, customersRaw, invoicesRaw, salesmenRaw] = await Promise.all([
+      apiService.getOrders(),
+      apiService.getCustomers(),
+      apiService.getInvoices(),
+      apiService.getSalesmen(),
+    ]);
+    if (ordersRaw == null) return null;
+    const apiCustomers = listOf(customersRaw);
+    const context = buildContext({
+      customers: apiCustomers,
+      invoices: listOf(invoicesRaw),
+      salesmen: listOf(salesmenRaw),
+    });
+    return {
+      orders: listOf(ordersRaw).map((o) => orderFromApi(o, context)),
+      customers: apiCustomers,
+    };
+  }, []);
+  const live = useLiveData(loadOrders);
+
+  const [orders, setOrders] = useState([]);
+  useEffect(() => {
+    if (live.data) setOrders(live.data.orders);
+  }, [live.data]);
+
+  const [offlineNotified, setOfflineNotified] = useState(false);
+  useEffect(() => {
+    if (live.error && !offlineNotified) {
+      addToast("Cannot reach the CRM server - showing the last loaded data", "error");
+      setOfflineNotified(true);
+    }
+    if (!live.error && offlineNotified) setOfflineNotified(false);
+  }, [live.error, offlineNotified, addToast]);
   const [viewMode, setViewMode] = useState("list"); // "list" | "new" | "edit"
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -263,6 +110,16 @@ export default function OrdersPage() {
   // Edit Order Form State (edit orders.png)
   const [editingOrder, setEditingOrder] = useState(null);
   const [editTab, setEditTab] = useState("products");
+
+  const orderQuantity = (o) =>
+    (o.items || []).reduce((sum, it) => sum + (Number(it.quantity) || 0), 0);
+
+  const paymentLabel = (o) =>
+    o.payment_method === "Wallet"
+      ? "WALLET"
+      : o.payment_status === "PAID"
+      ? "PAID"
+      : "UNPAID";
 
   const filteredOrders = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -343,11 +200,39 @@ export default function OrdersPage() {
     });
   }, [orders, searchQuery, filters]);
 
+  const [page, setPage] = useState(1);
+  const pageCount = Math.max(1, Math.ceil(filteredOrders.length / entriesPerPage));
+  const currentPage = Math.min(page, pageCount);
+  const pageStart = (currentPage - 1) * entriesPerPage;
+  useEffect(() => setPage(1), [searchQuery, filters, entriesPerPage]);
+
+  const orderStats = useMemo(
+    () => ({
+      total: filteredOrders.length,
+      pending: filteredOrders.filter((o) => o.status !== "Delivered").length,
+      revenue: filteredOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0),
+      pendingPayments: filteredOrders.filter((o) => Number(o.balance) > 0).length,
+    }),
+    [filteredOrders]
+  );
+
   const filteredSummaryProducts = useMemo(() => {
     const q = summarySearch.trim().toLowerCase();
-    if (!q) return ORDER_SUMMARY_PRODUCTS;
-    return ORDER_SUMMARY_PRODUCTS.filter((p) => p.name.toLowerCase().includes(q));
-  }, [summarySearch]);
+    const byProduct = new Map();
+    orders.forEach((o) =>
+      (o.items || []).forEach((it) => {
+        const row = byProduct.get(it.product) || { name: it.product, ordered: 0, delivered: 0, pending: 0 };
+        const qty = Number(it.quantity) || 0;
+        row.ordered += qty;
+        if (o.status === "Delivered") row.delivered += qty;
+        else if (o.status !== "Cancelled") row.pending += qty;
+        byProduct.set(it.product, row);
+      })
+    );
+    const rows = [...byProduct.values()];
+    if (!q) return rows;
+    return rows.filter((p) => p.name.toLowerCase().includes(q));
+  }, [summarySearch, orders]);
 
   const openNewOrderView = () => {
     setNewOrderForm({
@@ -372,67 +257,63 @@ export default function OrdersPage() {
     setViewMode("edit");
   };
 
-  const handleCreateOrder = (sendSms = false) => {
-    if (!newOrderForm.customer_name.trim()) {
+  const handleCreateOrder = async (sendSms = false) => {
+    if (!newOrderForm.customer_name.trim() && !newOrderForm.customer_code.trim()) {
       addToast("Please select or enter Customer Name", "error");
       return;
     }
+    // Orders belong to a real CRM customer: match the code first, then the name.
+    const code = newOrderForm.customer_code.trim().toLowerCase();
+    const name = newOrderForm.customer_name.trim().toLowerCase();
+    const customer = (live.data?.customers || []).find(
+      (c) =>
+        (code && c.customer_code.toLowerCase() === code) ||
+        (name && c.name.toLowerCase() === name)
+    );
+    if (!customer) {
+      addToast("No CRM customer matches that name or ID - add the customer first", "error");
+      return;
+    }
     const total = newOrderForm.items.reduce(
-      (acc, it) => acc + (Number(it.quantity) || 1) * (Number(it.unit_price) || 5.25),
+      (acc, it) => acc + (Number(it.quantity) || 1) * (Number(it.unit_price) || 0),
       0
     );
-    const created = {
-      id: Date.now(),
-      delivery_note: `DN-${newOrderForm.truck_id || "T6350"}-${Math.floor(16653 + Math.random() * 900)}`,
-      invoice_no: `IN-${newOrderForm.truck_id || "T6350"}/032${Math.floor(179 + Math.random() * 700)}`,
-      customer_name: newOrderForm.customer_name.trim(),
-      customer_id: newOrderForm.customer_code.trim() || "114843",
-      salesman_name: "56 - ANAS",
-      order_date: "08/09/2026",
-      truck: newOrderForm.truck_id || "T6350",
-      zone: newOrderForm.delivery_zone || "HILI INDUSTRIAL",
-      status: "Delivered",
-      total_amount: total.toFixed(2),
-      balance: "0.00",
-      payment_method: "Cash",
-      payment_status: "PAID",
-      items: newOrderForm.items.map((it) => ({
-        product: it.product || "5 gal water",
-        lend_type: it.type || "Sold",
-        quantity: Number(it.quantity) || 1,
-        unit_price: Number(it.unit_price) || 5.25,
-        coupon_qty: 0,
-      })),
-    };
-    setOrders((prev) => [created, ...prev]);
+    const created = await apiService.createOrder(newOrderToApi(newOrderForm, customer, total));
+    if (!created) {
+      addToast("Could not save the order - check the CRM server", "error");
+      return;
+    }
     addToast(
       sendSms
-        ? `Order ${created.delivery_note} created and SMS sent!`
-        : `Order ${created.delivery_note} created successfully`,
+        ? `Order ${created.order_no} created (SMS sending is not connected yet)`
+        : `Order ${created.order_no} created successfully`,
       "success"
     );
+    await live.refresh();
     setViewMode("list");
   };
 
-  const handleUpdateOrder = () => {
+  const handleUpdateOrder = async () => {
     if (!editingOrder) return;
-    const subtotal = editingOrder.items.reduce(
-      (sum, it) => sum + Number(it.quantity || 0) * Number(it.unit_price || 0),
-      0
-    );
-    const updated = {
-      ...editingOrder,
-      total_amount: subtotal.toFixed(2),
-    };
-    setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
-    addToast(`Order ${updated.delivery_note} updated successfully`, "success");
+    const result = await apiService.updateOrder(editingOrder.id, orderUpdateToApi(editingOrder));
+    if (!result) {
+      addToast(`Could not update ${editingOrder.delivery_note} - check the CRM server`, "error");
+      return;
+    }
+    addToast(`Order ${editingOrder.delivery_note} updated successfully`, "success");
+    await live.refresh();
     setViewMode("list");
   };
 
-  const handleDeleteOrder = (order) => {
-    setOrders((prev) => prev.filter((o) => o.id !== order.id));
+  const handleDeleteOrder = async (order) => {
+    const result = await apiService.deleteOrder(order.id);
+    if (!result) {
+      addToast(`Could not delete ${order.delivery_note} - check the CRM server`, "error");
+      return;
+    }
     addToast(`Order ${order.delivery_note} deleted`, "info");
     if (viewMode === "edit") setViewMode("list");
+    await live.refresh();
   };
 
   const handleExportCSV = () => {
@@ -474,64 +355,103 @@ export default function OrdersPage() {
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col">
       <Header title="Order Dashboard" subtitle="Manage Orders" />
 
-      {/* iOS Top Hero Navigation Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-[#3C3C43]/10 px-6 py-3.5 flex items-center justify-between sticky top-16 z-20">
-        <div className="flex items-center gap-2.5 text-sm">
-          <span className="font-bold text-base tracking-tight text-[#1C1C1E]">
-            {viewMode === "list" ? "Order Dashboard" : "Orders"}
-          </span>
-          <Home className="w-3.5 h-3.5 text-[#8E8E93]" />
-          <span className="text-[#8E8E93] text-xs">
-            /{" "}
-            {viewMode === "new"
-              ? "Create Order"
-              : viewMode === "edit"
-              ? "Update Order"
-              : "Manage Orders"}
-          </span>
-        </div>
-
-        {viewMode === "list" ? (
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={openNewOrderView}
-              className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#007AFF]/20"
-            >
-              + New Order
-            </button>
-            <button
-              type="button"
-              onClick={() => setSummaryDrawerOpen(true)}
-              className="px-4 py-1.5 rounded-full bg-[#34C759] hover:bg-[#2FB34F] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#34C759]/20"
-            >
-              Order Summary
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setViewMode("list")}
-            className="px-4 py-1.5 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition cursor-pointer"
-          >
-            Back to Orders
-          </button>
-        )}
-      </div>
-
       <div className="p-6 flex-1 space-y-6 max-w-7xl w-full mx-auto">
+        {viewMode !== "list" && (
+          <BackLink label="Back to Orders" onClick={() => setViewMode("list")} />
+        )}
+
         {viewMode === "list" && (
           <>
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <OrderStat
+                label="TOTAL ORDERS"
+                value={orderStats.total.toLocaleString()}
+                icon={FileSpreadsheet}
+                tone="bg-[#FF6B4A]"
+              />
+              <OrderStat
+                label="PENDING ORDERS"
+                value={orderStats.pending.toLocaleString()}
+                icon={Hourglass}
+                tone="bg-[#FF9500]"
+              />
+              <OrderStat
+                label="TOTAL REVENUE"
+                value={`AED ${orderStats.revenue.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+                icon={DollarSign}
+                tone="bg-[#5856D6]"
+              />
+              <OrderStat
+                label="PENDING PAYMENTS"
+                value={orderStats.pendingPayments.toLocaleString()}
+                icon={Wallet}
+                tone="bg-[#34C759]"
+              />
+            </div>
+
             {/* Filter Orders iOS Card */}
-            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 p-5">
-              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider mb-4">
+            <div className="ios-surface p-5">
+              <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider mb-4 flex items-center gap-1.5">
+                <Filter className="w-3.5 h-3.5 text-[#007AFF]" />
                 Filter Orders
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                 <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    From
-                  </label>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">Customer</label>
+                  <input
+                    type="text"
+                    placeholder="Select Customer"
+                    value={filters.customer}
+                    onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">Sales Rep</label>
+                  <select
+                    value={filters.salesman}
+                    onChange={(e) => setFilters({ ...filters, salesman: e.target.value })}
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                  >
+                    <option value="">Select Sales Rep</option>
+                    <option value="56 - ANAS">56 - ANAS</option>
+                    <option value="32 - NOOR">32 - NOOR</option>
+                    <option value="38 - NISAR">38 - NISAR</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">Truck</label>
+                  <select
+                    value={filters.truck}
+                    onChange={(e) => setFilters({ ...filters, truck: e.target.value })}
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                  >
+                    <option value="">Select Truck</option>
+                    <option value="T6350">T6350</option>
+                    <option value="T6335">T6335</option>
+                    <option value="T6354">T6354</option>
+                    <option value="T6356">T6356</option>
+                    <option value="T6343">T6343</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">Status</label>
+                  <select
+                    value={filters.status}
+                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+                  >
+                    <option value="">All Statuses</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Pending">Pending</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">From Date</label>
                   <input
                     type="date"
                     value={filters.from}
@@ -540,9 +460,7 @@ export default function OrdersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    To
-                  </label>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">To Date</label>
                   <input
                     type="date"
                     value={filters.to}
@@ -551,36 +469,7 @@ export default function OrdersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Customer
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Customer Name / ID"
-                    value={filters.customer}
-                    onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Salesman
-                  </label>
-                  <select
-                    value={filters.salesman}
-                    onChange={(e) => setFilters({ ...filters, salesman: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
-                  >
-                    <option value="">All Salesmen</option>
-                    <option value="56 - ANAS">56 - ANAS</option>
-                    <option value="32 - NOOR">32 - NOOR</option>
-                    <option value="38 - NISAR">38 - NISAR</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Route
-                  </label>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">Route</label>
                   <select
                     value={filters.route}
                     onChange={(e) => setFilters({ ...filters, route: e.target.value })}
@@ -592,11 +481,8 @@ export default function OrdersPage() {
                     <option value="6354">6354</option>
                   </select>
                 </div>
-
                 <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Zone
-                  </label>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">Zone</label>
                   <select
                     value={filters.zone}
                     onChange={(e) => setFilters({ ...filters, zone: e.target.value })}
@@ -609,38 +495,7 @@ export default function OrdersPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Truck
-                  </label>
-                  <select
-                    value={filters.truck}
-                    onChange={(e) => setFilters({ ...filters, truck: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
-                  >
-                    <option value="">All Trucks</option>
-                    <option value="T6350">T6350</option>
-                    <option value="T6335">T6335</option>
-                    <option value="T6356">T6356</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Status
-                  </label>
-                  <select
-                    value={filters.status}
-                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
-                  >
-                    <option value="">All Status</option>
-                    <option value="Delivered">Delivered</option>
-                    <option value="Pending">Pending</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Payment Method
-                  </label>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">Payment Method</label>
                   <select
                     value={filters.paymentMethod}
                     onChange={(e) => setFilters({ ...filters, paymentMethod: e.target.value })}
@@ -653,9 +508,7 @@ export default function OrdersPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
-                    Payment Status
-                  </label>
+                  <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">Payment Status</label>
                   <select
                     value={filters.paymentStatus}
                     onChange={(e) => setFilters({ ...filters, paymentStatus: e.target.value })}
@@ -668,7 +521,17 @@ export default function OrdersPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 mt-4">
+              <div className="flex items-center gap-4 mt-4">
+                <button
+                  type="button"
+                  onClick={() =>
+                    addToast(`Filters applied: ${filteredOrders.length} orders found`, "success")
+                  }
+                  className="px-5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold cursor-pointer shadow-sm inline-flex items-center gap-1.5"
+                >
+                  <Filter className="w-3 h-3" />
+                  Apply
+                </button>
                 <button
                   type="button"
                   onClick={() => {
@@ -687,89 +550,42 @@ export default function OrdersPage() {
                     });
                     addToast("Filters reset", "info");
                   }}
-                  className="px-4 py-1.5 rounded-full bg-[#E5E5EA] text-[#1C1C1E] text-xs font-semibold hover:bg-[#D1D1D6] cursor-pointer"
+                  className="text-[#007AFF] hover:text-[#0062cc] text-xs font-semibold cursor-pointer inline-flex items-center gap-1.5"
                 >
+                  <RotateCcw className="w-3 h-3" />
                   Reset
                 </button>
-                <button
-                  type="button"
-                  onClick={() => addToast(`Filters applied: ${filteredOrders.length} orders found`, "success")}
-                  className="px-5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm shadow-[#007AFF]/25"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-
-            {/* 4 iOS KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-sm flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] font-semibold text-[#8E8E93] uppercase">
-                    TOTAL ORDERS
-                  </div>
-                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono">
-                    {filteredOrders.length}
-                  </div>
-                  <div className="text-[11px] text-[#34C759] mt-0.5">Orders found</div>
-                </div>
-                <div className="w-10 h-10 rounded-2xl bg-[#007AFF]/10 text-[#007AFF] flex items-center justify-center">
-                  <ShoppingCart className="w-5 h-5" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-sm flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] font-semibold text-[#8E8E93] uppercase">DELIVERED</div>
-                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono">
-                    {filteredOrders.length}
-                  </div>
-                  <div className="text-[11px] text-[#34C759] mt-0.5">Completed orders</div>
-                </div>
-                <div className="w-10 h-10 rounded-2xl bg-[#34C759]/10 text-[#34C759] flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-sm flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] font-semibold text-[#8E8E93] uppercase">PENDING</div>
-                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono">0</div>
-                  <div className="text-[11px] text-[#FF9500] mt-0.5">Awaiting delivery</div>
-                </div>
-                <div className="w-10 h-10 rounded-2xl bg-[#FF9500]/10 text-[#FF9500] flex items-center justify-center">
-                  <Clock className="w-5 h-5" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-sm flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] font-semibold text-[#8E8E93] uppercase">REVENUE</div>
-                  <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono">AED 351.75</div>
-                  <div className="text-[11px] text-[#007AFF] mt-0.5">Total order value</div>
-                </div>
-                <div className="w-10 h-10 rounded-2xl bg-[#5856D6]/10 text-[#5856D6] flex items-center justify-center">
-                  <DollarSign className="w-5 h-5" />
-                </div>
               </div>
             </div>
 
             {/* Orders Management iOS Table Card */}
-            <div className="bg-white rounded-3xl shadow-sm border border-[#3C3C43]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 bg-[#E5E5EA] flex items-center justify-between">
-                <div>
-                  <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Orders Management</h2>
-                  <p className="text-[#8E8E93] text-xs mt-0.5">Live delivery records, billing and status</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleExportCSV}
-                  className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-[0_2px_8px_rgba(0,122,255,0.25)] active:scale-95 transition"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Download
-                </button>
-              </div>
+            <div className="ios-surface overflow-hidden">
+              <PanelHeader
+                icon={ShoppingCart}
+                title="Recent Orders"
+                subtitle="Live delivery records, billing and status"
+                onAction={handleExportCSV}
+                actions={
+                  <>
+                  <button
+                    type="button"
+                    onClick={() => setSummaryDrawerOpen(true)}
+                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1.5"
+                  >
+                    <BarChart3 className="w-3.5 h-3.5" />
+                    Order Summary
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openNewOrderView}
+                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    New Order
+                  </button>
+                </>
+                }
+              />
 
               <div className="px-6 py-3.5 bg-[#F2F2F7] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
                 <div className="flex items-center gap-2">
@@ -798,33 +614,34 @@ export default function OrdersPage() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left">
+                <table className="ios-table w-full text-left">
                   <thead>
-                    <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] tracking-wider uppercase">
+                    <tr className="ios-thead">
                       {[
                         "DELIVERY NOTE",
-                        "INVOICE NO.",
-                        "CUSTOMER NAME",
+                        "INVOICE",
+                        "CUSTOMER",
                         "CUSTOMER ID",
-                        "SALESMAN NAME",
-                        "ORDER DATE",
+                        "DATE",
                         "TRUCK",
+                        "QUANTITY",
                         "STATUS",
-                        "TOTAL AMOUNT",
+                        "TOTAL",
                         "BALANCE",
+                        "PAYMENT",
                         "ACTIONS",
                       ].map((col) => (
                         <th key={col} className="py-3 px-3.5 first:pl-6 last:pr-6 whitespace-nowrap">
                           <div className="flex items-center justify-between gap-1">
                             <span>{col}</span>
-                            <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70 shrink-0" />
+                            <ArrowUpDown className="w-3 h-3 sort-ico shrink-0" />
                           </div>
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#3C3C43]/10 text-[12px] text-[#1C1C1E]">
-                    {filteredOrders.slice(0, entriesPerPage).map((row) => (
+                  <tbody className="text-[12px] text-[#1C1C1E]">
+                    {filteredOrders.slice(pageStart, pageStart + entriesPerPage).map((row) => (
                       <tr key={row.id} className="hover:bg-[#F2F2F7]/50 transition-colors">
                         <td className="py-3.5 pl-6 pr-3.5 font-semibold text-[#1C1C1E] whitespace-nowrap">
                           {row.delivery_note}
@@ -836,28 +653,33 @@ export default function OrdersPage() {
                           {row.customer_name}
                         </td>
                         <td className="py-3.5 px-3.5 text-[#8E8E93] font-mono">{row.customer_id}</td>
-                        <td className="py-3.5 px-3.5 text-[#3C3C43] whitespace-nowrap">
-                          {row.salesman_name}
-                        </td>
                         <td className="py-3.5 px-3.5 text-[#8E8E93] whitespace-nowrap">
                           {row.order_date}
                         </td>
                         <td className="py-3.5 px-3.5 font-mono text-[#007AFF] font-medium">{row.truck}</td>
+                        <td className="py-3.5 px-3.5 font-mono text-[#1C1C1E]">
+                          {orderQuantity(row)}
+                        </td>
                         <td className="py-3.5 px-3.5">
-                          <span className="px-2.5 py-0.5 rounded-full bg-[#34C759]/15 text-[#248A3D] text-[10.5px] font-semibold">
+                          <span className="px-2.5 py-0.5 rounded-full bg-[#34C759]/15 text-[#248A3D] text-[10px] font-bold uppercase tracking-wide">
                             {row.status}
                           </span>
                         </td>
-                        <td className="py-3.5 px-3.5 font-bold text-[#1C1C1E] font-mono">
-                          {row.total_amount}
+                        <td className="py-3.5 px-3.5 font-bold text-[#1C1C1E] font-mono whitespace-nowrap">
+                          AED {row.total_amount}
                         </td>
-                        <td className="py-3.5 px-3.5 text-[#8E8E93] font-mono">{row.balance}</td>
+                        <td className="py-3.5 px-3.5 text-[#8E8E93] font-mono whitespace-nowrap">
+                          AED {row.balance}
+                        </td>
+                        <td className="py-3.5 px-3.5">
+                          <PaymentBadge label={paymentLabel(row)} />
+                        </td>
                         <td className="py-3.5 pl-3.5 pr-6 whitespace-nowrap">
                           <div className="flex items-center gap-1.5">
                             <button
                               type="button"
                               onClick={() => setViewModalOrder(row)}
-                              className="px-3 py-1 rounded-full bg-[#007AFF]/10 hover:bg-[#007AFF] text-[#007AFF] hover:text-white text-[10.5px] font-semibold transition cursor-pointer"
+                              className="px-3 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[10.5px] font-semibold transition cursor-pointer"
                             >
                               View
                             </button>
@@ -885,13 +707,30 @@ export default function OrdersPage() {
 
               <div className="px-6 py-3.5 bg-[#F9F9FB] border-t border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
                 <div>
-                  Showing 1 to {Math.min(entriesPerPage, filteredOrders.length)} of{" "}
-                  {filteredOrders.length} entries
+                  {filteredOrders.length === 0
+                    ? "No entries"
+                    : `Showing ${pageStart + 1} to ${Math.min(
+                        pageStart + entriesPerPage,
+                        filteredOrders.length
+                      )} of ${filteredOrders.length} entries`}
+                  {live.lastUpdated ? (
+                    <span className="ml-3 text-[#34C759]">
+                      ● Live · synced {live.lastUpdated.toLocaleTimeString()}
+                    </span>
+                  ) : null}
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <button className="w-7 h-7 rounded-full bg-[#007AFF] text-white text-xs font-semibold flex items-center justify-center">
-                    1
-                  </button>
+                  {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center ${
+                        p === currentPage ? "bg-[#007AFF] text-white" : "text-[#8E8E93] hover:bg-[#F2F2F7]"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -900,8 +739,8 @@ export default function OrdersPage() {
 
         {/* NEW ORDER SUB-VIEW (new orders.png) */}
         {viewMode === "new" && (
-          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+          <div className="ios-surface overflow-hidden">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">Order Information</h2>
             </div>
 
@@ -980,9 +819,9 @@ export default function OrdersPage() {
               <div>
                 <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-3">Order Items</h3>
                 <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
-                  <table className="w-full text-left border-collapse">
+                  <table className="ios-table w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                      <tr className="ios-thead">
                         <th className="py-2.5 px-4">PRODUCT</th>
                         <th className="py-2.5 px-4">QUANTITY</th>
                         <th className="py-2.5 px-4">TYPE</th>
@@ -990,7 +829,7 @@ export default function OrdersPage() {
                         <th className="py-2.5 px-4 w-16 text-center">ACTION</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#3C3C43]/10 text-xs">
+                    <tbody className="text-xs">
                       {newOrderForm.items.map((item, idx) => (
                         <tr key={item.id} className="hover:bg-[#F2F2F7]/50">
                           <td className="py-2.5 px-4">
@@ -1089,7 +928,7 @@ export default function OrdersPage() {
                       ],
                     })
                   }
-                  className="mt-3 px-4 py-2 rounded-full bg-[#007AFF]/10 hover:bg-[#007AFF] text-[#007AFF] hover:text-white text-xs font-semibold cursor-pointer transition active:scale-95"
+                  className="mt-3 px-4 py-2 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-xs font-semibold cursor-pointer transition active:scale-95"
                 >
                   + Add Product
                 </button>
@@ -1133,8 +972,8 @@ export default function OrdersPage() {
 
         {/* EDIT ORDER SUB-VIEW (edit orders.png) */}
         {viewMode === "edit" && editingOrder && (
-          <div className="bg-white rounded-3xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#3C3C43]/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#007AFF]/20 bg-[#007AFF]/10">
+          <div className="ios-surface overflow-hidden">
+            <div className="px-[18px] py-3.5 border-b border-[#3C3C43]/11 bg-white">
               <h2 className="text-[#1C1C1E] font-semibold text-base tracking-tight">
                 Update Order #{editingOrder.delivery_note}
               </h2>
@@ -1265,9 +1104,9 @@ export default function OrdersPage() {
                 </button>
 
                 <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
-                  <table className="w-full text-left border-collapse">
+                  <table className="ios-table w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[11px] font-bold text-[#007AFF] uppercase tracking-wider">
+                      <tr className="ios-thead">
                         <th className="py-2.5 px-4">PRODUCT NAME</th>
                         <th className="py-2.5 px-4">QUANTITY</th>
                         <th className="py-2.5 px-4">LEND/RETURN</th>
@@ -1277,7 +1116,7 @@ export default function OrdersPage() {
                         <th className="py-2.5 px-4">ACTION</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#3C3C43]/10 text-xs text-[#1C1C1E]">
+                    <tbody className="text-xs text-[#1C1C1E]">
                       {editingOrder.items.map((it, idx) => (
                         <tr key={it.id || idx} className="hover:bg-[#F2F2F7]/50">
                           <td className="py-2.5 px-4 font-medium">{it.product}</td>
@@ -1376,8 +1215,8 @@ export default function OrdersPage() {
 
       {/* VIEW ORDER DETAILS MODAL (view orders.png) */}
       {viewModalOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
             <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-base font-semibold text-[#1C1C1E]">
                 Order Details - {viewModalOrder.delivery_note}
@@ -1432,9 +1271,9 @@ export default function OrdersPage() {
               <div>
                 <div className="font-semibold text-[#1C1C1E] mb-2 text-xs">Order Items</div>
                 <div className="border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
-                  <table className="w-full text-left border-collapse">
+                  <table className="ios-table w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#007AFF]/10 border-y border-[#007AFF]/20 text-[10px] font-bold text-[#007AFF] uppercase tracking-wider">
+                      <tr className="ios-thead">
                         <th className="py-2.5 px-3">PRODUCT</th>
                         <th className="py-2.5 px-3">LEND TYPE</th>
                         <th className="py-2.5 px-3">QUANTITY</th>
@@ -1442,7 +1281,7 @@ export default function OrdersPage() {
                         <th className="py-2.5 px-3">TOTAL</th>
                       </tr>
                     </thead>
-                  <tbody className="divide-y divide-[#3C3C43]/10">
+                  <tbody className="">
                     {(viewModalOrder.items || []).map((it, idx) => (
                       <tr key={idx}>
                         <td className="py-2.5 px-3 font-medium">{it.product}</td>
@@ -1534,7 +1373,7 @@ export default function OrdersPage() {
 
       {/* ORDER SUMMARY RIGHT-HAND SLIDE-OVER DRAWER (order summary.png) */}
       {summaryDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/25 backdrop-blur-[6px]">
           <div className="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200 border-l border-[#3C3C43]/10">
             <div className="px-6 py-5 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-[#1C1C1E]">Product Delivery Details</h3>
@@ -1590,5 +1429,39 @@ export default function OrdersPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function OrderStat({ label, value, icon: Icon, tone }) {
+  return (
+    <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-sm flex items-center justify-between gap-3">
+      <div className="min-w-0">
+        <div className="text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wide">
+          {label}
+        </div>
+        <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono truncate">{value}</div>
+      </div>
+      <div
+        className={`w-11 h-11 shrink-0 rounded-full text-white flex items-center justify-center shadow-sm ${tone}`}
+      >
+        <Icon className="w-5 h-5" />
+      </div>
+    </div>
+  );
+}
+
+function PaymentBadge({ label }) {
+  const tone =
+    label === "PAID"
+      ? "bg-[#34C759]/15 text-[#248A3D]"
+      : label === "WALLET"
+      ? "bg-[#007AFF]/12 text-[#0062CC]"
+      : "bg-[#FF3B30]/12 text-[#C62A21]";
+  return (
+    <span
+      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${tone}`}
+    >
+      {label}
+    </span>
   );
 }
