@@ -2,7 +2,8 @@ from rest_framework import viewsets, filters, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.db.models import Sum, Count, Q
+from django.db import transaction
+from django.db.models import Sum, Count, Q, F
 from .models import (
     Product, StoreInventory, Order, OrderItem,
     Invoice, CashierTransaction, Wallet, WalletRecharge,
@@ -67,6 +68,40 @@ class WalletViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['customer__name', 'customer__customer_code']
     ordering_fields = ['balance']
+
+class WalletRechargeViewSet(viewsets.ModelViewSet):
+    """
+    Wallet top-ups, shared by the CRM website and the salesman mobile app.
+
+    Creating a recharge credits the wallet (amount + bonus) and records the
+    money taken in as a cashier transaction, all in one database transaction,
+    so wallet balances and the cashier ledger never disagree. Recharges are an
+    audit trail: they can be created and read, not edited or deleted.
+    """
+    queryset = WalletRecharge.objects.select_related('wallet__customer').order_by('-created_at')
+    serializer_class = WalletRechargeSerializer
+    http_method_names = ['get', 'post', 'head', 'options']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['wallet__customer__name', 'wallet__customer__customer_code', 'transaction_ref']
+    ordering_fields = ['created_at', 'amount']
+
+    CASHIER_METHODS = {choice for choice, _ in CashierTransaction.PAYMENT_METHODS}
+
+    def perform_create(self, serializer):
+        with transaction.atomic():
+            recharge = serializer.save()
+            Wallet.objects.filter(pk=recharge.wallet_id).update(
+                balance=F('balance') + recharge.amount + recharge.bonus
+            )
+            method = recharge.payment_method if recharge.payment_method in self.CASHIER_METHODS else 'Cash'
+            CashierTransaction.objects.create(
+                transaction_no=f'WR-{recharge.pk:06d}',
+                customer=recharge.wallet.customer,
+                amount=recharge.amount,
+                payment_type='Wallet Recharge',
+                payment_method=method,
+                reference_note=recharge.transaction_ref or f'Wallet recharge #{recharge.pk}',
+            )
 
 class ZoneViewSet(viewsets.ModelViewSet):
     queryset = Zone.objects.all()

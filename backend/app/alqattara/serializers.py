@@ -52,9 +52,18 @@ class CashierTransactionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class WalletRechargeSerializer(serializers.ModelSerializer):
+    customer = serializers.ReadOnlyField(source='wallet.customer_id')
+    customer_name = serializers.ReadOnlyField(source='wallet.customer.name')
+    customer_code = serializers.ReadOnlyField(source='wallet.customer.customer_code')
+
     class Meta:
         model = WalletRecharge
         fields = '__all__'
+
+    def validate_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError('Recharge amount must be greater than zero.')
+        return value
 
 class WalletSerializer(serializers.ModelSerializer):
     customer_name = serializers.ReadOnlyField(source='customer.name')

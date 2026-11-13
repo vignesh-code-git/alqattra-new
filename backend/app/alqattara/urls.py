@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     ProductViewSet, StoreInventoryViewSet, OrderViewSet,
-    InvoiceViewSet, CashierTransactionViewSet, WalletViewSet,
+    InvoiceViewSet, CashierTransactionViewSet, WalletViewSet, WalletRechargeViewSet,
     ZoneViewSet, RouteViewSet, MasterItemViewSet, dashboard_overview
 )
 
@@ -13,6 +13,7 @@ router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'invoices', InvoiceViewSet, basename='invoice')
 router.register(r'cashier', CashierTransactionViewSet, basename='cashier')
 router.register(r'wallets', WalletViewSet, basename='wallet')
+router.register(r'wallet-recharges', WalletRechargeViewSet, basename='wallet-recharge')
 router.register(r'zones', ZoneViewSet, basename='zone')
 router.register(r'routes', RouteViewSet, basename='route')
 router.register(r'masters', MasterItemViewSet, basename='master')
