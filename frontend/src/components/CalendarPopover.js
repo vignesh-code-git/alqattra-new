@@ -87,9 +87,9 @@ export default function CalendarPopover({
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-24px)] bg-white border border-[#E5E5EA] rounded-md shadow-xl p-3 sm:p-3.5 z-50 animate-in fade-in zoom-in-95 select-none">
+          <div className="ios-pop absolute right-0 mt-2 w-72 max-w-[calc(100vw-24px)] bg-white border border-[#E5E5EA] rounded-md shadow-xl p-3 sm:p-3.5 z-50 animate-in fade-in zoom-in-95 select-none">
             {/* Calendar Header with Month/Year Navigation */}
-            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-[#F2F2F7]">
+            <div className="ios-pop-head flex items-center justify-between pb-2.5 mb-2.5 border-b border-[#F2F2F7]">
               <span className="text-xs font-bold text-[#1C1C1E]">
                 {months[currentMonth]} {currentYear}
               </span>

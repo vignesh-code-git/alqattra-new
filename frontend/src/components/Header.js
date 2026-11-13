@@ -24,7 +24,6 @@ import {
   ShieldCheck,
   Building,
   Settings,
-  Bug,
   CheckSquare,
   Square,
   ListTodo,
@@ -33,11 +32,16 @@ import {
   AlertCircle,
   Copy,
   FileText,
+  Package,
+  ShoppingCart,
+  Wallet,
+  Truck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/Toast";
 import { useTerritory } from "@/context/TerritoryContext";
 import { useSidebar } from "@/context/SidebarContext";
+import HeaderClock from "@/components/HeaderClock";
 
 export default function Header({
   title = "Dashboard Overview",
@@ -54,12 +58,6 @@ export default function Header({
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showMobileTerritory, setShowMobileTerritory] = useState(false);
 
-  // Developer Bug Tracker & QA Checklist
-  const [showBugReportModal, setShowBugReportModal] = useState(false);
-  const [bugFilter, setBugFilter] = useState("all"); // "all", "open", "resolved"
-  const [showAddBugForm, setShowAddBugForm] = useState(false);
-  const [copiedNotes, setCopiedNotes] = useState(false);
-
   const [profile, setProfile] = useState({
     name: "Rouda Al Dhaheri",
     role: "Operations Administrator",
@@ -70,168 +68,6 @@ export default function Header({
   });
 
   const [editFormData, setEditFormData] = useState({ ...profile });
-
-  // Developer Bug Tracker & QA Checklist
-  const [bugs, setBugs] = useState([
-    {
-      id: "BUG-101",
-      title: "Notification icon click error (setShowProfileModal)",
-      module: "Header",
-      severity: "High",
-      resolved: true,
-      reported_at: "Today, 19:40",
-      description: "Resolved undefined function call on notification popover trigger.",
-    },
-    {
-      id: "BUG-102",
-      title: "Sidebar active items border twitch on click",
-      module: "Sidebar",
-      severity: "Medium",
-      resolved: true,
-      reported_at: "Today, 19:30",
-      description: "Stabilized 1px base border and replaced transition-all with transition-colors.",
-    },
-    {
-      id: "BUG-103",
-      title: "Table filter tabs border twitch on state change",
-      module: "DataTable",
-      severity: "Medium",
-      resolved: true,
-      reported_at: "Today, 19:32",
-      description: "Added constant 1px border across all table filter tabs and buttons.",
-    },
-    {
-      id: "BUG-104",
-      title: "Re-add sidebar logout button with power icon",
-      module: "Sidebar",
-      severity: "Low",
-      resolved: true,
-      reported_at: "Today, 19:48",
-      description: "Restored sidebar bottom sign-out button with clean border and hover state.",
-    },
-    {
-      id: "BUG-105",
-      title: "Add offline caching for driver mobile collections",
-      module: "Cashier",
-      severity: "Low",
-      resolved: false,
-      reported_at: "Today, 18:15",
-      description: "Support offline collection sync for drivers with poor desert cell coverage.",
-    },
-  ]);
-
-  const [newBug, setNewBug] = useState({
-    title: "",
-    module: "Orders",
-    severity: "Medium",
-    description: "",
-  });
-
-  // Load persisted QA bugs from localStorage
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("alqattara_qa_bugs_v2");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setBugs(parsed);
-        }
-      }
-    } catch {
-      // Ignore storage error
-    }
-  }, []);
-
-  const saveBugsToStorage = (updated) => {
-    setBugs(updated);
-    try {
-      localStorage.setItem("alqattara_qa_bugs_v2", JSON.stringify(updated));
-    } catch {
-      // Ignore
-    }
-  };
-
-  const toggleBugResolved = (bugId) => {
-    const updated = bugs.map((b) =>
-      b.id === bugId ? { ...b, resolved: !b.resolved } : b
-    );
-    saveBugsToStorage(updated);
-    const target = updated.find((b) => b.id === bugId);
-    if (target?.resolved) {
-      addToast(`Marked "${target.title}" as Resolved`, "success");
-    } else {
-      addToast(`Re-opened "${target?.title}" for developer review`, "info");
-    }
-  };
-
-  const handleCreateBug = (e) => {
-    e.preventDefault();
-    if (!newBug.title.trim()) {
-      addToast("Please enter an issue title", "error");
-      return;
-    }
-    const bugId = `BUG-${Math.floor(100 + Math.random() * 900)}`;
-    const created = {
-      id: bugId,
-      title: newBug.title.trim(),
-      module: newBug.module,
-      severity: newBug.severity,
-      resolved: false,
-      reported_at: "Just now",
-      description: newBug.description.trim() || "No detailed notes provided.",
-    };
-    const updated = [created, ...bugs];
-    saveBugsToStorage(updated);
-    setNewBug({
-      title: "",
-      module: "Orders",
-      severity: "Medium",
-      description: "",
-    });
-    setShowAddBugForm(false);
-    addToast(`Added ${bugId}: ${created.title}`, "success");
-  };
-
-  const handleDeleteBug = (bugId) => {
-    const updated = bugs.filter((b) => b.id !== bugId);
-    saveBugsToStorage(updated);
-    addToast("Issue removed from tracker", "info");
-  };
-
-  const generateBugsNotesFormat = () => {
-    const openCount = bugs.filter((b) => !b.resolved).length;
-    const resolvedCount = bugs.filter((b) => b.resolved).length;
-    const header = [
-      "📝 AL QATTARA CRM - DEVELOPER BUG & QA NOTES",
-      `Date: 08 Nov 2026 | Total: ${bugs.length} (${resolvedCount} Resolved, ${openCount} Open)`,
-      "--------------------------------------------------",
-    ];
-    const items = bugs.map(
-      (b) =>
-        `[${b.resolved ? "✓" : " "}] (${b.id}) [${b.severity.toUpperCase()} - ${b.module}] ${b.title}\n    Notes: ${b.description}`
-    );
-    const footer = [
-      "--------------------------------------------------",
-      `Status: ${resolvedCount}/${bugs.length} resolved`,
-      "Generated from Al Qattara CRM Developer Review Notes",
-    ];
-    return [...header, ...items, ...footer].join("\n\n");
-  };
-
-  const handleCopyNotes = () => {
-    const text = generateBugsNotesFormat();
-    navigator.clipboard.writeText(text);
-    setCopiedNotes(true);
-    setTimeout(() => setCopiedNotes(false), 2200);
-    addToast("Copied bug review notes to clipboard!", "success");
-  };
-
-  const openBugsCount = bugs.filter((b) => !b.resolved).length;
-  const filteredBugs = bugs.filter((b) => {
-    if (bugFilter === "open") return !b.resolved;
-    if (bugFilter === "resolved") return b.resolved;
-    return true;
-  });
 
   const [notifications, setNotifications] = useState([
     { id: 1, title: "Low Stock Alert", desc: "5-Gallon Polycarbonate stock below 200 bottles", time: "10m ago", unread: true },
@@ -286,55 +122,42 @@ export default function Header({
 
   return (
     <>
-      <header className="h-16 bg-white/85 backdrop-blur-xl border-b border-[#3C3C43]/10 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 transition-colors">
+      <header
+        className="relative h-16 border-b border-white/80 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-12px_rgba(0,0,0,0.14)] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 transition-colors"
+        style={{ background: "linear-gradient(180deg, rgba(0,122,255,0.11) 0%, #FFFFFF 100%)" }}
+      >
         {/* Left: Mobile Sidebar Toggle + Page Title & Breadcrumbs */}
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <button
             type="button"
             onClick={toggleMobileSidebar}
-            className="p-1.5 rounded-xl text-[#636366] hover:text-[#1C1C1E] hover:bg-[#F2F2F7] lg:hidden transition-colors shrink-0"
+            className="relative p-1.5 rounded-xl text-[#3C3C43] hover:text-[#1C1C1E] hover:bg-white/70 lg:hidden transition-colors shrink-0"
             aria-label="Open sidebar navigation"
           >
             <Menu className="w-5 h-5" />
           </button>
 
           {/* Page Title & Breadcrumbs */}
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5 text-[11px] text-[#8E8E93] font-normal">
-              <span className="text-[#007AFF] font-medium">CRM</span>
-              <ChevronRight className="w-3 h-3 text-[#8E8E93]" />
-              <span className="text-[#3C3C43] truncate">{subtitle}</span>
+          <div className="relative min-w-0">
+            <div className="flex items-center gap-1.5 text-[11px] text-[#6C6C70] font-normal">
+              <span className="text-[#007AFF] font-semibold">CRM</span>
+              <ChevronRight className="w-3 h-3 text-[#AEAEB2]" />
+              <span className="text-[#6C6C70] truncate">{subtitle}</span>
             </div>
-            <h1 className="text-sm font-bold text-[#1C1C1E] tracking-tight leading-tight truncate">
+            <h1 className="text-[15px] font-bold text-[#1C1C1E] tracking-tight leading-tight truncate">
               {title}
             </h1>
           </div>
         </div>
 
-        {/* Right Controls: page actions + Bug Tracker + Notifications + Profile */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Right Controls: page actions + Date & Clock + Notifications + Profile */}
+        <div className="relative flex items-center gap-2 sm:gap-3">
           {actions && (
             <div className="flex items-center gap-2 mr-1 pr-1 border-r border-[#3C3C43]/12">
               {actions}
             </div>
           )}
-          {/* Developer Bug Tracker - Icon Only, No Border, No Text */}
-          <button
-            type="button"
-            onClick={() => {
-              setShowBugReportModal(true);
-              setShowNotifications(false);
-              setShowProfileDropdown(false);
-            }}
-            className="w-9 h-9 rounded-full bg-transparent hover:bg-[#FF9500]/10 text-[#FF9500] flex items-center justify-center transition-all duration-150 outline-none cursor-pointer active:scale-95 relative"
-            title="Developer Bug Tracker & QA Review"
-            aria-label="Developer Bug Tracker"
-          >
-            <Bug className="w-4.5 h-4.5 text-[#FF9500]" />
-            {openBugsCount > 0 && (
-              <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-[#FF3B30]" />
-            )}
-          </button>
+          <HeaderClock />
 
           {/* Interactive Notifications Component */}
           <div className="relative">
@@ -343,13 +166,13 @@ export default function Header({
               onClick={() => {
                 setShowNotifications(!showNotifications);
                 setShowProfileDropdown(false);
-                setShowBugReportModal(false);
               }}
-              className="w-9 h-9 rounded-full bg-[#E5E5EA]/70 hover:bg-[#E5E5EA] text-[#1C1C1E] flex items-center justify-center transition-all duration-150 relative cursor-pointer outline-none"
+              className="w-9 h-9 rounded-xl text-white flex items-center justify-center transition-all duration-150 relative cursor-pointer outline-none hover:-translate-y-0.5"
+              style={{ background: "linear-gradient(160deg, rgba(0,122,255,0.78) 0%, #007AFF 100%)", boxShadow: "0 6px 14px -4px rgba(0,122,255,0.55), inset 0 1px 0 rgba(255,255,255,0.35)" }}
               title="Notifications"
               aria-label="View notifications"
             >
-              <Bell className="w-4 h-4 text-[#3C3C43]" />
+              <Bell className="w-4 h-4 text-white" />
               {unreadCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#FF3B30] text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-white">
                   {unreadCount}
@@ -360,101 +183,105 @@ export default function Header({
             {showNotifications && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
-                <div className="absolute right-0 mt-2.5 w-80 sm:w-96 bg-white/88 backdrop-blur-2xl border border-[#3C3C43]/12 rounded-[18px] shadow-[0_12px_40px_-4px_rgba(0,0,0,0.18),0_2px_8px_rgba(0,0,0,0.06)] ring-1 ring-black/[0.02] z-50 animate-in fade-in slide-in-from-top-1 duration-150 text-xs overflow-hidden">
-                  {/* Notifications Header */}
-                  <div className="px-4 py-3 border-b border-[#3C3C43]/10 bg-[#F2F2F7]/40 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-[15px] text-[#1C1C1E] tracking-[-0.01em]">Notifications</span>
-                      {unreadCount > 0 ? (
-                        <span className="text-[10px] font-semibold text-[#007AFF] bg-[#007AFF]/10 px-2 py-0.5 rounded-full">
-                          {unreadCount} New
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-medium text-[#8E8E93] bg-[#E5E5EA] px-2 py-0.5 rounded-full">
-                          All Read
-                        </span>
-                      )}
+                {/* iOS Notification Centre: frosted sheet of rounded notification cards */}
+                <div className="ios-pop absolute right-0 mt-3 w-[22rem] sm:w-[24rem] rounded-[24px] shadow-[0_24px_60px_-12px_rgba(0,0,0,0.28),0_2px_8px_rgba(0,0,0,0.06)] z-50 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
+                  <div className="px-4 pt-4 pb-3 flex items-end justify-between">
+                    <div>
+                      <div className="text-[10px] font-extrabold uppercase tracking-[0.1em] text-[#007AFF]">
+                        {unreadCount > 0 ? `${unreadCount} new` : "All caught up"}
+                      </div>
+                      <h3 className="text-[22px] font-bold text-[#1C1C1E] tracking-[-0.02em] leading-tight">Notifications</h3>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       {unreadCount > 0 && (
                         <button
                           type="button"
                           onClick={handleMarkAllRead}
-                          className="text-[11px] text-[#007AFF] hover:underline flex items-center gap-1 font-semibold transition-colors"
                           title="Mark all as read"
+                          className="h-7 px-2.5 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF]/20 text-[#007AFF] text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                         >
-                          <CheckCheck className="w-3 h-3" />
-                          <span>Mark Read</span>
+                          <CheckCheck className="w-3.5 h-3.5" />
+                          Read all
                         </button>
                       )}
                       {notifications.length > 0 && (
                         <button
                           type="button"
                           onClick={handleClearAll}
-                          className="text-[11px] text-[#8E8E93] hover:text-[#FF3B30] flex items-center gap-1 transition-colors"
                           title="Clear all notifications"
+                          aria-label="Clear all notifications"
+                          className="w-7 h-7 rounded-full bg-[#767680]/12 hover:bg-[#FF3B30]/14 text-[#636366] hover:text-[#FF3B30] flex items-center justify-center transition-colors cursor-pointer"
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <X className="w-3.5 h-3.5" strokeWidth={2.6} />
                         </button>
                       )}
                     </div>
                   </div>
 
-                  {/* Notifications List */}
-                  <div className="divide-y divide-[#3C3C43]/[0.08] max-h-80 overflow-y-auto overscroll-contain">
+                  <div className="px-3 pb-3 space-y-2 max-h-[26rem] overflow-y-auto overscroll-contain">
                     {notifications.length === 0 ? (
-                      <div className="p-6 text-center text-[#8E8E93]">
-                        <Bell className="w-6 h-6 mx-auto mb-2 text-[#C7C7CC]" />
-                        <p className="font-medium text-xs">No notifications</p>
-                        <p className="text-[11px] text-[#8E8E93] mt-0.5">You are all caught up!</p>
+                      <div className="py-10 text-center">
+                        <div
+                          className="w-12 h-12 mx-auto rounded-2xl flex items-center justify-center text-white mb-3"
+                          style={{ background: "linear-gradient(160deg, rgba(52,199,89,0.8) 0%, #34C759 100%)", boxShadow: "0 8px 18px -6px rgba(52,199,89,0.6)" }}
+                        >
+                          <CheckCheck className="w-6 h-6" />
+                        </div>
+                        <p className="text-[14px] font-semibold text-[#1C1C1E]">No Notifications</p>
+                        <p className="text-[12px] text-[#8E8E93] mt-0.5">You are all caught up.</p>
                       </div>
                     ) : (
-                      notifications.map((n) => (
-                        <div
-                          key={n.id}
-                          onClick={() => handleNotificationClick(n)}
-                          className={`px-4 py-3 transition-colors cursor-pointer flex items-start gap-3 active:bg-[#767680]/[0.14] ${
-                            n.unread ? "bg-[#007AFF]/[0.055] hover:bg-[#007AFF]/[0.09]" : "hover:bg-[#767680]/[0.08]"
-                          }`}
-                        >
-                          <div className="pt-0.5">
+                      notifications.map((n) => {
+                        const k = notifKind(n);
+                        const KIcon = k.icon;
+                        return (
+                          <button
+                            type="button"
+                            key={n.id}
+                            onClick={() => handleNotificationClick(n)}
+                            className={`w-full text-left rounded-[18px] p-3 flex items-start gap-3 transition-all duration-150 cursor-pointer active:scale-[0.985] border ${
+                              n.unread
+                                ? "bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-12px_rgba(0,0,0,0.22)] border-white"
+                                : "bg-white/55 border-white/60 hover:bg-white/80"
+                            }`}
+                          >
                             <span
-                              className={`w-2 h-2 rounded-full block ${
-                                n.unread ? "bg-[#007AFF]" : "bg-transparent"
-                              }`}
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-1">
-                              <span
-                                className={`text-xs truncate ${
-                                  n.unread ? "font-semibold text-[#1C1C1E]" : "font-normal text-[#3C3C43]"
-                                }`}
-                              >
+                              className="w-10 h-10 rounded-[11px] flex items-center justify-center text-white shrink-0"
+                              style={{ background: `linear-gradient(160deg, ${k.color}C7 0%, ${k.color} 100%)`, boxShadow: `0 6px 14px -6px ${k.color}` }}
+                            >
+                              <KIcon className="w-[19px] h-[19px]" strokeWidth={2.2} />
+                            </span>
+                            <span className="flex-1 min-w-0">
+                              <span className="flex items-center justify-between gap-2">
+                                <span className="text-[10px] font-bold uppercase tracking-[0.06em]" style={{ color: k.color }}>
+                                  {k.app}
+                                </span>
+                                <span className="flex items-center gap-1.5 text-[10.5px] text-[#8E8E93] shrink-0">
+                                  {n.time}
+                                  {n.unread && <span className="w-2 h-2 rounded-full bg-[#007AFF]" />}
+                                </span>
+                              </span>
+                              <span className={`block text-[13px] mt-0.5 truncate ${n.unread ? "font-semibold text-[#1C1C1E]" : "font-medium text-[#3C3C43]"}`}>
                                 {n.title}
                               </span>
-                              <span className="text-[10px] text-[#8E8E93] shrink-0 font-mono">{n.time}</span>
-                            </div>
-                            <p className="text-[11px] text-[#8E8E93] mt-0.5 leading-snug line-clamp-2">
-                              {n.desc}
-                            </p>
-                          </div>
-                        </div>
-                      ))
+                              <span className="block text-[12px] text-[#6C6C70] leading-snug mt-0.5 line-clamp-2">{n.desc}</span>
+                            </span>
+                          </button>
+                        );
+                      })
                     )}
                   </div>
 
-                  {/* Footer with Simulate Live Alert button */}
-                  <div className="px-3 py-2.5 border-t border-[#3C3C43]/10 bg-[#F2F2F7]/50 flex items-center justify-between">
+                  <div className="px-3 pb-3">
                     <button
                       type="button"
                       onClick={handleSimulateAlert}
-                      className="text-[11px] text-[#007AFF] hover:text-[#0062CC] font-medium flex items-center gap-1.5 px-2 py-1 rounded hover:bg-[#EAF4FF] transition-colors"
+                      className="w-full h-9 rounded-[12px] text-white text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] cursor-pointer"
+                      style={{ background: "linear-gradient(100deg, #0A84FF 0%, #5E5CE6 100%)", boxShadow: "0 8px 18px -8px rgba(94,92,230,0.7)" }}
                     >
-                      <Sparkles className="w-3 h-3 text-[#007AFF]" />
-                      <span>Simulate Notification</span>
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Simulate Notification
                     </button>
-                    <span className="text-[10px] text-[#8E8E93]">Click alert to read</span>
                   </div>
                 </div>
               </>
@@ -468,122 +295,113 @@ export default function Header({
               onClick={() => {
                 setShowProfileDropdown(!showProfileDropdown);
                 setShowNotifications(false);
-                setShowBugReportModal(false);
               }}
               className="relative p-0.5 rounded-full hover:ring-2 hover:ring-[#007AFF]/40 transition-colors duration-150 outline-none focus:outline-none select-none cursor-pointer"
               title="User Profile & Account Settings"
               aria-label="User Profile"
             >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#007AFF] to-[#32ADE6] flex items-center justify-center text-white text-xs font-bold shadow-xs">
+              <div className="w-9 h-9 rounded-full text-white flex items-center justify-center text-xs font-bold" style={{ background: "linear-gradient(160deg, rgba(175,82,222,0.8) 0%, #AF52DE 100%)", boxShadow: "0 6px 14px -4px rgba(175,82,222,0.55), inset 0 1px 0 rgba(255,255,255,0.35)" }}>
                 {profile.initial || profile.name.charAt(0)}
               </div>
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#34C759] ring-2 ring-white" />
             </button>
 
-            {/* Profile Dropdown Menu */}
-            {showProfileDropdown && (
-              <>
-                <div
-                  className="fixed inset-0 z-40"
-                  onClick={() => setShowProfileDropdown(false)}
-                />
-                <div className="absolute right-0 mt-2.5 w-80 sm:w-88 bg-white/88 backdrop-blur-2xl border border-[#3C3C43]/12 rounded-[18px] shadow-[0_12px_40px_-4px_rgba(0,0,0,0.18),0_2px_8px_rgba(0,0,0,0.06)] ring-1 ring-black/[0.02] p-3.5 z-50 animate-in fade-in slide-in-from-top-1 duration-150 space-y-3 text-xs">
-                  {/* Operator Identity Banner */}
-                  <div className="flex items-start gap-3 p-3 bg-[#767680]/[0.08] rounded-[14px]">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#007AFF] to-[#32ADE6] flex items-center justify-center text-white text-lg font-bold shadow-sm shrink-0">
-                      {profile.initial || profile.name.charAt(0)}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-bold text-[#1C1C1E] truncate">{profile.name}</h4>
-                        <span className="flex items-center gap-1 text-[10px] text-[#248A3D] bg-[#DCF7E3]/80 px-2 py-0.5 rounded-full font-medium">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#34C759] animate-pulse" />
-                          <span>Online</span>
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-[#007AFF] font-semibold flex items-center gap-1 mt-0.5">
-                        <Shield className="w-3 h-3" />
-                        <span className="truncate">{profile.role}</span>
-                      </div>
-                      <div className="text-[11px] text-[#8E8E93] truncate mt-0.5 font-mono">
-                        {profile.email}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Quick Edit Profile Action Button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditFormData({ ...profile });
-                      setShowEditProfileModal(true);
-                      setShowProfileDropdown(false);
-                    }}
-                    className="w-full flex items-center justify-between p-2.5 rounded-[14px] bg-[#767680]/[0.08] hover:bg-[#767680]/[0.14] active:bg-[#767680]/[0.2] text-[#1C1C1E] font-semibold transition-all cursor-pointer group"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-[8px] bg-[#007AFF] flex items-center justify-center text-white shadow-sm shrink-0">
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="text-left">
-                        <span className="block text-xs font-semibold">Edit Operator Profile</span>
-                        <span className="block text-[10px] text-[#8E8E93] font-normal">Change name, email, phone & details</span>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-[#8E8E93] group-hover:text-[#007AFF] transition-transform group-hover:translate-x-0.5" />
-                  </button>
-
-                  {/* Profile Details Snapshot */}
-                  <div className="text-[11px] bg-[#767680]/[0.08] px-3 rounded-[14px]">
-                    <div className="flex items-center justify-between py-2.5">
-                      <span className="text-[#8E8E93] flex items-center gap-1.5">
-                        <Phone className="w-3 h-3 text-[#8E8E93]" />
-                        <span>Contact:</span>
-                      </span>
-                      <span className="font-mono text-[#2C2C2E] font-medium">{profile.phone}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2.5 border-t border-[#3C3C43]/[0.08]">
-                      <span className="text-[#8E8E93] flex items-center gap-1.5">
-                        <Building className="w-3 h-3 text-[#8E8E93]" />
-                        <span>Department:</span>
-                      </span>
-                      <span className="text-[#2C2C2E] font-medium">{profile.department}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-1 border-t border-[#E5E5EA]/60">
-                      <span className="text-[#8E8E93] flex items-center gap-1.5">
-                        <MapPin className="w-3 h-3 text-[#8E8E93]" />
-                        <span>Active Territory:</span>
-                      </span>
-                      <span className="text-[#007AFF] font-semibold">{territory === "ALL" ? "All Territories (HQ)" : territory}</span>
-                    </div>
-                  </div>
-
-                  {/* Bottom Log Out Option */}
-                  <div className="pt-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowProfileDropdown(false);
-                        handleLogout();
-                      }}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[14px] bg-[#FF3B30]/10 hover:bg-[#FF3B30]/18 active:bg-[#FF3B30]/24 text-[#FF3B30] font-semibold transition-all cursor-pointer"
-                    >
-                      <Power className="w-3.5 h-3.5" />
-                      <span>Log Out</span>
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
           </div>
         </div>
       </header>
 
+      {/* Profile: centred iOS account sheet */}
+      {showProfileDropdown && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-[8px] animate-in fade-in duration-200"
+          onClick={() => setShowProfileDropdown(false)}
+        >
+          <div
+            role="dialog"
+            aria-label="Account"
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-[380px] rounded-[28px] shadow-[0_30px_80px_-16px_rgba(0,0,0,0.4)] overflow-hidden animate-in zoom-in-95 duration-200"
+            style={{ background: "linear-gradient(180deg, rgba(175,82,222,0.18) 0%, rgba(0,122,255,0.09) 150px, #F2F2F7 270px)", backgroundColor: "#F2F2F7" }}
+          >
+            <div className="flex items-center justify-between px-4 pt-3.5">
+              <span className="text-[15px] font-semibold text-[#1C1C1E]">Account</span>
+              <button
+                type="button"
+                onClick={() => setShowProfileDropdown(false)}
+                className="text-[15px] font-semibold text-[#007AFF] hover:opacity-70 transition-opacity cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+
+            {/* Identity */}
+            <div className="flex flex-col items-center text-center px-6 pt-4 pb-5">
+              <div className="relative">
+                <div
+                  className="w-20 h-20 rounded-full flex items-center justify-center text-white text-[30px] font-bold ring-4 ring-white"
+                  style={{ background: "linear-gradient(150deg, #5E5CE6 0%, #AF52DE 100%)", boxShadow: "0 14px 30px -10px rgba(175,82,222,0.7)" }}
+                >
+                  {profile.initial || profile.name.charAt(0)}
+                </div>
+                <span className="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-[#34C759] ring-[3px] ring-white" />
+              </div>
+              <h3 className="mt-3 text-[20px] font-bold text-[#1C1C1E] tracking-[-0.02em]">{profile.name}</h3>
+              <p className="text-[13px] text-[#6C6C70]">{profile.email}</p>
+              <span className="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#007AFF]/12 text-[#007AFF] text-[11px] font-semibold">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                {profile.role}
+              </span>
+            </div>
+
+            <div className="px-4 pb-4 space-y-3.5">
+              {/* Grouped list */}
+              <div className="bg-white rounded-[14px] overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditFormData({ ...profile });
+                    setShowEditProfileModal(true);
+                    setShowProfileDropdown(false);
+                  }}
+                  className="group w-full flex items-center gap-3 px-3 py-2.5 hover:bg-[#767680]/[0.06] active:bg-[#767680]/[0.12] transition-colors cursor-pointer"
+                >
+                  <AccountTile color="#007AFF" icon={Edit3} />
+                  <span className="flex-1 text-left text-[14px] text-[#1C1C1E]">Edit Profile</span>
+                  <ChevronRight className="w-4 h-4 text-[#C7C7CC] group-hover:text-[#8E8E93] transition-colors" />
+                </button>
+                <AccountRow color="#34C759" icon={Phone} label="Phone" value={profile.phone} />
+                <AccountRow color="#FF9500" icon={Building} label="Department" value={profile.department} />
+                <AccountRow
+                  color="#FF3B30"
+                  icon={MapPin}
+                  label="Territory"
+                  value={territory === "ALL" ? "All Cities" : territory}
+                />
+              </div>
+
+              <div className="bg-white rounded-[14px] overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowProfileDropdown(false);
+                    handleLogout();
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-[#FF3B30]/[0.06] active:bg-[#FF3B30]/[0.12] transition-colors cursor-pointer"
+                >
+                  <AccountTile color="#FF3B30" icon={Power} />
+                  <span className="flex-1 text-left text-[14px] font-semibold text-[#FF3B30]">Log Out</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit Profile Modal */}
       {showEditProfileModal && (
         <div className="fixed inset-0 bg-black/25 backdrop-blur-[6px] z-50 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
-          <div className="bg-white/95 backdrop-blur-2xl border border-[#3C3C43]/12 rounded-[20px] shadow-[0_24px_64px_-8px_rgba(0,0,0,0.3)] w-full max-w-md p-6 space-y-4 animate-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-3">
+          <div className="ios-pop bg-white/95 backdrop-blur-2xl rounded-[20px] shadow-[0_24px_64px_-8px_rgba(0,0,0,0.3)] w-full max-w-md p-6 space-y-4 animate-in zoom-in-95 duration-150">
+            <div className="ios-pop-head flex items-center justify-between border-b border-[#F2F2F7] pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-[#007AFF]/10 text-[#007AFF] flex items-center justify-center">
                   <Edit3 className="w-4 h-4" />
@@ -694,342 +512,39 @@ export default function Header({
         </div>
       )}
 
-      {/* Developer Bug Tracker & QA Checklist Modal */}
-      {showBugReportModal && (
-        <div className="fixed inset-0 bg-black/25 backdrop-blur-[6px] z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto" >
-          <div className="bg-white/95 backdrop-blur-2xl border border-[#3C3C43]/12 rounded-[20px] shadow-[0_24px_64px_-8px_rgba(0,0,0,0.3)] w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 text-xs">
-            {/* Modal Header */}
-            <div className="px-5 py-4 border-b border-[#3C3C43]/10 bg-[#FF9500]/[0.07] flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-[10px] bg-[#FF9500] flex items-center justify-center text-white shadow-sm shrink-0">
-                  <Bug className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-[15px] font-semibold text-[#1C1C1E] tracking-[-0.01em] flex items-center gap-2">
-                    <span>Developer Bug Tracker & QA Review</span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#FF9500]/15 text-[#B56B00]">
-                      Live Checklist
-                    </span>
-                  </h3>
-                  <p className="text-[11px] text-[#8E8E93]">
-                    Interactive tick/untick checklist for website updates & developer tasks.
-                  </p>
-                </div>
-              </div>
-
-              {/* Header Right Actions */}
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleCopyNotes}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E5E5EA] hover:border-[#007AFF] text-[#3C3C43] hover:text-[#007AFF] text-xs font-semibold shadow-2xs transition-all cursor-pointer active:scale-[0.98]"
-                  title="Copy notes in formatted checklist text"
-                >
-                  {copiedNotes ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-[#34C759]" />
-                      <span className="text-[#248A3D] font-bold">Notes Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5 text-[#8E8E93]" />
-                      <span>Copy Notes</span>
-                    </>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowBugReportModal(false)}
-                  className="w-7 h-7 rounded-full bg-[#767680]/12 hover:bg-[#767680]/20 text-[#8E8E93] hover:text-[#1C1C1E] flex items-center justify-center transition-colors text-base leading-none cursor-pointer active:scale-95"
-                  aria-label="Close bug tracker"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-
-            {/* Quick Metrics & Progress Bar */}
-            <div className="px-5 py-3 border-b border-[#3C3C43]/10 bg-[#F2F2F7]/60 flex flex-col gap-2 shrink-0">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-[#636366] font-medium">
-                    Total Tracked: <strong className="text-[#1C1C1E] font-mono">{bugs.length}</strong>
-                  </span>
-                  <span className="text-[#FF3B30] font-medium">
-                    Open / Unticked: <strong className="font-mono">{openBugsCount}</strong>
-                  </span>
-                  <span className="text-[#34C759] font-medium">
-                    Resolved / Ticked: <strong className="font-mono">{bugs.length - openBugsCount}</strong>
-                  </span>
-                </div>
-                <span className="text-[11px] font-bold text-[#007AFF]">
-                  {Math.round(((bugs.length - openBugsCount) / (bugs.length || 1)) * 100)}% Resolved
-                </span>
-              </div>
-              <div className="w-full h-1.5 bg-[#767680]/20 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-[#007AFF] transition-all duration-300 rounded-full"
-                  style={{
-                    width: `${Math.round(((bugs.length - openBugsCount) / (bugs.length || 1)) * 100)}%`,
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Filter Tabs & Add Bug Toggle */}
-            <div className="px-4 py-2.5 border-b border-[#3C3C43]/10 bg-transparent flex items-center justify-between gap-2 shrink-0">
-              <div className="flex items-center gap-[2px] bg-[#767680]/12 p-[2px] rounded-[9px] text-xs font-semibold">
-                {[
-                  { id: "all", label: "All Items", count: bugs.length },
-                  { id: "open", label: "Open / Unticked", count: openBugsCount },
-                  { id: "resolved", label: "Resolved / Ticked", count: bugs.length - openBugsCount },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setBugFilter(tab.id)}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold border transition-colors duration-150 cursor-pointer outline-none focus:outline-none select-none ${
-                      bugFilter === tab.id
-                        ? "bg-white text-[#007AFF] border-[#E5E5EA] shadow-2xs"
-                        : "border-transparent text-[#636366] hover:text-[#1C1C1E]"
-                    }`}
-                  >
-                    <span>{tab.label}</span>
-                    <span className="ml-1 text-[10px] text-[#8E8E93]">({tab.count})</span>
-                  </button>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowAddBugForm(!showAddBugForm)}
-                className="px-3 py-1 bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold rounded-lg shadow-2xs transition-all active:scale-[0.98] flex items-center gap-1 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>{showAddBugForm ? "Close Form" : "Report Issue"}</span>
-              </button>
-            </div>
-
-            {/* Add Bug Form (Collapsible) */}
-            {showAddBugForm && (
-              <form onSubmit={handleCreateBug} className="p-4 bg-[#F2F2F7]/90 border-b border-[#E5E5EA]/90 space-y-3 shrink-0 animate-in fade-in duration-150">
-                <div className="font-semibold text-[#2C2C2E] text-xs">Report New Bug / Change Request</div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                  <div className="sm:col-span-2">
-                    <label className="text-[#636366] block text-[11px] mb-1 font-medium">Issue Title *</label>
-                    <input
-                      type="text"
-                      required
-                      value={newBug.title}
-                      onChange={(e) => setNewBug({ ...newBug, title: e.target.value })}
-                      placeholder="e.g. Table universal filter border twitch..."
-                      className="w-full px-3 py-1.5 bg-white border border-[#E5E5EA] rounded-lg text-xs font-medium text-[#1C1C1E] focus:outline-none focus:border-[#007AFF]"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[#636366] block text-[11px] mb-1 font-medium">Module</label>
-                    <select
-                      value={newBug.module}
-                      onChange={(e) => setNewBug({ ...newBug, module: e.target.value })}
-                      className="w-full px-2.5 py-1.5 bg-white border border-[#E5E5EA] rounded-lg text-xs font-medium text-[#1C1C1E] focus:outline-none focus:border-[#007AFF]"
-                    >
-                      {["Header", "Sidebar", "DataTable", "Orders", "Cashier", "Customers", "Inventory", "Drivers", "Settings"].map((m) => (
-                        <option key={m} value={m}>{m}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                  <div>
-                    <label className="text-[#636366] block text-[11px] mb-1 font-medium">Severity</label>
-                    <select
-                      value={newBug.severity}
-                      onChange={(e) => setNewBug({ ...newBug, severity: e.target.value })}
-                      className="w-full px-2.5 py-1.5 bg-white border border-[#E5E5EA] rounded-lg text-xs font-medium text-[#1C1C1E] focus:outline-none focus:border-[#007AFF]"
-                    >
-                      <option value="Low">Low - Cosmetic / Polish</option>
-                      <option value="Medium">Medium - Feature Update</option>
-                      <option value="High">High - Priority Bug</option>
-                      <option value="Critical">Critical - Blocker</option>
-                    </select>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="text-[#636366] block text-[11px] mb-1 font-medium">Description / Review Notes</label>
-                    <input
-                      type="text"
-                      value={newBug.description}
-                      onChange={(e) => setNewBug({ ...newBug, description: e.target.value })}
-                      placeholder="Brief notes for the developer..."
-                      className="w-full px-3 py-1.5 bg-white border border-[#E5E5EA] rounded-lg text-xs font-medium text-[#1C1C1E] focus:outline-none focus:border-[#007AFF]"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-end gap-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddBugForm(false)}
-                    className="px-3 py-1.5 rounded-lg border border-[#E5E5EA] text-[#636366] hover:bg-[#F2F2F7] text-xs font-medium transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-1.5 bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold rounded-lg shadow-2xs transition-all active:scale-[0.98]"
-                  >
-                    Add to Checklist
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {/* Bug Checklist Items */}
-            <div className="flex-1 overflow-y-auto divide-y divide-[#F2F2F7] p-2 sm:p-3">
-              {filteredBugs.length === 0 ? (
-                <div className="p-8 text-center text-[#8E8E93]">
-                  <Bug className="w-8 h-8 mx-auto mb-2 text-[#C7C7CC]" />
-                  <p className="font-semibold text-[#3C3C43] text-xs">No issues found in this view</p>
-                  <p className="text-[11px] text-[#8E8E93] mt-0.5">
-                    {bugFilter === "open"
-                      ? "All reported issues have been ticked off and resolved!"
-                      : bugFilter === "resolved"
-                      ? "No resolved issues yet."
-                      : "No bugs reported yet."}
-                  </p>
-                </div>
-              ) : (
-                filteredBugs.map((bug) => (
-                  <div
-                    key={bug.id}
-                    className={`py-2 px-2.5 rounded-lg flex items-start justify-between gap-3 transition-colors ${
-                      bug.resolved ? "bg-[#F2F2F7]/60" : "hover:bg-[#F2F2F7]/80"
-                    }`}
-                  >
-                    {/* Tick / Untick Checkbox */}
-                    <button
-                      type="button"
-                      onClick={() => toggleBugResolved(bug.id)}
-                      className="mt-0.5 shrink-0 transition-transform active:scale-90 cursor-pointer outline-none focus:outline-none"
-                      title={bug.resolved ? "Click to untick / mark open" : "Click to tick / mark resolved"}
-                    >
-                      {bug.resolved ? (
-                        <span className="w-[18px] h-[18px] rounded-full bg-[#34C759] flex items-center justify-center shadow-[0_1px_3px_rgba(52,199,89,0.4)]">
-                          <Check className="w-3 h-3 text-white" strokeWidth={3.5} />
-                        </span>
-                      ) : (
-                        <span className="w-[18px] h-[18px] rounded-full border-[1.5px] border-[#C7C7CC] hover:border-[#007AFF] block transition-colors" />
-                      )}
-                    </button>
-
-                    {/* Bug Details */}
-                    <div
-                      onClick={() => toggleBugResolved(bug.id)}
-                      className="flex-1 min-w-0 cursor-pointer select-none"
-                    >
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="font-mono text-[10px] text-[#8E8E93] font-bold">{bug.id}</span>
-                        <span
-                          className={`font-semibold text-xs ${
-                            bug.resolved ? "line-through text-[#8E8E93]" : "text-[#2C2C2E]"
-                          }`}
-                        >
-                          {bug.title}
-                        </span>
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-[#F2F2F7] text-[#636366]">
-                          {bug.module}
-                        </span>
-                        <span
-                          className={`px-1.5 py-0.2 rounded text-[10px] font-semibold ${
-                            bug.severity === "Critical" || bug.severity === "High"
-                              ? "bg-[#FFF1F0] text-[#C62A21] border border-[#FFD5D2]"
-                              : bug.severity === "Medium"
-                              ? "bg-[#FFF6E8] text-[#B56B00] border border-[#FFE0AD]"
-                              : "bg-[#EBFAEF] text-[#248A3D] border border-[#BCEFC9]"
-                          }`}
-                        >
-                          {bug.severity}
-                        </span>
-                        <span className="text-[10px] text-[#8E8E93] font-mono">{bug.reported_at}</span>
-                      </div>
-                      <p
-                        className={`text-[11px] mt-0.5 line-clamp-2 ${
-                          bug.resolved ? "text-[#8E8E93] line-through" : "text-[#8E8E93]"
-                        }`}
-                      >
-                        {bug.description}
-                      </p>
-                    </div>
-
-                    {/* Delete Bug Button */}
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteBug(bug.id)}
-                      className="p-1 rounded text-[#C7C7CC] hover:text-[#FF3B30] hover:bg-[#FFF1F0] transition-colors shrink-0 cursor-pointer"
-                      title="Delete bug item"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Note Format Preview Box */}
-            <div className="p-3 bg-[#F2F2F7]/90 border-t border-[#E5E5EA]/90 shrink-0 space-y-2">
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="font-bold text-[#636366] flex items-center gap-1">
-                  <span>📋 Notes Format Preview</span>
-                  <span className="text-[#8E8E93] font-normal">(Formatted for developers)</span>
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopyNotes}
-                  className="text-[11px] text-[#007AFF] hover:text-[#0062CC] font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                >
-                  <Copy className="w-3 h-3" />
-                  <span>{copiedNotes ? "Copied!" : "Copy Format"}</span>
-                </button>
-              </div>
-
-              <div className="bg-white border border-[#E5E5EA] rounded-lg p-2.5 font-mono text-[11px] text-[#3C3C43] max-h-24 overflow-y-auto leading-relaxed select-all">
-                {bugs.map((b) => (
-                  <div key={b.id} className="truncate">
-                    <span className={b.resolved ? "text-[#34C759] font-bold" : "text-[#FF9500] font-bold"}>
-                      [{b.resolved ? "✓" : " "}]
-                    </span>{" "}
-                    ({b.id}) [{b.severity.toUpperCase()} - {b.module}] {b.title}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Modal Bottom Footer */}
-            <div className="px-5 py-3 bg-white border-t border-[#F2F2F7] flex items-center justify-between text-xs shrink-0">
-              <span className="text-[11px] text-[#8E8E93] font-medium">
-                {bugs.length - openBugsCount} of {bugs.length} resolved • Review and tick before publishing updates
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleCopyNotes}
-                  className="px-3 py-1.5 rounded-xl border border-[#E5E5EA] hover:bg-[#F2F2F7] text-[#3C3C43] font-semibold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <Copy className="w-3.5 h-3.5 text-[#8E8E93]" />
-                  <span>{copiedNotes ? "Notes Copied!" : "Copy Notes"}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowBugReportModal(false)}
-                  className="px-4 py-1.5 bg-[#007AFF] hover:bg-[#0062CC] text-white font-semibold rounded-xl transition-all shadow-2xs cursor-pointer"
-                >
-                  Done
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
+  );
+}
+
+/** What each notification is about: its app label, icon and colour. */
+function notifKind(n) {
+  const t = `${n.title} ${n.desc}`.toLowerCase();
+  if (t.includes("stock")) return { app: "Inventory", icon: Package, color: "#FF9500" };
+  if (t.includes("cash") || t.includes("settlement")) return { app: "Cashier", icon: Wallet, color: "#FF2D55" };
+  if (t.includes("route") || t.includes("dispatch")) return { app: "Routes", icon: Truck, color: "#32ADE6" };
+  if (t.includes("order")) return { app: "Orders", icon: ShoppingCart, color: "#34C759" };
+  return { app: "Al Qattara", icon: Bell, color: "#007AFF" };
+}
+
+/** iOS Settings-style icon tile. */
+function AccountTile({ color, icon: Icon }) {
+  return (
+    <span
+      className="w-[30px] h-[30px] rounded-[8px] flex items-center justify-center text-white shrink-0"
+      style={{ background: `linear-gradient(160deg, ${color}C7 0%, ${color} 100%)` }}
+    >
+      <Icon className="w-4 h-4" strokeWidth={2.3} />
+    </span>
+  );
+}
+
+/** One row of the account sheet's grouped list, with an inset hairline above. */
+function AccountRow({ color, icon, label, value }) {
+  return (
+    <div className="relative flex items-center gap-3 px-3 py-2.5 before:absolute before:top-0 before:left-[54px] before:right-0 before:h-px before:bg-[#3C3C43]/[0.1]">
+      <AccountTile color={color} icon={icon} />
+      <span className="text-[14px] text-[#1C1C1E]">{label}</span>
+      <span className="flex-1 min-w-0 text-right text-[13px] text-[#8E8E93] truncate">{value}</span>
+    </div>
   );
 }

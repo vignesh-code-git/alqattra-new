@@ -5,9 +5,10 @@ import { Download } from "lucide-react";
 /**
  * Header bar for a page's primary record list.
  *
- * Plain surface with a hairline underneath — no gradient — so the table's own
- * header row stays the darkest thing in the card. Page-level actions live here
- * via `actions`, which is why pages no longer carry a separate toolbar.
+ * Same look as the dashboard panels: a soft blue tint that fades down into
+ * the card, a solid blue icon badge with a matching glow, and the title in
+ * dark ink. Page-level actions live here via `actions`, which is why pages
+ * no longer carry a separate toolbar.
  */
 export default function PanelHeader({
   icon: Icon,
@@ -19,19 +20,28 @@ export default function PanelHeader({
   children,
 }) {
   return (
-    <div className="px-[18px] py-3 bg-[#007AFF] flex items-center justify-between gap-3">
-      <div className="min-w-0 flex items-center gap-2.5">
+    <div
+      className="px-[18px] py-3 flex items-center justify-between gap-3 border-b border-[#007AFF]/10"
+      style={{ background: "linear-gradient(180deg, rgba(0,122,255,0.11) 0%, rgba(0,122,255,0.035) 100%)" }}
+    >
+      <div className="min-w-0 flex items-center gap-3">
         {Icon && (
-          <span className="w-7 h-7 rounded-[8px] bg-white/20 text-white flex items-center justify-center shrink-0">
-            <Icon className="w-[15px] h-[15px]" />
+          <span
+            className="w-9 h-9 rounded-xl text-white flex items-center justify-center shrink-0"
+            style={{
+              background: "linear-gradient(160deg, #007AFFC7 0%, #007AFF 100%)",
+              boxShadow: "0 6px 14px -5px rgba(0,122,255,0.4), inset 0 1px 0 rgba(255,255,255,0.35)",
+            }}
+          >
+            <Icon className="w-[18px] h-[18px]" strokeWidth={2.3} />
           </span>
         )}
         <div className="min-w-0">
-          <h2 className="text-white font-semibold text-[15px] tracking-[-0.014em] leading-tight truncate">
+          <h2 className="text-[#1C1C1E] font-bold text-[15px] tracking-[-0.014em] leading-tight truncate">
             {title}
           </h2>
           {subtitle && (
-            <p className="text-white/70 text-[11px] leading-tight mt-0.5 truncate">{subtitle}</p>
+            <p className="text-[#6C6C70] text-[11px] leading-tight mt-0.5 truncate">{subtitle}</p>
           )}
         </div>
       </div>
@@ -43,7 +53,7 @@ export default function PanelHeader({
           <button
             type="button"
             onClick={onAction}
-            className="px-3.5 py-1.5 rounded-full bg-white hover:bg-white/90 text-[#007AFF] text-[11.5px] font-semibold inline-flex items-center gap-1.5 cursor-pointer active:scale-95 transition shadow-[0_1px_3px_rgba(0,0,0,0.15)]"
+            className="px-3.5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-[11.5px] font-semibold inline-flex items-center gap-1.5 cursor-pointer active:scale-95 transition shadow-[0_6px_14px_-6px_rgba(0,122,255,0.6)]"
           >
             <Download className="w-3.5 h-3.5" />
             {actionLabel}

@@ -405,8 +405,8 @@ export default function WalletPage() {
       {/* COUPON DETAILS MODAL (view coupons.png & view coupons-1.png) */}
       {couponModalRow && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
-            <div className="px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
+          <div className="ios-pop bg-white rounded-[20px] shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden">
+            <div className="ios-pop-head px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-[15px] font-semibold text-[#1C1C1E]">Coupon Details</h3>
               <button
                 type="button"
@@ -420,19 +420,19 @@ export default function WalletPage() {
             <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
               {/* Top 3 Pills */}
               <div className="grid grid-cols-3 gap-3 text-center text-xs">
-                <div className="bg-[#F2F2F7]/70 border border-[#3C3C43]/10 rounded-2xl p-3">
+                <div className="bg-[#F2F2F7]/70 rounded-2xl p-3">
                   <span className="text-[#8E8E93] block text-[10px] font-semibold uppercase tracking-wider">
                     Customer ID
                   </span>
                   <span className="font-bold text-[#1C1C1E] mt-0.5 block">{couponModalRow.customer_id}</span>
                 </div>
-                <div className="bg-[#F2F2F7]/70 border border-[#3C3C43]/10 rounded-2xl p-3">
+                <div className="bg-[#F2F2F7]/70 rounded-2xl p-3">
                   <span className="text-[#8E8E93] block text-[10px] font-semibold uppercase tracking-wider">
                     Total Amount
                   </span>
                   <span className="font-bold text-[#007AFF] mt-0.5 block">AED {couponModalRow.amount}</span>
                 </div>
-                <div className="bg-[#F2F2F7]/70 border border-[#3C3C43]/10 rounded-2xl p-3">
+                <div className="bg-[#F2F2F7]/70 rounded-2xl p-3">
                   <span className="text-[#8E8E93] block text-[10px] font-semibold uppercase tracking-wider">
                     Total Coupons
                   </span>
@@ -455,7 +455,7 @@ export default function WalletPage() {
               </div>
 
               {/* Coupon List Table */}
-              <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
+              <div className="rounded-2xl overflow-hidden">
                 <table className="ios-table w-full text-left border-collapse">
                   <thead>
                     <tr className="ios-thead">

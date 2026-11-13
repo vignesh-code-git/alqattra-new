@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import FilterPopup from "@/components/FilterPopup";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import StatCard, { hexFromTone } from "@/components/StatCard";
 import BackLink from "@/components/BackLink";
 import PanelHeader from "@/components/PanelHeader";
 import { apiService } from "@/services/api";
@@ -348,7 +350,7 @@ export default function CustomersPage() {
         {viewMode === "list" && (
           <>
             {/* Filter Customers iOS Card */}
-            <div className="ios-surface p-5">
+            <FilterPopup title="Filter Orders" className="p-5">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider mb-4 flex items-center gap-1.5">
                 <Filter className="w-3.5 h-3.5 text-[#007AFF]" />
                 Filter Orders
@@ -576,7 +578,7 @@ export default function CustomersPage() {
                   Reset
                 </button>
               </div>
-            </div>
+            </FilterPopup>
 
             {/* Customer Management Table Card */}
             <div className="ios-surface overflow-hidden">
@@ -1247,50 +1249,10 @@ export default function CustomersPage() {
             {txTab === "asset" && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                        TOTAL ASSETS
-                      </div>
-                      <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">3</div>
-                    </div>
-                    <div className="w-11 h-11 rounded-2xl bg-[#FF9500]/15 text-[#FF9500] flex items-center justify-center">
-                      <Package className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                        TOTAL SECURITY DEPOSIT
-                      </div>
-                      <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">60</div>
-                    </div>
-                    <div className="w-11 h-11 rounded-2xl bg-[#FFCC00]/20 text-[#D4A000] flex items-center justify-center">
-                      <CreditCard className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                        RETURNED ASSETS
-                      </div>
-                      <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">0</div>
-                    </div>
-                    <div className="w-11 h-11 rounded-2xl bg-[#34C759]/15 text-[#34C759] flex items-center justify-center">
-                      <CheckCircle2 className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                        RETURNED PAYMENT
-                      </div>
-                      <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">0</div>
-                    </div>
-                    <div className="w-11 h-11 rounded-2xl bg-[#5856D6]/15 text-[#5856D6] flex items-center justify-center">
-                      <Wallet className="w-5 h-5" />
-                    </div>
-                  </div>
+                  <StatCard label="TOTAL ASSETS" value="3" icon={Package} color="#FF9500" />
+                  <StatCard label="TOTAL SECURITY DEPOSIT" value="60" icon={CreditCard} color="#FFCC00" />
+                  <StatCard label="RETURNED ASSETS" value="0" icon={CheckCircle2} color="#34C759" />
+                  <StatCard label="RETURNED PAYMENT" value="0" icon={Wallet} color="#5856D6" />
                 </div>
 
                 <div className="ios-surface overflow-hidden">
@@ -1379,50 +1341,10 @@ export default function CustomersPage() {
             {txTab === "order" && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                        TOTAL ORDERS
-                      </div>
-                      <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">1</div>
-                    </div>
-                    <div className="w-11 h-11 rounded-2xl bg-[#007AFF]/15 text-[#007AFF] flex items-center justify-center">
-                      <ShoppingCart className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                        TOTAL VALUE
-                      </div>
-                      <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">AED 123.00</div>
-                    </div>
-                    <div className="w-11 h-11 rounded-2xl bg-[#FFCC00]/20 text-[#D4A000] flex items-center justify-center">
-                      <CreditCard className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                        TOTAL PAID
-                      </div>
-                      <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">AED 123.00</div>
-                    </div>
-                    <div className="w-11 h-11 rounded-2xl bg-[#34C759]/15 text-[#34C759] flex items-center justify-center">
-                      <CheckCircle2 className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                        PENDING PAYMENTS
-                      </div>
-                      <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">AED 0.00</div>
-                    </div>
-                    <div className="w-11 h-11 rounded-2xl bg-[#FF9500]/15 text-[#FF9500] flex items-center justify-center">
-                      <Clock className="w-5 h-5" />
-                    </div>
-                  </div>
+                  <StatCard label="TOTAL ORDERS" value="1" icon={ShoppingCart} color="#007AFF" />
+                  <StatCard label="TOTAL VALUE" value="AED 123.00" icon={CreditCard} color="#FFCC00" />
+                  <StatCard label="TOTAL PAID" value="AED 123.00" icon={CheckCircle2} color="#34C759" />
+                  <StatCard label="PENDING PAYMENTS" value="AED 0.00" icon={Clock} color="#FF9500" />
                 </div>
 
                 <div className="ios-surface overflow-hidden">
@@ -1485,30 +1407,10 @@ export default function CustomersPage() {
             {txTab === "payment" && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                    <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                      TOTAL PAYMENTS
-                    </div>
-                    <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">AED 123.00</div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                    <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                      WALLET RECHARGE
-                    </div>
-                    <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">AED 0.00</div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                    <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                      CASH PAYMENT
-                    </div>
-                    <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">AED 0.00</div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                    <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                      CARD PAYMENT
-                    </div>
-                    <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">AED 123.00</div>
-                  </div>
+                  <StatCard label="TOTAL PAYMENTS" value="AED 123.00" icon={CreditCard} color="#007AFF" />
+                  <StatCard label="WALLET RECHARGE" value="AED 0.00" icon={Wallet} color="#AF52DE" />
+                  <StatCard label="CASH PAYMENT" value="AED 0.00" icon={CheckCircle2} color="#34C759" />
+                  <StatCard label="CARD PAYMENT" value="AED 123.00" icon={CreditCard} color="#FF9500" />
                 </div>
 
                 <div className="ios-surface overflow-hidden">
@@ -1559,30 +1461,10 @@ export default function CustomersPage() {
             {txTab === "wallet" && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                    <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                      RECHARGED COUPONS
-                    </div>
-                    <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">10</div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                    <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                      COUPON VALUE
-                    </div>
-                    <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">0</div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                    <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                      REDEEMED COUPONS
-                    </div>
-                    <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">0</div>
-                  </div>
-                  <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                    <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                      BALANCE COUPONS
-                    </div>
-                    <div className="text-2xl font-bold text-[#34C759] mt-1 tracking-tight">10</div>
-                  </div>
+                  <StatCard label="RECHARGED COUPONS" value="10" icon={Package} color="#007AFF" />
+                  <StatCard label="COUPON VALUE" value="0" icon={Wallet} color="#AF52DE" />
+                  <StatCard label="REDEEMED COUPONS" value="0" icon={CheckCircle2} color="#FF9500" />
+                  <StatCard label="BALANCE COUPONS" value="10" icon={Clock} color="#34C759" />
                 </div>
 
                 <div className="ios-surface overflow-hidden">
@@ -1645,8 +1527,8 @@ export default function CustomersPage() {
       {/* CUSTOMER DETAILS MODAL (detail.png) */}
       {detailsModalOpen && selectedCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
+          <div className="ios-pop bg-white rounded-[20px] shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden">
+            <div className="ios-pop-head px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-base font-semibold text-[#1C1C1E]">Customer Details</h3>
               <button
                 type="button"
@@ -1820,8 +1702,8 @@ export default function CustomersPage() {
       {/* RETURN ASSET MODAL (asset hist-view.png) */}
       {returnAssetModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-md overflow-hidden border border-[#3C3C43]/10">
-            <div className="px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
+          <div className="ios-pop bg-white rounded-[20px] shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-md overflow-hidden">
+            <div className="ios-pop-head px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-[15px] font-semibold text-[#1C1C1E]">Return Asset</h3>
               <button
                 type="button"
@@ -1833,7 +1715,7 @@ export default function CustomersPage() {
             </div>
 
             <div className="p-6 space-y-4 text-xs text-[#1C1C1E]">
-              <div className="bg-[#F2F2F7]/70 p-4 rounded-2xl border border-[#3C3C43]/10 space-y-1.5">
+              <div className="bg-[#F2F2F7]/70 p-4 rounded-2xl space-y-1.5">
                 <div>
                   <span className="font-semibold text-[#8E8E93]">Asset Type:</span>{" "}
                   <span className="font-medium text-[#1C1C1E]">{returnAssetModal.asset_type}</span>
@@ -1911,8 +1793,8 @@ export default function CustomersPage() {
       {/* CUSTOMER ORDER DETAILS MODAL (view order.png) */}
       {txOrderModalOpen && selectedCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
-            <div className="px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
+          <div className="ios-pop bg-white rounded-[20px] shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden">
+            <div className="ios-pop-head px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-[15px] font-semibold text-[#1C1C1E]">
                 Order Details - DN-T6347-09911
               </h3>
@@ -1926,7 +1808,7 @@ export default function CustomersPage() {
             </div>
 
             <div className="p-6 space-y-4 text-xs text-[#1C1C1E]">
-              <div className="grid grid-cols-2 gap-4 bg-[#F2F2F7]/50 p-4 rounded-2xl border border-[#3C3C43]/10">
+              <div className="grid grid-cols-2 gap-4 bg-[#F2F2F7]/50 p-4 rounded-2xl">
                 <div className="space-y-1">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-[#8E8E93] mb-1">Customer Information</div>
                   <div>
@@ -1969,7 +1851,7 @@ export default function CustomersPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
+              <div className="rounded-2xl overflow-hidden">
                 <table className="ios-table w-full text-left border-collapse">
                   <thead>
                     <tr className="ios-thead">
@@ -2029,8 +1911,8 @@ export default function CustomersPage() {
       {/* RECHARGE DETAILS COUPONS MODAL (wallet charge view.png) */}
       {rechargeModalOpen && selectedCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
-            <div className="px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
+          <div className="ios-pop bg-white rounded-[20px] shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden">
+            <div className="ios-pop-head px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-[15px] font-semibold text-[#1C1C1E]">
                 Recharge Details - {selectedCustomer.customer_id}
               </h3>
@@ -2044,7 +1926,7 @@ export default function CustomersPage() {
             </div>
 
             <div className="p-6 max-h-[70vh] overflow-y-auto">
-              <div className="rounded-2xl border border-[#3C3C43]/10 overflow-hidden">
+              <div className="rounded-2xl overflow-hidden">
                 <table className="ios-table w-full text-left border-collapse">
                   <thead>
                     <tr className="ios-thead">
@@ -2092,8 +1974,8 @@ export default function CustomersPage() {
       {/* ASSET SUMMARY RIGHT-HAND SLIDE-OVER DRAWER (asset summary.png) */}
       {assetSummaryDrawerOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/25 backdrop-blur-[6px]">
-          <div className="bg-white w-full max-w-xs h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200 rounded-l-3xl border-l border-[#3C3C43]/10">
-            <div className="px-5 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
+          <div className="ios-pop bg-white w-full max-w-xs h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200 rounded-l-3xl border-l border-[#3C3C43]/10">
+            <div className="ios-pop-head px-5 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-sm font-semibold text-[#1C1C1E]">Product Delivery Details</h3>
               <button
                 type="button"
@@ -2122,7 +2004,7 @@ export default function CustomersPage() {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className="border border-[#3C3C43]/10 rounded-2xl p-4 bg-[#F2F2F7]/40 shadow-xs"
+                  className=" rounded-2xl p-4 bg-[#F2F2F7]/40 shadow-xs"
                 >
                   <div className="text-xs font-semibold text-[#1C1C1E] mb-2">{item.name}</div>
                   <div className="grid grid-cols-3 text-center gap-2">

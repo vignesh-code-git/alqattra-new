@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import FilterPopup from "@/components/FilterPopup";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import StatCard from "@/components/StatCard";
 import { apiService } from "@/services/api";
 import useLiveData from "@/hooks/useLiveData";
 import { listOf, salesmanCollectionsFromApi, collectedPaymentFromApi, customerCreditsFromApi, collectionToApi } from "@/services/crmMappers";
@@ -60,6 +62,19 @@ export default function CashierPage() {
   }, [live.error, offlineNotified, addToast]);
 
   const [salesmanRows, setSalesmanRows] = useState([]);
+  // Headline figures for the Salesman Collection cards, from the live rows.
+  const salesmanTotals = useMemo(
+    () =>
+      salesmanRows.reduce(
+        (acc, s) => ({
+          total: acc.total + Number(s.total_amount || 0),
+          received: acc.received + Number(s.received_amount || 0),
+          pending: acc.pending + Number(s.pending_amount || 0),
+        }),
+        { total: 0, received: 0, pending: 0 }
+      ),
+    [salesmanRows]
+  );
   const [collectedPayments, setCollectedPayments] = useState([]);
   const [customerCredits, setCustomerCredits] = useState([]);
   useEffect(() => {
@@ -344,7 +359,7 @@ export default function CashierPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
+              <div className="bg-white rounded-3xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
                 <div>
                   <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                     TOTAL COLLECTED
@@ -357,7 +372,7 @@ export default function CashierPage() {
                   <DollarSign className="w-5 h-5" />
                 </div>
               </div>
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
+              <div className="bg-white rounded-3xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
                 <div>
                   <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                     CASH PAYMENTS
@@ -370,7 +385,7 @@ export default function CashierPage() {
                   <DollarSign className="w-5 h-5" />
                 </div>
               </div>
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
+              <div className="bg-white rounded-3xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
                 <div>
                   <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                     CARD PAYMENTS
@@ -433,37 +448,9 @@ export default function CashierPage() {
           /* TAB 1: SALESMAN COLLECTION (cashier.png) */
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">TOTAL AMOUNT</div>
-                  <div className="text-2xl font-bold tracking-tight text-[#1C1C1E] mt-1">AED 52,078.69</div>
-                </div>
-                <div className="w-11 h-11 rounded-2xl bg-[#007AFF]/10 text-[#007AFF] flex items-center justify-center">
-                  <DollarSign className="w-5 h-5" />
-                </div>
-              </div>
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                    RECEIVED AMOUNT
-                  </div>
-                  <div className="text-2xl font-bold tracking-tight text-[#1C1C1E] mt-1">AED 25,650.00</div>
-                </div>
-                <div className="w-11 h-11 rounded-2xl bg-[#34C759]/10 text-[#34C759] flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5" />
-                </div>
-              </div>
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
-                    PENDING AMOUNT
-                  </div>
-                  <div className="text-2xl font-bold tracking-tight text-[#FF9500] mt-1">AED 26,428.69</div>
-                </div>
-                <div className="w-11 h-11 rounded-2xl bg-[#FF9500]/10 text-[#FF9500] flex items-center justify-center">
-                  <Clock className="w-5 h-5" />
-                </div>
-              </div>
+              <StatCard label="TOTAL AMOUNT" value={`AED ${salesmanTotals.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} icon={DollarSign} color="#007AFF" />
+              <StatCard label="RECEIVED AMOUNT" value={`AED ${salesmanTotals.received.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} icon={CheckCircle2} color="#34C759" />
+              <StatCard label="PENDING AMOUNT" value={`AED ${salesmanTotals.pending.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} icon={Clock} color="#FF9500" />
             </div>
 
             <div className="ios-surface overflow-hidden">
@@ -575,7 +562,7 @@ export default function CashierPage() {
           /* TAB 2: CUSTOMER CREDITS (customer credits.png) */
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
+              <div className="bg-white rounded-3xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
                 <div>
                   <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">TOTAL DUE</div>
                   <div className="text-2xl font-bold tracking-tight text-[#FF3B30] mt-1">AED 737,496.90</div>
@@ -584,7 +571,7 @@ export default function CashierPage() {
                   <DollarSign className="w-5 h-5" />
                 </div>
               </div>
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
+              <div className="bg-white rounded-3xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
                 <div>
                   <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                     PENDING ORDERS
@@ -595,7 +582,7 @@ export default function CashierPage() {
                   <ShoppingCart className="w-5 h-5" />
                 </div>
               </div>
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
+              <div className="bg-white rounded-3xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between">
                 <div>
                   <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                     CUSTOMER COUNT
@@ -692,7 +679,7 @@ export default function CashierPage() {
         ) : (
           /* TAB 3: CUSTOMER STATEMENT (custm -statement.png) */
           <>
-            <div className="ios-surface p-6 space-y-4">
+            <FilterPopup title="Statement Parameters" className="p-6 space-y-4">
               <h3 className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wider">
                 Statement Parameters
               </h3>
@@ -780,7 +767,7 @@ export default function CashierPage() {
                   Download Report
                 </button>
               </div>
-            </div>
+            </FilterPopup>
 
             <div className="ios-surface overflow-hidden">
               <div className="bg-linear-to-r from-[#007AFF] to-[#5856D6] px-6 py-4 flex items-center justify-between">
@@ -799,8 +786,8 @@ export default function CashierPage() {
       {/* COLLECT PAYMENT MODAL */}
       {collectModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-md overflow-hidden border border-[#3C3C43]/10">
-            <div className="px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
+          <div className="ios-pop bg-white rounded-[20px] shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-md overflow-hidden">
+            <div className="ios-pop-head px-6 py-4 border-b border-[#E5E5EA] flex items-center justify-between bg-white/80 backdrop-blur-md">
               <h3 className="text-[15px] font-semibold text-[#1C1C1E]">
                 Collect Payment -{" "}
                 {collectModal.type === "salesman"

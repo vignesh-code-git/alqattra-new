@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import FilterPopup from "@/components/FilterPopup";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import StatCard, { hexFromTone } from "@/components/StatCard";
 import BackLink from "@/components/BackLink";
 import PanelHeader from "@/components/PanelHeader";
 import { apiService } from "@/services/api";
@@ -394,7 +396,7 @@ export default function OrdersPage() {
             </div>
 
             {/* Filter Orders iOS Card */}
-            <div className="ios-surface p-5">
+            <FilterPopup title="Filter Orders" className="p-5">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider mb-4 flex items-center gap-1.5">
                 <Filter className="w-3.5 h-3.5 text-[#007AFF]" />
                 Filter Orders
@@ -556,7 +558,7 @@ export default function OrdersPage() {
                   Reset
                 </button>
               </div>
-            </div>
+            </FilterPopup>
 
             {/* Orders Management iOS Table Card */}
             <div className="ios-surface overflow-hidden">
@@ -818,7 +820,7 @@ export default function OrdersPage() {
               {/* Order Items */}
               <div>
                 <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-3">Order Items</h3>
-                <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
+                <div className="overflow-x-auto rounded-2xl">
                   <table className="ios-table w-full text-left border-collapse">
                     <thead>
                       <tr className="ios-thead">
@@ -1103,7 +1105,7 @@ export default function OrdersPage() {
                   + Add Product
                 </button>
 
-                <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl">
+                <div className="overflow-x-auto rounded-2xl">
                   <table className="ios-table w-full text-left border-collapse">
                     <thead>
                       <tr className="ios-thead">
@@ -1160,7 +1162,7 @@ export default function OrdersPage() {
               </div>
 
               {/* Order Summary Box */}
-              <div className="bg-[#F2F2F7]/60 rounded-2xl p-5 border border-[#3C3C43]/10 space-y-2 text-xs">
+              <div className="bg-[#F2F2F7]/60 rounded-2xl p-5 space-y-2 text-xs">
                 <div className="font-semibold text-[#1C1C1E] mb-2 text-xs">Order Summary</div>
                 <div className="flex justify-between text-[#8E8E93]">
                   <span>Subtotal:</span>
@@ -1216,8 +1218,8 @@ export default function OrdersPage() {
       {/* VIEW ORDER DETAILS MODAL (view orders.png) */}
       {viewModalOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
+          <div className="ios-pop bg-white rounded-[20px] shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden">
+            <div className="ios-pop-head px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-base font-semibold text-[#1C1C1E]">
                 Order Details - {viewModalOrder.delivery_note}
               </h3>
@@ -1270,7 +1272,7 @@ export default function OrdersPage() {
 
               <div>
                 <div className="font-semibold text-[#1C1C1E] mb-2 text-xs">Order Items</div>
-                <div className="border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
+                <div className=" rounded-2xl overflow-hidden">
                   <table className="ios-table w-full text-left border-collapse">
                     <thead>
                       <tr className="ios-thead">
@@ -1374,8 +1376,8 @@ export default function OrdersPage() {
       {/* ORDER SUMMARY RIGHT-HAND SLIDE-OVER DRAWER (order summary.png) */}
       {summaryDrawerOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/25 backdrop-blur-[6px]">
-          <div className="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200 border-l border-[#3C3C43]/10">
-            <div className="px-6 py-5 border-b border-[#3C3C43]/10 flex items-center justify-between">
+          <div className="ios-pop bg-white w-full max-w-sm h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200 border-l border-[#3C3C43]/10">
+            <div className="ios-pop-head px-6 py-5 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-[#1C1C1E]">Product Delivery Details</h3>
               <button
                 type="button"
@@ -1403,7 +1405,7 @@ export default function OrdersPage() {
               {filteredSummaryProducts.map((item, idx) => (
                 <div
                   key={idx}
-                  className="border border-[#3C3C43]/10 rounded-2xl p-4 bg-white shadow-xs"
+                  className=" rounded-2xl p-4 bg-white shadow-xs"
                 >
                   <div className="text-xs font-semibold text-[#1C1C1E] mb-3">{item.name}</div>
                   <div className="grid grid-cols-3 text-center gap-2">
@@ -1433,21 +1435,7 @@ export default function OrdersPage() {
 }
 
 function OrderStat({ label, value, icon: Icon, tone }) {
-  return (
-    <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-sm flex items-center justify-between gap-3">
-      <div className="min-w-0">
-        <div className="text-[10px] font-semibold text-[#8E8E93] uppercase tracking-wide">
-          {label}
-        </div>
-        <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono truncate">{value}</div>
-      </div>
-      <div
-        className={`w-11 h-11 shrink-0 rounded-full text-white flex items-center justify-center shadow-sm ${tone}`}
-      >
-        <Icon className="w-5 h-5" />
-      </div>
-    </div>
-  );
+  return <StatCard label={label} value={value} icon={Icon} color={hexFromTone(tone)} />;
 }
 
 function PaymentBadge({ label }) {

@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import FilterPopup from "@/components/FilterPopup";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import StatCard, { hexFromTone } from "@/components/StatCard";
 import { apiService } from "@/services/api";
 import useLiveData from "@/hooks/useLiveData";
 import { listOf, buildContext, invoiceFromApi, nonBilledFromApi, invoiceForOrder } from "@/services/crmMappers";
@@ -253,7 +255,7 @@ export default function InvoicesPage() {
             </div>
 
             {/* Filter Invoices iOS Card (invoices.png) */}
-            <div className="ios-surface p-5">
+            <FilterPopup title="Filter Orders" className="p-5">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider mb-4 flex items-center gap-1.5">
                 <Filter className="w-3.5 h-3.5 text-[#007AFF]" />
                 Filter Orders
@@ -371,7 +373,7 @@ export default function InvoicesPage() {
                   Reset
                 </button>
               </div>
-            </div>
+            </FilterPopup>
 
             {/* Invoices Management Table Card */}
             <div className="ios-surface overflow-hidden">
@@ -666,8 +668,8 @@ export default function InvoicesPage() {
       {/* VIEW INVOICE DETAILS MODAL (view invoice.png) */}
       {viewModalInvoice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
+          <div className="ios-pop bg-white rounded-[20px] shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden">
+            <div className="ios-pop-head px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-base font-semibold text-[#1C1C1E]">
                 Order Details - {viewModalInvoice.invoice_no}
               </h3>
@@ -720,7 +722,7 @@ export default function InvoicesPage() {
 
               <div>
                 <div className="font-semibold text-[#1C1C1E] mb-2 text-xs">Order Items</div>
-                <div className="border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
+                <div className=" rounded-2xl overflow-hidden">
                   <table className="ios-table w-full text-left border-collapse">
                     <thead>
                       <tr className="ios-thead">
@@ -784,19 +786,5 @@ export default function InvoicesPage() {
 }
 
 function InvoiceStat({ label, value, icon: Icon, tone }) {
-  return (
-    <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex items-center justify-between gap-3">
-      <div className="min-w-0">
-        <div className="text-[10px] font-semibold tracking-wide text-[#8E8E93] uppercase">
-          {label}
-        </div>
-        <div className="text-2xl font-bold text-[#1C1C1E] mt-1 font-mono truncate">{value}</div>
-      </div>
-      <div
-        className={`w-11 h-11 shrink-0 rounded-full text-white flex items-center justify-center shadow-sm ${tone}`}
-      >
-        <Icon className="w-5 h-5" />
-      </div>
-    </div>
-  );
+  return <StatCard label={label} value={value} icon={Icon} color={hexFromTone(tone)} />;
 }

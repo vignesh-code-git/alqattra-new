@@ -617,8 +617,8 @@ export default function DataTable({
               {showFilterPopover && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowFilterPopover(false)} />
-                  <div className="absolute left-0 mt-2 w-64 bg-white border border-[#E5E5EA] rounded-xl shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 space-y-2.5 text-xs">
-                    <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-2">
+                  <div className="ios-pop absolute left-0 mt-2 w-64 bg-white border border-[#E5E5EA] rounded-xl shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 space-y-2.5 text-xs">
+                    <div className="ios-pop-head flex items-center justify-between border-b border-[#F2F2F7] pb-2">
                       <span className="font-semibold text-[#2C2C2E] flex items-center gap-1.5">
                         <SlidersHorizontal className="w-3.5 h-3.5 text-[#007AFF]" />
                         <span>Filter Column Scope</span>
@@ -721,9 +721,9 @@ export default function DataTable({
                       className="fixed inset-0 z-40"
                       onClick={() => setShowCalendarPopover(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-[#E5E5EA] rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in zoom-in-95 space-y-3.5 text-xs">
+                    <div className="ios-pop absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in zoom-in-95 space-y-3.5 text-xs">
                       {/* Popover Header */}
-                      <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-2.5">
+                      <div className="ios-pop-head flex items-center justify-between border-b border-[#F2F2F7] pb-2.5">
                         <div className="flex items-center gap-1.5 font-semibold text-[#2C2C2E]">
                           <CalendarIcon className="w-4 h-4 text-[#007AFF]" />
                           <span>Interactive Calendar Filter</span>
@@ -1151,9 +1151,9 @@ export default function DataTable({
       {/* CSV Import Popup Message Modal */}
       {showImportModal && (
         <div className="fixed inset-0 bg-[#1C1C1E]/50 backdrop-blur-2xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white border border-[#E5E5EA] rounded-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
+          <div className="ios-pop bg-white border border-[#E5E5EA] rounded-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-3">
+            <div className="ios-pop-head flex items-center justify-between border-b border-[#F2F2F7] pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-lg bg-[#EAF4FF] text-[#007AFF] flex items-center justify-center border border-[#BFDDFF] shrink-0">
                   <Upload className="w-5 h-5" />

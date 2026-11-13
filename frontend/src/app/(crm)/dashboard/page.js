@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import FilterPopup from "@/components/FilterPopup";
 import Header from "@/components/Header";
 import { apiService } from "@/services/api";
+import TickRing from "@/components/TickRing";
 import { useToast } from "@/components/Toast";
 import Link from "next/link";
 import {
@@ -19,7 +21,11 @@ import {
   SlidersHorizontal,
   RotateCcw,
   Calendar,
-  Filter
+  Filter,
+  PieChart,
+  Wallet,
+  Trophy,
+  LineChart,
 } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -30,6 +36,7 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  Filler,
   Title
 } from "chart.js";
 import { Doughnut, Line } from "react-chartjs-2";
@@ -42,6 +49,7 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  Filler,
   Title
 );
 
@@ -99,7 +107,6 @@ export default function DashboardPage() {
 
   const [selectedMonth, setSelectedMonth] = useState("November 2026");
   const [selectedProduct, setSelectedProduct] = useState("All Products");
-  const [showFilters, setShowFilters] = useState(false);
   const [filterFromDate, setFilterFromDate] = useState("");
   const [filterToDate, setFilterToDate] = useState("");
   const [filterTerritory, setFilterTerritory] = useState("All");
@@ -131,13 +138,11 @@ export default function DashboardPage() {
       {
         data: PAYMENT_SERIES.map((s) => split[s.key] ?? 0),
         backgroundColor: PAYMENT_SERIES.map((s) => s.color),
-        // 2px gap in the surface colour separates touching segments
-        borderWidth: 2,
-        borderColor: "#FFFFFF",
-        borderAlign: "inner",
-        hoverBorderColor: "#FFFFFF",
-        hoverOffset: 6,
-        spacing: 0,
+        // Rounded segment ends with a small surface-coloured gap between them
+        borderWidth: 0,
+        borderRadius: 8,
+        spacing: 3,
+        hoverOffset: 8,
       },
     ],
   });
@@ -148,9 +153,9 @@ export default function DashboardPage() {
   const donutOptions = (centerValue, centerLabel) => ({
     responsive: true,
     maintainAspectRatio: false,
-    cutout: "68%",
-    layout: { padding: 6 },
-    animation: { animateRotate: true, duration: 600, easing: "easeOutQuart" },
+    cutout: "76%",
+    layout: { padding: 10 },
+    animation: { animateRotate: true, animateScale: true, duration: 900, easing: "easeOutQuart" },
     plugins: {
       legend: { display: false },
       centerText: { value: centerValue, label: centerLabel },
@@ -177,74 +182,162 @@ export default function DashboardPage() {
     },
   });
 
-  // Hero figure drawn in the ring's hole
+  // Hero figure in the ring's hole, a soft grey track behind the ring, and a
+  // gentle drop shadow under the segments.
   const centerTextPlugin = {
     id: "centerText",
+    beforeDatasetsDraw(chart) {
+      const meta = chart.getDatasetMeta(0);
+      const arc = meta?.data?.[0];
+      if (!arc) return;
+      const { x, y, innerRadius, outerRadius } = arc.getProps(
+        ["x", "y", "innerRadius", "outerRadius"],
+        true
+      );
+      const { ctx } = chart;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x, y, (innerRadius + outerRadius) / 2, 0, Math.PI * 2);
+      ctx.lineWidth = outerRadius - innerRadius;
+      ctx.strokeStyle = "#F2F2F7";
+      ctx.stroke();
+      ctx.restore();
+      ctx.save();
+      ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 3;
+    },
     afterDatasetsDraw(chart, _args, opts) {
-      if (!opts || !opts.value) return;
       const { ctx, chartArea } = chart;
+      ctx.restore(); // ends the shadow started in beforeDatasetsDraw
+      if (!opts || !opts.value) return;
       const x = (chartArea.left + chartArea.right) / 2;
       const y = (chartArea.top + chartArea.bottom) / 2;
       ctx.save();
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillStyle = "#1C1C1E";
-      ctx.font = "600 20px " + CHART_FONT;
-      ctx.fillText(opts.value, x, y - 7);
       ctx.fillStyle = "#8E8E93";
-      ctx.font = "500 10px " + CHART_FONT;
-      ctx.fillText(String(opts.label || "").toUpperCase(), x, y + 13);
+      ctx.font = "600 9.5px " + CHART_FONT;
+      ctx.fillText(String(opts.label || "").toUpperCase(), x, y - 14);
+      ctx.fillStyle = "#1C1C1E";
+      ctx.font = "700 22px " + CHART_FONT;
+      ctx.fillText(opts.value, x, y + 6);
       ctx.restore();
     },
   };
 
-  // Line Chart config for Sales Trend — single series, so no legend box
+  // Line Chart config for Sales Trend - single series, so no legend box.
+  // Premium look: a blue-to-violet stroke with a soft glow beneath it, an
+  // area wash that fades to nothing, and only the latest point marked.
+  const TREND_FROM = "#0A84FF";
+  const TREND_TO = "#AF52DE";
+  const trendValues = [0, 0.2, 0.5, 0.8, 1.0];
+  const lastIdx = trendValues.length - 1;
   const trendData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May"],
     datasets: [
       {
         label: "Sales Trend",
-        data: [0, 0.2, 0.5, 0.8, 1.0],
-        borderColor: "#007AFF",
-        // area wash, not a saturated block
-        backgroundColor: "rgba(0,122,255,0.10)",
-        borderWidth: 2,
-        tension: 0.38,
-        fill: true,
-        pointBackgroundColor: "#007AFF",
-        // 2px ring in the surface colour
+        data: trendValues,
+        borderColor: (c) => {
+          const { ctx, chartArea } = c.chart;
+          if (!chartArea) return TREND_FROM;
+          const g = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+          g.addColorStop(0, TREND_FROM);
+          g.addColorStop(1, TREND_TO);
+          return g;
+        },
+        backgroundColor: (c) => {
+          const { ctx, chartArea } = c.chart;
+          if (!chartArea) return "rgba(94,92,230,0.12)";
+          const g = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+          g.addColorStop(0, "rgba(94,92,230,0.26)");
+          g.addColorStop(0.6, "rgba(94,92,230,0.07)");
+          g.addColorStop(1, "rgba(94,92,230,0)");
+          return g;
+        },
+        borderWidth: 3,
+        borderCapStyle: "round",
+        borderJoinStyle: "round",
+        cubicInterpolationMode: "monotone",
+        fill: "start",
+        // only the latest value carries a marker; the rest appear on hover
+        pointRadius: (c) => (c.dataIndex === lastIdx ? 5 : 0),
+        pointBackgroundColor: TREND_TO,
         pointBorderColor: "#FFFFFF",
-        pointBorderWidth: 2,
-        pointRadius: 4,
+        pointBorderWidth: 2.5,
         pointHoverRadius: 6,
-        pointHoverBorderWidth: 2,
+        pointHoverBackgroundColor: (c) => (c.dataIndex === lastIdx ? TREND_TO : "#5E5CE6"),
+        pointHoverBorderColor: "#FFFFFF",
+        pointHoverBorderWidth: 2.5,
         // hit target larger than the mark
         pointHitRadius: 24,
       },
     ],
   };
 
+  // Glow under the line, a halo round the latest point, and a dashed guide
+  // line under the cursor.
+  const trendPremium = {
+    id: "trendPremium",
+    beforeDatasetDraw(chart) {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.shadowColor = "rgba(94,92,230,0.42)";
+      ctx.shadowBlur = 16;
+      ctx.shadowOffsetY = 8;
+    },
+    afterDatasetDraw(chart) {
+      chart.ctx.restore();
+    },
+    afterDatasetsDraw(chart) {
+      const pt = chart.getDatasetMeta(0)?.data?.[lastIdx];
+      if (!pt) return;
+      const { ctx } = chart;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 11, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(175,82,222,0.16)";
+      ctx.fill();
+      ctx.restore();
+    },
+    afterDraw(chart) {
+      const active = chart.tooltip?.getActiveElements?.() || [];
+      if (!active.length) return;
+      const { ctx, chartArea } = chart;
+      const x = active[0].element.x;
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(94,92,230,0.45)";
+      ctx.beginPath();
+      ctx.moveTo(x, chartArea.top);
+      ctx.lineTo(x, chartArea.bottom);
+      ctx.stroke();
+      ctx.restore();
+    },
+  };
+
   const lineOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: { padding: { top: 14, right: 12 } },
     interaction: { mode: "index", intersect: false },
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: "rgba(28,28,30,0.92)",
+        backgroundColor: "rgba(28,28,30,0.9)",
         cornerRadius: 12,
         padding: { top: 9, bottom: 9, left: 12, right: 12 },
-        displayColors: true,
-        boxWidth: 10,
-        boxHeight: 2,
-        boxPadding: 7,
-        titleColor: "rgba(255,255,255,0.68)",
+        displayColors: false,
+        titleColor: "rgba(255,255,255,0.65)",
         titleFont: { size: 11, weight: "500" },
         bodyColor: "#FFFFFF",
-        bodyFont: { size: 13, weight: "600" },
-        caretSize: 5,
+        bodyFont: { size: 14, weight: "700" },
+        caretSize: 6,
+        caretPadding: 10,
         callbacks: {
-          label: (ctx) => ` AED ${Number(ctx.parsed.y).toFixed(2)}`,
+          label: (ctx) => `AED ${Number(ctx.parsed.y).toFixed(2)}`,
         },
       },
     },
@@ -252,16 +345,18 @@ export default function DashboardPage() {
       x: {
         border: { display: false },
         grid: { display: false },
-        ticks: { color: "#8E8E93", font: { size: 11 }, padding: 6 },
+        ticks: { color: "#8E8E93", font: { size: 11, weight: "500" }, padding: 8 },
       },
       y: {
-        border: { display: false },
-        // hairline, solid, one step off the surface
+        beginAtZero: true,
+        border: { display: false, dash: [3, 5] },
+        // dashed hairlines, well behind the data
         grid: { color: "rgba(60,60,67,0.10)", lineWidth: 1, drawTicks: false },
         ticks: {
           color: "#8E8E93",
           font: { size: 11 },
-          padding: 8,
+          padding: 10,
+          maxTicksLimit: 5,
           callback: (val) => `AED ${val}`,
         },
       },
@@ -270,91 +365,69 @@ export default function DashboardPage() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <Header
-        title="Dashboard Overview"
-        subtitle="Dashboard"
-        actions={
-          <button
-            type="button"
-            onClick={() => setShowFilters(true)}
-            className="px-3.5 py-1.5 rounded-full bg-[#767680]/12 hover:bg-[#767680]/20 text-[#1C1C1E] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1.5"
-          >
-            <Filter className="w-3.5 h-3.5" />
-            Filters
-          </button>
-        }
-      />
+      <Header title="Dashboard Overview" subtitle="Dashboard" />
 
       <main className="p-5 space-y-5 flex-1 overflow-y-auto">
-        {/* iOS Dashboard Filters Modal */}
-        {showFilters && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4">
-            <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-[#3C3C43]/10">
-              <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
-                <h3 className="text-sm font-bold text-[#1C1C1E]">Dashboard Filters</h3>
-                <button
-                  type="button"
-                  onClick={() => setShowFilters(false)}
-                  className="w-7 h-7 rounded-full bg-[#E5E5EA] flex items-center justify-center text-[#8E8E93] hover:text-[#1C1C1E] cursor-pointer"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="p-6 space-y-4 text-xs text-[#3C3C43]">
-                <div>
-                  <label className="block font-semibold text-[#8E8E93] mb-1">From Date</label>
-                  <input
-                    type="date"
-                    value={filterFromDate || "2026-09-07"}
-                    onChange={(e) => setFilterFromDate(e.target.value)}
-                    className="w-full px-3 py-2 text-xs text-[#1C1C1E]"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-[#8E8E93] mb-1">To Date</label>
-                  <input
-                    type="date"
-                    value={filterToDate || "2026-09-07"}
-                    onChange={(e) => setFilterToDate(e.target.value)}
-                    className="w-full px-3 py-2 text-xs text-[#1C1C1E]"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-[#8E8E93] mb-1">Filter By</label>
-                  <select
-                    value={filterTerritory}
-                    onChange={(e) => setFilterTerritory(e.target.value)}
-                    className="w-full px-3 py-2 text-xs text-[#1C1C1E] bg-white"
-                  >
-                    <option value="Daily">Daily</option>
-                    <option value="Weekly">Weekly</option>
-                    <option value="Monthly">Monthly</option>
-                    <option value="Yearly">Yearly</option>
-                  </select>
-                </div>
-              </div>
-              <div className="px-6 py-3.5 bg-[#F9F9FB] border-t border-[#3C3C43]/10 flex items-center justify-end gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setShowFilters(false)}
-                  className="px-4 py-1.5 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold cursor-pointer"
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowFilters(false);
-                    addToast("Dashboard filters applied", "success");
-                  }}
-                  className="px-5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold shadow-sm shadow-[#007AFF]/25 cursor-pointer"
-                >
-                  Apply
-                </button>
-              </div>
+        {/* Dashboard filters, on the page itself */}
+        <FilterPopup title="Dashboard Period" className="p-5">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="w-full sm:w-[170px]">
+              <label className="block text-[10.5px] font-bold uppercase tracking-[0.05em] mb-1">From Date</label>
+              <input
+                type="date"
+                value={filterFromDate}
+                onChange={(e) => setFilterFromDate(e.target.value)}
+                className="w-full px-3 py-2 text-xs"
+              />
+            </div>
+            <div className="w-full sm:w-[170px]">
+              <label className="block text-[10.5px] font-bold uppercase tracking-[0.05em] mb-1">To Date</label>
+              <input
+                type="date"
+                value={filterToDate}
+                onChange={(e) => setFilterToDate(e.target.value)}
+                className="w-full px-3 py-2 text-xs"
+              />
+            </div>
+            <div className="w-full sm:w-[150px]">
+              <label className="block text-[10.5px] font-bold uppercase tracking-[0.05em] mb-1">Filter By</label>
+              <select
+                value={filterTerritory}
+                onChange={(e) => setFilterTerritory(e.target.value)}
+                className="w-full px-3 py-2 text-xs"
+              >
+                <option value="All">All Time</option>
+                <option value="Daily">Daily</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Yearly">Yearly</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setFilterFromDate("");
+                  setFilterToDate("");
+                  setFilterTerritory("All");
+                  addToast("Dashboard filters cleared", "info");
+                }}
+                className="h-[34px] px-2 text-[#007AFF] hover:text-[#0062cc] text-xs font-semibold cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <RotateCcw className="w-3 h-3" />
+                Reset
+              </button>
+              <button
+                type="button"
+                onClick={() => addToast("Dashboard filters applied", "success")}
+                className="h-[34px] px-5 rounded-full bg-[#007AFF] hover:bg-[#0062CC] text-white text-xs font-semibold cursor-pointer shadow-sm inline-flex items-center gap-1.5"
+              >
+                <Filter className="w-3 h-3" />
+                Apply
+              </button>
             </div>
           </div>
-        )}
+        </FilterPopup>
 
         {/* KPI Grid - iOS Metric Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
@@ -411,14 +484,9 @@ export default function DashboardPage() {
         {/* Charts Row: iOS Card Container */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Revenue Chart */}
-          <div className="bg-white rounded-3xl border border-[#3C3C43]/10 p-5 shadow-sm">
-            <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-3 mb-3">
-              <div>
-                <span className="text-[10px] text-[#8E8E93] font-extrabold uppercase tracking-wider block">
-                  REVENUE
-                </span>
-                <h3 className="text-xs font-bold text-[#2C2C2E]">By Payment Method</h3>
-              </div>
+          <DashPanel tone="blue">
+            <div className="flex items-center justify-between border-b border-[#3C3C43]/[0.07] pb-3 mb-3">
+              <PanelTitle tone="blue" icon={PieChart} eyebrow="REVENUE" title="By Payment Method" />
               <select
                 value={selectedMonth}
                 onChange={(e) => {
@@ -434,30 +502,20 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex flex-col items-center justify-center py-1">
-              <div className="w-[196px] h-[196px] relative">
-                <Doughnut
-                  data={revenueChartData}
-                  options={donutOptions(
-                    compactAED(m.total_revenue ?? 5817740.39),
-                    "Total revenue"
-                  )}
-                  plugins={[centerTextPlugin]}
-                />
-              </div>
+              <TickRing
+                segments={PAYMENT_SERIES.map((p) => ({ ...p, value: revenueSplit[p.key] ?? 0 }))}
+                value={compactAED(m.total_revenue ?? 5817740.39).replace("AED ", "")}
+                label="AED total revenue"
+              />
 
-              <SplitLegend split={revenueSplit} />
+              <SplitLegend split={revenueSplit} total={m.total_revenue ?? 5817740.39} />
             </div>
-          </div>
+          </DashPanel>
 
           {/* Collections Chart */}
-          <div className="bg-white rounded-3xl border border-[#3C3C43]/10 p-5 shadow-sm">
-            <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-3 mb-3">
-              <div>
-                <span className="text-[10px] text-[#8E8E93] font-extrabold uppercase tracking-wider block">
-                  COLLECTIONS
-                </span>
-                <h3 className="text-xs font-bold text-[#2C2C2E]">By Payment Method</h3>
-              </div>
+          <DashPanel tone="green">
+            <div className="flex items-center justify-between border-b border-[#3C3C43]/[0.07] pb-3 mb-3">
+              <PanelTitle tone="green" icon={Wallet} eyebrow="COLLECTIONS" title="By Payment Method" />
               <select
                 value={selectedMonth}
                 onChange={(e) => {
@@ -473,31 +531,24 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex flex-col items-center justify-center py-1">
-              <div className="w-[196px] h-[196px] relative">
-                <Doughnut
-                  data={collectionsChartData}
-                  options={donutOptions(
-                    compactAED(m.total_collection ?? 18613.24),
-                    "Total collected"
-                  )}
-                  plugins={[centerTextPlugin]}
-                />
-              </div>
+              <TickRing
+                segments={PAYMENT_SERIES.map((p) => ({ ...p, value: collectionsSplit[p.key] ?? 0 }))}
+                value={compactAED(m.total_collection ?? 18613.24).replace("AED ", "")}
+                label="AED total collected"
+              />
 
-              <SplitLegend split={collectionsSplit} />
+              <SplitLegend split={collectionsSplit} total={m.total_collection ?? 18613.24} />
             </div>
-          </div>
+          </DashPanel>
         </div>
 
         {/* Lower Row: Top Products Sales (With Vertical Column Divider Lines) & Performance Trend */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Top Products Table with Column Divider Lines */}
-          <div className="ios-surface overflow-hidden flex flex-col justify-between">
+          <DashPanel tone="orange" flush className="flex flex-col justify-between">
             <div>
-              <div className="px-5 py-4 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex items-center justify-between">
-                <h3 className="text-xs font-bold text-[#1C1C1E] tracking-tight uppercase">
-                  Top Products Sales
-                </h3>
+              <div className="px-5 py-4 border-b border-[#3C3C43]/[0.07] flex items-center justify-between">
+                <PanelTitle tone="orange" icon={Trophy} eyebrow="Best sellers" title="Top Products Sales" />
                 <Link
                   href="/utilities"
                   className="text-[11px] font-semibold text-[#007AFF] hover:underline flex items-center gap-1"
@@ -530,7 +581,8 @@ export default function DashboardPage() {
                           {p.this_month}
                         </td>
                         <td className="px-4 py-3 text-right font-bold text-[#34C759] font-mono">
-                          {p.change}
+                          {/* No sales last month means there is no percentage to show */}
+                          {Number(p.last_month) === 0 && Number(p.this_month) > 0 ? "New" : String(p.change).includes("Infinity") ? "-" : p.change}
                         </td>
                       </tr>
                     ))}
@@ -542,17 +594,12 @@ export default function DashboardPage() {
             <div className="p-3 bg-[#F9F9FB] border-t border-[#3C3C43]/10 text-right text-[11px] text-[#8E8E93]">
               Showing top 4 high-demand water SKUs
             </div>
-          </div>
+          </DashPanel>
 
           {/* Performance Trend */}
-          <div className="bg-white rounded-3xl border border-[#3C3C43]/10 p-5 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between border-b border-[#F2F2F7] pb-3 mb-2">
-              <div>
-                <span className="text-[10px] text-[#8E8E93] font-extrabold uppercase tracking-wider block">
-                  PERFORMANCE
-                </span>
-                <h3 className="text-xs font-bold text-[#2C2C2E]">Product Sales Trend</h3>
-              </div>
+          <DashPanel tone="purple" className="flex flex-col justify-between">
+            <div className="flex items-center justify-between border-b border-[#3C3C43]/[0.07] pb-3 mb-2">
+              <PanelTitle tone="purple" icon={LineChart} eyebrow="PERFORMANCE" title="Product Sales Trend" />
               <select
                 value={selectedProduct}
                 onChange={(e) => {
@@ -567,39 +614,112 @@ export default function DashboardPage() {
               </select>
             </div>
 
-            <div className="h-48 w-full pt-1">
-              <Line data={trendData} options={lineOptions} />
+            <div className="h-52 w-full pt-1">
+              <Line data={trendData} options={lineOptions} plugins={[trendPremium]} />
             </div>
-          </div>
+          </DashPanel>
         </div>
       </main>
     </div>
   );
 }
 
+/**
+ * Dashboard panel: a tint of its colour fades into white from the top, and the title carries a
+ * matching icon badge. `flush` drops the padding for edge-to-edge tables.
+ */
+const PANEL_TONES = {
+  blue: { solid: "#007AFF", tint: "rgba(0,122,255,0.09)", glow: "rgba(0,122,255,0.4)" },
+  green: { solid: "#34C759", tint: "rgba(52,199,89,0.10)", glow: "rgba(52,199,89,0.4)" },
+  orange: { solid: "#FF9500", tint: "rgba(255,149,0,0.10)", glow: "rgba(255,149,0,0.4)" },
+  purple: { solid: "#AF52DE", tint: "rgba(175,82,222,0.09)", glow: "rgba(175,82,222,0.4)" },
+};
+
+function DashPanel({ tone = "blue", flush = false, className = "", children }) {
+  const t = PANEL_TONES[tone] || PANEL_TONES.blue;
+  return (
+    <div
+      className={`relative overflow-hidden rounded-3xl shadow-[0_1px_2px_rgba(0,0,0,0.04),0_10px_28px_-14px_rgba(0,0,0,0.18)] ${
+        flush ? "" : "p-5"
+      } ${className}`}
+      style={{ background: `linear-gradient(180deg, ${t.tint} 0%, #FFFFFF 160px)` }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function PanelTitle({ tone = "blue", icon: Icon, eyebrow, title }) {
+  const t = PANEL_TONES[tone] || PANEL_TONES.blue;
+  return (
+    <div className="flex items-center gap-3 min-w-0">
+      <div
+        className="w-9 h-9 shrink-0 rounded-xl flex items-center justify-center text-white"
+        style={{
+          background: `linear-gradient(160deg, ${t.solid}C7 0%, ${t.solid} 100%)`,
+          boxShadow: `0 6px 14px -5px ${t.glow}, inset 0 1px 0 rgba(255,255,255,0.35)`,
+        }}
+      >
+        <Icon className="w-[18px] h-[18px]" strokeWidth={2.3} />
+      </div>
+      <div className="min-w-0">
+        <span
+          className="block text-[10px] font-extrabold uppercase tracking-[0.08em]"
+          style={{ color: t.solid }}
+        >
+          {eyebrow}
+        </span>
+        <h3 className="text-[13px] font-bold text-[#1C1C1E] truncate">{title}</h3>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Colourful status tile: a soft tint of the tile's colour behind the card, a
+ * solid icon badge with a matching glow, and the figure in dark ink so it
+ * stays readable on every tint.
+ */
+const KPI_TONES = {
+  emerald: { solid: "#34C759", from: "#EAFBEF", glow: "rgba(52,199,89,0.35)" },
+  blue: { solid: "#007AFF", from: "#E8F2FF", glow: "rgba(0,122,255,0.35)" },
+  amber: { solid: "#FF9500", from: "#FFF4E3", glow: "rgba(255,149,0,0.35)" },
+  cyan: { solid: "#32ADE6", from: "#E6F6FD", glow: "rgba(50,173,230,0.35)" },
+  purple: { solid: "#AF52DE", from: "#F6EDFC", glow: "rgba(175,82,222,0.35)" },
+  rose: { solid: "#FF3B30", from: "#FFECEB", glow: "rgba(255,59,48,0.35)" },
+  slate: { solid: "#8E8E93", from: "#F2F2F7", glow: "rgba(142,142,147,0.35)" },
+  teal: { solid: "#30B0C7", from: "#E7F7FA", glow: "rgba(48,176,199,0.35)" },
+};
+
 function KpiCard({ title, value, icon: Icon, color }) {
-  const colorMap = {
-    emerald: "bg-[#EBFAEF] text-[#34C759] border-[#BCEFC9]",
-    blue: "bg-[#EAF4FF] text-[#007AFF] border-[#BFDDFF]",
-    amber: "bg-[#FFF6E8] text-[#FF9500] border-[#FFE0AD]",
-    cyan: "bg-cyan-50 text-cyan-600 border-cyan-200",
-    purple: "bg-purple-50 text-purple-600 border-purple-200",
-    rose: "bg-[#FFF1F0] text-[#FF3B30] border-[#FFD5D2]",
-    slate: "bg-[#F2F2F7] text-[#636366] border-[#E5E5EA]",
-    teal: "bg-teal-50 text-teal-600 border-teal-200",
-  };
+  const tone = KPI_TONES[color] || KPI_TONES.slate;
 
   return (
-    <div className="bg-white rounded-2xl border border-[#3C3C43]/10 p-3.5 flex flex-col justify-between shadow-xs hover:shadow-md transition-all">
-      <div className="flex items-start justify-between gap-1.5 mb-1.5">
-        <span className="text-[9.5px] font-semibold text-[#8E8E93] tracking-[0.02em] uppercase leading-[1.25] min-h-[2.1em]">
+    <div
+      className="group relative overflow-hidden rounded-2xl p-3.5 flex flex-col justify-between gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_6px_16px_-8px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 hover:shadow-[0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_-10px_rgba(0,0,0,0.18)] transition-all duration-200"
+      style={{ background: `linear-gradient(145deg, ${tone.from} 0%, #FFFFFF 78%)` }}
+    >
+      {/* Soft colour bloom in the corner */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-8 -right-8 w-20 h-20 rounded-full opacity-25 blur-2xl transition-opacity duration-200 group-hover:opacity-40"
+        style={{ backgroundColor: tone.solid }}
+      />
+      <div className="relative flex items-start justify-between gap-2">
+        <span className="text-[10px] font-semibold text-[#6C6C70] tracking-[0.03em] uppercase leading-[1.25] min-h-[2.5em]">
           {title}
         </span>
-        <div className={`w-5 h-5 shrink-0 rounded-full flex items-center justify-center ${colorMap[color] || colorMap.slate}`}>
-          <Icon className="w-2.5 h-2.5" />
+        <div
+          className="stat-icon w-8 h-8 shrink-0 rounded-[10px] flex items-center justify-center text-white"
+          style={{
+            background: `linear-gradient(160deg, ${tone.solid}CC 0%, ${tone.solid} 100%)`,
+            boxShadow: `0 4px 10px -2px ${tone.glow}`,
+          }}
+        >
+          <Icon className="w-4 h-4" strokeWidth={2.4} />
         </div>
       </div>
-      <div className="text-[13.5px] font-bold text-[#1C1C1E] tracking-tight truncate font-mono">
+      <div className="relative text-[16px] font-bold text-[#1C1C1E] tracking-tight truncate tabular-nums">
         {value}
       </div>
     </div>
@@ -611,24 +731,38 @@ function KpiCard({ title, value, icon: Icon, color }) {
  * which is what lets the lower-contrast slots (orange, green) ship on a white
  * surface. Text stays in ink tokens; only the swatch carries the series hue.
  */
-function SplitLegend({ split }) {
+function SplitLegend({ split, total }) {
   const rows = PAYMENT_SERIES.map((s) => ({ ...s, value: split[s.key] ?? 0 }));
   return (
-    <div className="mt-4 w-full max-w-[280px] space-y-px">
+    <div className="mt-5 w-full grid grid-cols-2 gap-2">
       {rows.map((r) => (
         <div
           key={r.key}
-          className="flex items-center gap-2.5 py-[5px] text-[12px] leading-none"
+          className="rounded-2xl bg-[#F9F9FB] px-3 py-2.5"
         >
-          <span
-            className="w-2.5 h-2.5 rounded-[3px] shrink-0"
-            style={{ backgroundColor: r.color }}
-            aria-hidden="true"
-          />
-          <span className="text-[#3C3C43] font-medium flex-1 min-w-0 truncate">
-            {r.key}
-          </span>
-          <span className="text-[#1C1C1E] font-semibold tabular-nums">{r.value}%</span>
+          <div className="flex items-center gap-2">
+            <span
+              className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white shadow-sm"
+              style={{ backgroundColor: r.color }}
+              aria-hidden="true"
+            />
+            <span className="text-[12px] text-[#3C3C43] font-medium flex-1 min-w-0 truncate">
+              {r.key}
+            </span>
+            <span className="text-[13px] text-[#1C1C1E] font-bold tabular-nums">{r.value}%</span>
+          </div>
+          {/* Share bar: the hue marks identity; the figures stay in ink. */}
+          <div className="mt-2 h-1.5 rounded-full bg-[#E5E5EA] overflow-hidden" aria-hidden="true">
+            <div
+              className="h-full rounded-full"
+              style={{ width: `${r.value}%`, backgroundColor: r.color }}
+            />
+          </div>
+          {total ? (
+            <div className="mt-1.5 text-[10.5px] text-[#8E8E93] font-medium tabular-nums">
+              {compactAED((total * r.value) / 100)}
+            </div>
+          ) : null}
         </div>
       ))}
     </div>

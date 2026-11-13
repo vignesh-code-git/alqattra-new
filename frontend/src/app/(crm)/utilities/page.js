@@ -925,21 +925,21 @@ export default function UtilitiesPage() {
         {subView === "view_item" && selectedItem && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+              <div className="bg-white rounded-3xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
                 <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">CURRENT STOCK</div>
                 <div className="text-2xl font-bold text-[#34C759] mt-1 tracking-tight">
                   {selectedItem.current_stock === "N/A" ? 0 : selectedItem.current_stock}
                 </div>
               </div>
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+              <div className="bg-white rounded-3xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
                 <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">OLD STOCK</div>
                 <div className="text-2xl font-bold text-[#1C1C1E] mt-1 tracking-tight">0</div>
               </div>
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+              <div className="bg-white rounded-3xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
                 <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">DAMAGED STOCK</div>
                 <div className="text-2xl font-bold text-[#FF3B30] mt-1 tracking-tight">0</div>
               </div>
-              <div className="bg-white rounded-3xl p-5 border border-[#3C3C43]/10 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+              <div className="bg-white rounded-3xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
                 <div className="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">
                   DISCARDED STOCK
                 </div>
@@ -1193,7 +1193,7 @@ export default function UtilitiesPage() {
               </form>
 
               {/* Truck Stock Table inside Manage Truck Stock */}
-              <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl overflow-hidden mt-4">
+              <div className="overflow-x-auto rounded-2xl overflow-hidden mt-4">
                 <table className="ios-table w-full text-left border-collapse">
                   <thead>
                     <tr className="ios-thead">
@@ -1248,8 +1248,8 @@ export default function UtilitiesPage() {
       {/* 8. TRUCK STOCK DETAILS MODAL (truck view.png) */}
       {truckModalOpen && selectedTruck && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-[6px] p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[20px] border border-[#3C3C43]/11 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden border border-[#3C3C43]/10">
-            <div className="px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
+          <div className="ios-pop bg-white rounded-[20px] shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_64px_-12px_rgba(0,0,0,0.3)] w-full max-w-2xl overflow-hidden">
+            <div className="ios-pop-head px-6 py-4 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-base font-semibold text-[#1C1C1E]">Truck Stock Details</h3>
               <button
                 type="button"
@@ -1274,7 +1274,7 @@ export default function UtilitiesPage() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto border border-[#3C3C43]/10 rounded-2xl overflow-hidden">
+              <div className="overflow-x-auto rounded-2xl overflow-hidden">
                 <table className="ios-table w-full text-left border-collapse">
                   <thead>
                     <tr className="ios-thead">
@@ -1334,8 +1334,8 @@ export default function UtilitiesPage() {
       {/* 9. TOTAL PRODUCT DELIVERY SUMMARY RIGHT-HAND DRAWER (product-summary.png) */}
       {productSummaryDrawerOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/25 backdrop-blur-[6px]">
-          <div className="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200 border-l border-[#3C3C43]/10">
-            <div className="px-6 py-5 border-b border-[#3C3C43]/10 flex items-center justify-between">
+          <div className="ios-pop bg-white w-full max-w-sm h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200 border-l border-[#3C3C43]/10">
+            <div className="ios-pop-head px-6 py-5 border-b border-[#3C3C43]/10 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-[#1C1C1E]">
                 Total Product Delivery Summary
               </h3>
@@ -1365,7 +1365,7 @@ export default function UtilitiesPage() {
               {filteredProductSummary.map((item, idx) => (
                 <div
                   key={idx}
-                  className="border border-[#3C3C43]/10 rounded-2xl p-4 bg-white shadow-xs"
+                  className=" rounded-2xl p-4 bg-white shadow-xs"
                 >
                   <div className="text-xs font-semibold text-[#1C1C1E] mb-3">{item.name}</div>
                   <div className="grid grid-cols-3 text-center gap-2">

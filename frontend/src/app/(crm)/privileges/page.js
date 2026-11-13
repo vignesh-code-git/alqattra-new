@@ -348,7 +348,7 @@ export default function PrivilegesPage() {
                 </div>
 
                 {openReadOnlyDropdown && (
-                  <div className="absolute left-0 right-0 top-full mt-1 bg-white/95 backdrop-blur-xl border border-[#3C3C43]/10 rounded-2xl shadow-xl z-20 max-h-48 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl z-20 max-h-48 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-3 gap-1.5">
                     {ALL_MODULES.map((mod) => (
                       <label
                         key={mod}
@@ -401,7 +401,7 @@ export default function PrivilegesPage() {
                 </div>
 
                 {openWriteDropdown && (
-                  <div className="absolute left-0 right-0 top-full mt-1 bg-white/95 backdrop-blur-xl border border-[#3C3C43]/10 rounded-2xl shadow-xl z-20 max-h-48 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl z-20 max-h-48 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-3 gap-1.5">
                     {ALL_MODULES.map((mod) => (
                       <label
                         key={mod}

@@ -38,7 +38,7 @@ export default function LoginPage() {
 
       {/* Login card */}
       <div className="relative z-20 w-full max-w-[380px] mx-auto px-4">
-        <div className="bg-white rounded-[20px] shadow-[0_14px_40px_rgba(0,0,0,0.12)] border border-[#3C3C43]/8 px-8 py-9">
+        <div className="bg-white rounded-[20px] shadow-[0_14px_40px_rgba(0,0,0,0.12)] px-8 py-9">
           <div className="flex justify-center mb-7">
             <Image
               src="/alqattara-logo.svg"

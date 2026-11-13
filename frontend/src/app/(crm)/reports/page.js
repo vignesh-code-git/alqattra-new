@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import FilterPopup from "@/components/FilterPopup";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
 import PanelHeader from "@/components/PanelHeader";
@@ -507,7 +508,7 @@ export default function ReportsPage() {
         {/* TAB 1: SALESMAN COLLECTION REPORT (reposrts-salesman.png) */}
         {activeTab === "salesman" && (
           <>
-            <div className="ios-surface p-5 space-y-4">
+            <FilterPopup title="Filter Parameters" className="p-5 space-y-4">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
@@ -600,7 +601,7 @@ export default function ReportsPage() {
                   Apply
                 </button>
               </div>
-            </div>
+            </FilterPopup>
 
             <div className="ios-surface overflow-hidden">
               <PanelHeader
@@ -659,7 +660,7 @@ export default function ReportsPage() {
         {/* TAB 2: CUSTOMER REPORT (customer report.png) */}
         {activeTab === "customer" && (
           <>
-            <div className="ios-surface p-5 space-y-4">
+            <FilterPopup title="Filter Parameters" className="p-5 space-y-4">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
@@ -787,7 +788,7 @@ export default function ReportsPage() {
                   Apply
                 </button>
               </div>
-            </div>
+            </FilterPopup>
 
             <div className="ios-surface overflow-hidden">
               <PanelHeader
@@ -841,7 +842,7 @@ export default function ReportsPage() {
         {/* TAB 3: TRUCK REPORT (truck reposrt.png) */}
         {activeTab === "truck" && (
           <>
-            <div className="ios-surface p-5 space-y-4">
+            <FilterPopup title="Filter Parameters" className="p-5 space-y-4">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
@@ -939,7 +940,7 @@ export default function ReportsPage() {
                   Apply
                 </button>
               </div>
-            </div>
+            </FilterPopup>
 
             <div className="ios-surface overflow-hidden">
               <PanelHeader
@@ -993,7 +994,7 @@ export default function ReportsPage() {
         {/* TAB 4: COMMISSION REPORT (commission repo.png) */}
         {activeTab === "commission" && (
           <>
-            <div className="ios-surface p-5 space-y-4">
+            <FilterPopup title="Filter Parameters" className="p-5 space-y-4">
               <h3 className="text-xs font-bold text-[#1C1C1E] uppercase tracking-wider">
                 Filter Parameters
               </h3>
@@ -1061,7 +1062,7 @@ export default function ReportsPage() {
                   Apply
                 </button>
               </div>
-            </div>
+            </FilterPopup>
 
             <div className="ios-surface overflow-hidden">
               <PanelHeader
