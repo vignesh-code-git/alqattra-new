@@ -53,8 +53,8 @@ const navigationItems = [
 
 // Territories, each with its own icon tile colour.
 const cities = [
-  { id: "ALL", label: "All Cities", seg: "ALL", short: "ALL", icon: Globe2, color: "#007AFF" },
-  { id: "AL AIN", label: "Al Ain", seg: "AL AIN", short: "AIN", icon: Building2, color: "#34C759" },
+  { id: "ALL", label: "All Cities", seg: "ALL", short: "ALL", icon: Globe2, color: "#34C759" },
+  { id: "AL AIN", label: "Al Ain", seg: "AL AIN", short: "AIN", icon: Building2, color: "#AF52DE" },
   { id: "ABU DHABI", label: "Abu Dhabi", seg: "ABU DHABI", short: "AD", icon: Landmark, color: "#FF9500" },
 ];
 
