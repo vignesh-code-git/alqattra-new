@@ -319,7 +319,7 @@ export default function Sidebar() {
                   }}
                 >
                   {item.mac ? (
-                    <MacTrashIcon full={binCount > 0} className="w-8 h-8 drop-shadow-[0_2px_2px_rgba(0,0,0,0.12)]" />
+                    <MacTrashIcon count={binCount} className="w-8 h-8 drop-shadow-[0_2px_2px_rgba(0,0,0,0.12)]" />
                   ) : (
                     <Icon className="w-[15px] h-[15px] text-white" strokeWidth={2.3} />
                   )}

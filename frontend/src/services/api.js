@@ -15,6 +15,15 @@ export async function fetchFromAPI(endpoint, options = {}) {
       const errBody = await res.text().catch(() => "");
       throw new Error(`API error ${res.status}: ${errBody || res.statusText}`);
     }
+    // Deletes, restores and soft deletes change what is in the Bin, so tell
+    // the sidebar to refresh its Bin icon straight away.
+    const method = (options.method || "GET").toUpperCase();
+    const touchesBin =
+      method === "DELETE" ||
+      (method === "POST" && (cleanEndpoint.includes("soft_delete") || cleanEndpoint.startsWith("/crm/bin/")));
+    if (typeof window !== "undefined" && touchesBin) {
+      window.dispatchEvent(new Event("bin-changed"));
+    }
     // Return json if content-type is json or body exists
     const contentType = res.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
