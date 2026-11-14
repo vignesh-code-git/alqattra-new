@@ -1,9 +1,14 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import confirmDelete from "@/components/confirmDelete";
+import TableIO from "@/components/TableIO";
 import PanelHeader from "@/components/PanelHeader";
+import { apiService } from "@/services/api";
+import useLiveData from "@/hooks/useLiveData";
+import { listOf } from "@/services/crmMappers";
 import { Home, ArrowUpDown, ChevronDown, X, ShieldCheck, Plus } from "lucide-react";
 
 const ALL_MODULES = [
@@ -23,71 +28,29 @@ const ALL_MODULES = [
   "offer_commission",
 ];
 
-const INITIAL_PRIVILEGES = [
-  {
-    id: 1,
-    class_name: "ADMINA",
-    readonly: "",
-    read_write:
-      "dashboard,utilities,orders,customers,reports,wallet,zones,routes,salesman,masters,privileges,cities,cashier,offer_commission",
-    registered_on: "27/10/2025",
-  },
-  {
-    id: 2,
-    class_name: "customercare",
-    readonly: "dashboard,orders,customers,reports,wallet,zones,routes,salesman",
-    read_write: "orders,customers,reports,salesman,cities",
-    registered_on: "20/09/2025",
-  },
-  {
-    id: 3,
-    class_name: "test",
-    readonly: "",
-    read_write: "masters,privileges,cashier",
-    registered_on: "14/09/2025",
-  },
-  {
-    id: 4,
-    class_name: "CASHIER",
-    readonly: "dashboard",
-    read_write: "orders,customers,reports,salesman,cities,cashier",
-    registered_on: "13/09/2025",
-  },
-  {
-    id: 5,
-    class_name: "ADMINISTRATOR",
-    readonly: "utilities,orders,customers,reports,wallet,zones,routes,salesman,cashier",
-    read_write: "cities",
-    registered_on: "15/07/2025",
-  },
-  {
-    id: 6,
-    class_name: "STORE KEEPER",
-    readonly: "utilities",
-    read_write: "utilities,cities",
-    registered_on: "15/07/2025",
-  },
-  {
-    id: 7,
-    class_name: "AAdmin",
-    readonly: "",
-    read_write:
-      "dashboard,utilities,orders,customers,reports,wallet,zones,routes,salesman,masters,privileges,cities,cashier",
-    registered_on: "15/07/2025",
-  },
-  {
-    id: 8,
-    class_name: "ADMIN",
-    readonly: "",
-    read_write:
-      "dashboard,utilities,orders,customers,reports,wallet,zones,routes,salesman,masters,privileges,cities",
-    registered_on: "28/02/2025",
-  },
-];
+/** Access level from the API -> row shape this page renders. */
+function accessLevelFromApi(l) {
+  return {
+    id: l.id,
+    class_name: l.class_name,
+    readonly: l.readonly || "",
+    read_write: l.read_write || "",
+    registered_on: l.registered_on || "-",
+  };
+}
 
 export default function PrivilegesPage() {
   const { addToast } = useToast();
-  const [privileges, setPrivileges] = useState(INITIAL_PRIVILEGES);
+  const loadLive = useCallback(async () => {
+    const raw = await apiService.getAccessLevels();
+    if (raw == null) return null;
+    return listOf(raw).map(accessLevelFromApi);
+  }, []);
+  const live = useLiveData(loadLive);
+  const [privileges, setPrivileges] = useState([]);
+  useEffect(() => {
+    if (live.data) setPrivileges(live.data);
+  }, [live.data]);
   const [viewMode, setViewMode] = useState("list"); // "list" | "add"
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -134,7 +97,7 @@ export default function PrivilegesPage() {
     }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     if (!className.trim()) {
       addToast("Please enter a Previlage Class name", "error");
@@ -145,16 +108,29 @@ export default function PrivilegesPage() {
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const yyyy = today.getFullYear();
 
-    const newItem = {
-      id: Date.now(),
+    const created = await apiService.createAccessLevel({
       class_name: className.trim(),
       readonly: readOnlyModules.join(","),
       read_write: writeModules.join(","),
       registered_on: `${dd}/${mm}/${yyyy}`,
-    };
-    setPrivileges((prev) => [newItem, ...prev]);
+    });
+    if (!created) {
+      addToast("Could not save - check the CRM server", "error");
+      return;
+    }
+    await live.refresh();
     addToast(`Previlage class "${className}" created successfully`, "success");
     setViewMode("list");
+  };
+
+  const handleDeletePrivilege = async (row) => {
+    const result = await apiService.deleteAccessLevel(row.id);
+    if (!result) {
+      addToast(`Could not delete "${row.class_name}" - check the CRM server`, "error");
+      return;
+    }
+    addToast(`Deleted access level "${row.class_name}"`, "info");
+    await live.refresh();
   };
 
   return (
@@ -174,13 +150,13 @@ export default function PrivilegesPage() {
                 <button
                   type="button"
                   onClick={openAddView}
-                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#5856D6]/10 border border-[#5856D6]/50 text-[#5856D6] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Add New
                 </button>
               }
-              onAction={() => addToast("Exported privilege records", "success")}
+              tools={<TableIO name="user-access-levels" onExport={() => addToast("Exported privilege records", "success")} />}
             />
 
             {/* Show Entries & Search Bar */}
@@ -246,6 +222,7 @@ export default function PrivilegesPage() {
                         <ArrowUpDown className="w-3 h-3 text-[#007AFF]/70" />
                       </div>
                     </th>
+                    <th className="py-3 px-6">ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody className="text-[12.5px] text-[#1C1C1E]">
@@ -255,11 +232,20 @@ export default function PrivilegesPage() {
                       <td className="py-3.5 px-4 text-[#8E8E93] text-xs font-mono break-all">{row.readonly || "-"}</td>
                       <td className="py-3.5 px-4 text-[#3C3C43] text-xs font-mono break-all">{row.read_write}</td>
                       <td className="py-3.5 px-6 text-[#8E8E93] whitespace-nowrap">{row.registered_on}</td>
+                      <td className="py-3.5 px-4 last:pr-6">
+                        <button
+                          type="button"
+                          onClick={async () => (await confirmDelete(`access level "${row.class_name}"`)) && handleDeletePrivilege(row)}
+                          className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition cursor-pointer active:scale-95"
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))}
                   {paginatedRows.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center text-[#8E8E93]">
+                      <td colSpan={5} className="py-8 text-center text-[#8E8E93]">
                         No matching privilege records found.
                       </td>
                     </tr>
@@ -283,8 +269,8 @@ export default function PrivilegesPage() {
                     onClick={() => setCurrentPage(page)}
                     className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition cursor-pointer ${
                       currentPage === page
-                        ? "bg-[#007AFF] text-white shadow-xs"
-                        : "text-[#3C3C43] hover:bg-black/5"
+                        ? "bg-white border border-[#007AFF]/60 text-[#007AFF]"
+                        : "bg-white border border-[#007AFF]/20 text-[#3C3C43] hover:bg-[#007AFF]/10"
                     }`}
                   >
                     {page}

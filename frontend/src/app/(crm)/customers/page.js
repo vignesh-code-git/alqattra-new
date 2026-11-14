@@ -6,6 +6,8 @@ import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
 import StatCard, { hexFromTone } from "@/components/StatCard";
 import BackLink from "@/components/BackLink";
+import confirmDelete from "@/components/confirmDelete";
+import TableIO from "@/components/TableIO";
 import PanelHeader from "@/components/PanelHeader";
 import { apiService } from "@/services/api";
 import useLiveData from "@/hooks/useLiveData";
@@ -33,6 +35,7 @@ import {
   Plus,
   Users,
 } from "lucide-react";
+import IosDateInput from "@/components/IosDateInput";
 
 const RECHARGE_COUPON_CODES = [
   "F-bb84f862-f2eb-4bf3-8826-ab2435fc55c3",
@@ -438,8 +441,7 @@ export default function CustomersPage() {
                 </div>
                 <div>
                   <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">From</label>
-                  <input
-                    type="date"
+                  <IosDateInput
                     value={customerFilters.from}
                     onChange={(e) =>
                       setCustomerFilters({ ...customerFilters, from: e.target.value })
@@ -449,8 +451,7 @@ export default function CustomersPage() {
                 </div>
                 <div>
                   <label className="block text-[10.5px] font-semibold text-[#8E8E93] uppercase mb-1">To</label>
-                  <input
-                    type="date"
+                  <IosDateInput
                     value={customerFilters.to}
                     onChange={(e) =>
                       setCustomerFilters({ ...customerFilters, to: e.target.value })
@@ -586,26 +587,27 @@ export default function CustomersPage() {
                 icon={Users}
                 title="Customer List"
                 subtitle="Live customer directory, deliveries and transactions"
-                onAction={() => addToast("Exported customer records", "success")}
+               
                 actions={
                   <>
                   <button
                     type="button"
                     onClick={() => setViewMode("deleted")}
-                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95"
+                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#FF3B30]/10 border border-[#FF3B30]/50 text-[#D70015] text-[11.5px] font-semibold transition cursor-pointer active:scale-95"
                   >
                     Deleted Customer
                   </button>
                   <button
                     type="button"
                     onClick={openNewCustomerView}
-                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#5856D6]/10 border border-[#5856D6]/50 text-[#5856D6] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     New Customer
                   </button>
                 </>
                 }
+                tools={<TableIO name="customer-list" onExport={() => addToast("Exported customer records", "success")} />}
               />
 
               <div className="px-6 py-4 bg-[#F2F2F7]/50 border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
@@ -674,7 +676,7 @@ export default function CustomersPage() {
                                 setSelectedCustomer(cust);
                                 setDetailsModalOpen(true);
                               }}
-                              className="px-3 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                              className="px-3 py-1 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               Details
                             </button>
@@ -685,9 +687,16 @@ export default function CustomersPage() {
                                 setTxTab("asset");
                                 setViewMode("transactions");
                               }}
-                              className="px-3 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                              className="px-3 py-1 rounded-full bg-white border border-[#34C759]/50 text-[#248A3D] hover:bg-[#34C759]/10 text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               Transactions
+                            </button>
+                            <button
+                              type="button"
+                              onClick={async () => (await confirmDelete(`customer ${cust.name}`, "They move to Deleted Customers and the Bin. After 30 days they are deleted for good.")) && handleDeleteCustomer(cust)}
+                              className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition cursor-pointer active:scale-95"
+                            >
+                              Delete
                             </button>
                           </div>
                         </td>
@@ -717,7 +726,7 @@ export default function CustomersPage() {
                       key={p}
                       onClick={() => setPage(p)}
                       className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center ${
-                        p === currentPage ? "bg-[#007AFF] text-white shadow-xs" : "text-[#8E8E93] hover:bg-[#F2F2F7]"
+                        p === currentPage ? "bg-white border border-[#007AFF]/60 text-[#007AFF]" : "bg-white border border-[#007AFF]/20 text-[#3C3C43] hover:bg-[#007AFF]/10"
                       }`}
                     >
                       {p}
@@ -810,7 +819,7 @@ export default function CustomersPage() {
                         <button
                           type="button"
                           onClick={() => handleRestoreCustomer(row)}
-                          className="px-3.5 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                          className="px-3.5 py-1 rounded-full bg-white border border-[#34C759]/50 text-[#248A3D] hover:bg-[#34C759]/10 text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                         >
                           Restore
                         </button>
@@ -828,7 +837,7 @@ export default function CustomersPage() {
                   <button
                     key={p}
                     className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center ${
-                      p === 1 ? "bg-[#007AFF] text-white shadow-xs" : "text-[#8E8E93] hover:bg-[#F2F2F7]"
+                      p === 1 ? "bg-white border border-[#007AFF]/60 text-[#007AFF]" : "bg-white border border-[#007AFF]/20 text-[#3C3C43] hover:bg-[#007AFF]/10"
                     }`}
                   >
                     {p}
@@ -1157,7 +1166,7 @@ export default function CustomersPage() {
                             pricing: customerForm.pricing.filter((_, i) => i !== idx),
                           })
                         }
-                        className="px-4 py-2 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-xs font-semibold cursor-pointer active:scale-95 transition"
+                        className="px-4 py-2 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-xs font-semibold cursor-pointer active:scale-95 transition"
                       >
                         Remove
                       </button>
@@ -1173,7 +1182,7 @@ export default function CustomersPage() {
                       pricing: [...customerForm.pricing, { product: "", price: "" }],
                     })
                   }
-                  className="px-4 py-2 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-xs font-semibold cursor-pointer active:scale-95 transition"
+                  className="px-4 py-2 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-xs font-semibold cursor-pointer active:scale-95 transition"
                 >
                   + Add Product Price
                 </button>
@@ -1191,7 +1200,7 @@ export default function CustomersPage() {
                   <button
                     type="button"
                     onClick={() => openEditCustomerView(selectedCustomer)}
-                    className="px-4 py-2 rounded-full bg-[#FF9500]/15 hover:bg-[#FF9500] text-[#D48000] hover:text-white text-xs font-semibold cursor-pointer active:scale-95 transition"
+                    className="px-4 py-2 rounded-full bg-white border border-[#FF9500]/50 text-[#D48000] hover:bg-[#FF9500]/10 text-xs font-semibold cursor-pointer active:scale-95 transition"
                   >
                     Reset Changes
                   </button>
@@ -1300,7 +1309,7 @@ export default function CustomersPage() {
                                   deposit: 0,
                                 })
                               }
-                              className="px-3.5 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                              className="px-3.5 py-1 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
@@ -1324,7 +1333,7 @@ export default function CustomersPage() {
                                   deposit: 60,
                                 })
                               }
-                              className="px-3.5 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                              className="px-3.5 py-1 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
@@ -1390,7 +1399,7 @@ export default function CustomersPage() {
                             <button
                               type="button"
                               onClick={() => setTxOrderModalOpen(true)}
-                              className="px-3.5 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                              className="px-3.5 py-1 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
@@ -1508,7 +1517,7 @@ export default function CustomersPage() {
                             <button
                               type="button"
                               onClick={() => setRechargeModalOpen(true)}
-                              className="px-3.5 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                              className="px-3.5 py-1 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
@@ -1682,8 +1691,8 @@ export default function CustomersPage() {
               </button>
               <button
                 type="button"
-                onClick={() => handleDeleteCustomer(selectedCustomer)}
-                className="px-4 py-2 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-xs font-semibold cursor-pointer active:scale-95 transition"
+                onClick={async () => (await confirmDelete(`customer ${selectedCustomer.name}`, "They move to Deleted Customers and the Bin. After 30 days they are deleted for good.")) && handleDeleteCustomer(selectedCustomer)}
+                className="px-4 py-2 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-xs font-semibold cursor-pointer active:scale-95 transition"
               >
                 Delete Customer
               </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -26,6 +26,8 @@ import {
   Landmark,
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
+import MacTrashIcon from "@/components/MacTrashIcon";
+import { apiService } from "@/services/api";
 import { useSidebar } from "@/context/SidebarContext";
 import { useTerritory } from "@/context/TerritoryContext";
 
@@ -44,6 +46,9 @@ const navigationItems = [
   { name: "Salesman", href: "/salesman", icon: UserCheck, color: "#00C7BE" },
   { name: "Masters", href: "/masters", icon: Sliders, color: "#A2845E" },
   { name: "Privileges", href: "/privileges", icon: ShieldCheck, color: "#636366" },
+  // Last, like the Trash at the end of the Mac Dock. Drawn as the Mac Trash
+  // can rather than a coloured tile.
+  { name: "Bin", href: "/bin", mac: true, color: "#8E8E93" },
 ];
 
 // Territories, each with its own icon tile colour.
@@ -61,12 +66,19 @@ function tile(color) {
   };
 }
 
-/* Floating label shown beside the rail while collapsed (brand, city, log out). */
-function Tip({ children }) {
+/* Floating label shown beside the rail while collapsed (brand, city, log out),
+   in the same colourful tile style as the menu items' labels. */
+function Tip({ children, color = "#007AFF" }) {
   return (
-    <span className="absolute left-full ml-2 px-2.5 py-1.5 bg-[#1C1C1E]/92 backdrop-blur-xl text-white text-[11px] font-semibold rounded-xl shadow-xl opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 pointer-events-none transition-all duration-150 whitespace-nowrap z-[120]">
-      <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#1C1C1E]/92 rotate-45" />
-      {children}
+    <span
+      className="absolute left-full ml-2 px-2.5 py-1.5 text-white text-[11px] font-semibold rounded-xl shadow-xl opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 pointer-events-none transition-all duration-150 whitespace-nowrap z-[120]"
+      style={tile(color)}
+    >
+      <span
+        className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45"
+        style={{ backgroundColor: `${color}D9` }}
+      />
+      <span className="relative">{children}</span>
     </span>
   );
 }
@@ -83,6 +95,23 @@ export default function Sidebar() {
   // collapsed-rail label is drawn once on the sidebar itself, level with
   // the hovered item.
   const [navTip, setNavTip] = useState(null);
+  // How many items are in the Bin: the icon shows paper in it when not empty.
+  const [binCount, setBinCount] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      const items = await apiService.getBin();
+      if (alive && Array.isArray(items)) setBinCount(items.length);
+    };
+    load();
+    const t = setInterval(load, 20000);
+    window.addEventListener("bin-changed", load);
+    return () => {
+      alive = false;
+      clearInterval(t);
+      window.removeEventListener("bin-changed", load);
+    };
+  }, [pathname]);
   const asideRef = useRef(null);
   // Mac Dock magnification (collapsed rail only): the icon under the pointer
   // swells and its neighbours grow less, easing off over DOCK_RANGE px. Rows
@@ -183,7 +212,7 @@ export default function Sidebar() {
                   priority
                   className="w-9 h-9"
                 />
-                <Tip>Expand menu</Tip>
+                <Tip color="#007AFF">Expand menu</Tip>
               </>
             ) : (
               <Image
@@ -246,14 +275,25 @@ export default function Sidebar() {
                 style={{ height: `${40 + (mag - 1) * 24}px` }}
               >
                 {/* Selected page: a simple flat highlight in the page's own
-                    colour, the way iPad sidebars mark the current item. */}
+                    colour, the way iPad sidebars mark the current item. It
+                    deepens when hovered, like every other row. */}
                 <span
                   aria-hidden="true"
-                  className={`absolute inset-0 -z-10 rounded-[12px] transition-opacity duration-200 ${
+                  className={`absolute inset-0 -z-10 rounded-[12px] transition-[opacity,background-color] duration-200 ${
                     isActive ? "opacity-100" : "opacity-0"
                   }`}
-                  style={{ backgroundColor: `${item.color}1F` }}
+                  style={{ backgroundColor: `${item.color}${isActive && hovered === item.name ? "33" : "1F"}` }}
                 />
+                {/* Selected page: a short rounded line in its colour at the left */}
+                {isActive && (
+                  <span
+                    aria-hidden="true"
+                    className={`absolute top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full ${
+                      compact ? "left-0.5" : "left-0"
+                    }`}
+                    style={{ backgroundColor: item.color }}
+                  />
+                )}
                 {/* Wide sidebar hover: a soft grey platter fades in behind the row.
                     (The collapsed rail magnifies like the Dock instead.) */}
                 {!isActive && !compact && (
@@ -267,16 +307,29 @@ export default function Sidebar() {
                 {/* Each page has its own colour, shown as a rounded square behind
                     its icon (the way iPhone Settings does it). On the collapsed
                     rail it swells and lifts out towards the page, like the Dock. */}
+                {/* Thin divider above the Bin, like the one before the Dock's Trash */}
+                {item.mac && (
+                  <span aria-hidden="true" className="absolute -top-[3px] left-2 right-2 h-px bg-[#3C3C43]/12" />
+                )}
                 <span
                   className="relative w-7 h-7 shrink-0 rounded-[8px] flex items-center justify-center transition-transform duration-[160ms] ease-out will-change-transform"
                   style={{
-                    ...tile(item.color),
+                    ...(item.mac ? {} : tile(item.color)),
                     transform: `translateX(${(mag - 1) * 12}px) scale(${mag})`,
                   }}
                 >
-                  <Icon className="w-[15px] h-[15px] text-white" strokeWidth={2.3} />
+                  {item.mac ? (
+                    <MacTrashIcon full={binCount > 0} className="w-8 h-8 drop-shadow-[0_2px_2px_rgba(0,0,0,0.12)]" />
+                  ) : (
+                    <Icon className="w-[15px] h-[15px] text-white" strokeWidth={2.3} />
+                  )}
                 </span>
-                {!compact && <span className="truncate">{item.name}</span>}
+                {!compact && <span className="truncate flex-1">{item.name}</span>}
+                {!compact && item.mac && binCount > 0 && (
+                  <span className="mr-1 min-w-5 h-5 px-1.5 rounded-full bg-[#8E8E93]/15 text-[#636366] text-[10.5px] font-semibold flex items-center justify-center">
+                    {binCount}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -319,7 +372,7 @@ export default function Sidebar() {
                 <span className="text-[9px] font-bold tracking-tight" style={{ color: activeCity.color }}>
                   {activeCity.short}
                 </span>
-                {!showCityPopover && <Tip>Territory: {activeCity.label}</Tip>}
+                {!showCityPopover && <Tip color={activeCity.color}>Territory: {activeCity.label}</Tip>}
               </button>
 
               {showCityPopover && (
@@ -417,7 +470,7 @@ export default function Sidebar() {
                 style={tile("#FF3B30")}
               >
                 <Power className="w-[17px] h-[17px] text-white" strokeWidth={2.6} />
-                <Tip>Log out</Tip>
+                <Tip color="#FF3B30">Log out</Tip>
               </button>
             </div>
           ) : (

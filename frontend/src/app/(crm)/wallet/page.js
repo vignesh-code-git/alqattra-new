@@ -7,6 +7,8 @@ import { apiService } from "@/services/api";
 import useLiveData from "@/hooks/useLiveData";
 import { listOf, walletRowsFromApi } from "@/services/crmMappers";
 import BackLink from "@/components/BackLink";
+import confirmDelete from "@/components/confirmDelete";
+import TableIO from "@/components/TableIO";
 import PanelHeader from "@/components/PanelHeader";
 import { ArrowUpDown, X, Wallet } from "lucide-react";
 
@@ -120,6 +122,16 @@ export default function WalletPage() {
     setViewMode("list");
   };
 
+  const handleDeleteWallet = async (row) => {
+    const result = await apiService.deleteWallet(row.wallet_id);
+    if (!result) {
+      addToast("Could not delete this wallet - check the CRM server", "error");
+      return;
+    }
+    addToast(`Wallet of ${row.customer_name || row.customer_id} deleted`, "info");
+    await live.refresh();
+  };
+
   return (
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col font-sans pb-12">
       <Header title="Wallet" subtitle="Manage Wallet" />
@@ -137,16 +149,17 @@ export default function WalletPage() {
               icon={Wallet}
               title="Wallet Management"
               subtitle="Customer wallets, coupons and recharges"
-              onAction={() => addToast("Exported wallet records", "success")}
+             
               actions={
                 <button
                   type="button"
                   onClick={() => setViewMode("recharge")}
-                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95"
+                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#FF2D55]/10 border border-[#FF2D55]/50 text-[#D6204A] text-[11.5px] font-semibold transition cursor-pointer active:scale-95"
                 >
                   Wallet Recharge
                 </button>
               }
+              tools={<TableIO name="wallet-management" onExport={() => addToast("Exported wallet records", "success")} />}
             />
 
             <div className="px-6 py-3.5 bg-[#F2F2F7]/50 border-b border-[#E5E5EA] flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
@@ -223,9 +236,16 @@ export default function WalletPage() {
                         <button
                           type="button"
                           onClick={() => setCouponModalRow(row)}
-                          className="px-3.5 py-1.5 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold transition cursor-pointer"
                         >
                           View Coupons
+                        </button>
+                        <button
+                          type="button"
+                          onClick={async () => (await confirmDelete(`wallet of ${row.customer_name || row.customer_id}`, "This removes the customer's whole wallet, including all its recharges. All of it moves to the Bin, where you can restore it for 30 days.")) && handleDeleteWallet(row)}
+                          className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition cursor-pointer active:scale-95"
+                        >
+                          Delete
                         </button>
                       </td>
                     </tr>
@@ -242,7 +262,7 @@ export default function WalletPage() {
                     key={p}
                     className={`w-7 h-7 rounded-full text-[11px] font-medium flex items-center justify-center transition-all cursor-pointer ${
                       p === 1
-                        ? "bg-[#007AFF] text-white shadow-xs font-semibold"
+                        ? "bg-white border border-[#007AFF]/60 text-[#007AFF] font-semibold"
                         : "text-[#8E8E93] hover:text-[#1C1C1E] hover:bg-[#E5E5EA]"
                     }`}
                   >

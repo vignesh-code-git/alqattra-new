@@ -1,127 +1,42 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import confirmDelete from "@/components/confirmDelete";
+import TableIO from "@/components/TableIO";
 import PanelHeader from "@/components/PanelHeader";
+import { apiService } from "@/services/api";
+import useLiveData from "@/hooks/useLiveData";
+import { listOf } from "@/services/crmMappers";
 import { Home, ArrowUpDown, Sliders, Plus } from "lucide-react";
 
-const INITIAL_MASTERS = [
-  {
-    id: 1,
-    customer_name: "sanin",
-    customer_id: "it@alqattara.com",
-    registered_on: "09/04/2026",
-    contact: "ADMINA",
-    phone: "0564116337",
-    last_login: "-",
-    last_logout: "-",
-  },
-  {
-    id: 2,
-    customer_name: "MAHA RASHED",
-    customer_id: "maha@alqattara.com",
-    registered_on: "17/12/2025",
-    contact: "ADMINA",
-    phone: "0501234567",
-    last_login: "08/09/2026, 9:32:06 AM",
-    last_logout: "03/09/2026, 12:02:06 PM",
-  },
-  {
-    id: 3,
-    customer_name: "AMIRA",
-    customer_id: "amira@alqattara.com",
-    registered_on: "16/10/2025",
-    contact: "AAdmin",
-    phone: "0529876543",
-    last_login: "17/10/2025, 10:18:45 AM",
-    last_logout: "-",
-  },
-  {
-    id: 4,
-    customer_name: "MOHAMMED.A",
-    customer_id: "it@alqattara.com",
-    registered_on: "15/07/2025",
-    contact: "ADMINA",
-    phone: "0554433221",
-    last_login: "08/09/2026, 8:57:32 AM",
-    last_logout: "27/08/2026, 5:48:43 PM",
-  },
-  {
-    id: 5,
-    customer_name: "IRSHAD",
-    customer_id: "store@alqattara.com",
-    registered_on: "13/07/2025",
-    contact: "STORE KEEPER",
-    phone: "0567788990",
-    last_login: "08/09/2026, 7:44:33 AM",
-    last_logout: "21/07/2026, 7:24:45 AM",
-  },
-  {
-    id: 6,
-    customer_name: "SUDEESH",
-    customer_id: "chemist@alqattara.com",
-    registered_on: "12/07/2025",
-    contact: "STORE KEEPER",
-    phone: "0543322110",
-    last_login: "12/07/2025, 5:09:45 PM",
-    last_logout: "-",
-  },
-  {
-    id: 7,
-    customer_name: "RABEESH",
-    customer_id: "abudhabi-branch@alqattara.com",
-    registered_on: "12/07/2025",
-    contact: "AAdmin",
-    phone: "0508877665",
-    last_login: "08/09/2026, 10:34:38 AM",
-    last_logout: "25/07/2026, 11:02:07 AM",
-  },
-  {
-    id: 8,
-    customer_name: "MANAGING DIRECTOR",
-    customer_id: "md@alqattara.com",
-    registered_on: "12/07/2025",
-    contact: "AAdmin",
-    phone: "0501112233",
-    last_login: "08/09/2026, 9:48:35 AM",
-    last_logout: "01/09/2026, 11:36:23 AM",
-  },
-  {
-    id: 9,
-    customer_name: "Rouda",
-    customer_id: "rouda@alqattara.com",
-    registered_on: "12/07/2025",
-    contact: "AAdmin",
-    phone: "0501234567",
-    last_login: "07/09/2026, 10:37:56 AM",
-    last_logout: "07/09/2026, 10:35:27 AM",
-  },
-  {
-    id: 10,
-    customer_name: "Cashier",
-    customer_id: "sales@alqattara.com",
-    registered_on: "05/07/2025",
-    contact: "CASHIER",
-    phone: "0559988776",
-    last_login: "08/09/2026, 7:31:06 AM",
-    last_logout: "19/08/2026, 8:12:27 AM",
-  },
-  {
-    id: 11,
-    customer_name: "ADMIN",
-    customer_id: "admin@alqattara.com",
-    registered_on: "28/02/2025",
-    contact: "ADMIN",
-    phone: "0500000001",
-    last_login: "08/09/2026, 8:10:12 AM",
-    last_logout: "07/09/2026, 6:00:00 PM",
-  },
-];
+/** Staff user from the API -> row shape this page renders. */
+function staffFromApi(u) {
+  return {
+    id: u.id,
+    customer_name: u.name,
+    customer_id: u.email,
+    registered_on: u.registered_on || "-",
+    contact: u.role || "",
+    phone: u.phone || "",
+    last_login: u.last_login || "-",
+    last_logout: u.last_logout || "-",
+  };
+}
 
 export default function MastersPage() {
   const { addToast } = useToast();
-  const [masters, setMasters] = useState(INITIAL_MASTERS);
+  const loadLive = useCallback(async () => {
+    const raw = await apiService.getStaffUsers();
+    if (raw == null) return null;
+    return listOf(raw).map(staffFromApi);
+  }, []);
+  const live = useLiveData(loadLive);
+  const [masters, setMasters] = useState([]);
+  useEffect(() => {
+    if (live.data) setMasters(live.data);
+  }, [live.data]);
   const [viewMode, setViewMode] = useState("list"); // "list" | "add" | "edit"
   const [searchQuery, setSearchQuery] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -178,47 +93,49 @@ export default function MastersPage() {
     setViewMode("edit");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.fullName.trim() || !formData.email.trim()) {
       addToast("Please fill in Full Name and Email Address", "error");
       return;
     }
-
+    const payload = {
+      name: formData.fullName.trim(),
+      email: formData.email.trim(),
+      phone: formData.contactNumber.trim(),
+      role: formData.designation || (editingRow ? editingRow.contact : "ADMINA"),
+    };
     if (viewMode === "edit" && editingRow) {
-      setMasters((prev) =>
-        prev.map((m) =>
-          m.id === editingRow.id
-            ? {
-                ...m,
-                customer_name: formData.fullName.trim(),
-                customer_id: formData.email.trim(),
-                phone: formData.contactNumber.trim(),
-                contact: formData.designation || m.contact,
-              }
-            : m
-        )
-      );
-      addToast(`Employee "${formData.fullName}" updated successfully`, "success");
+      const saved = await apiService.updateStaffUser(editingRow.id, payload);
+      if (!saved) {
+        addToast("Could not save - check the CRM server", "error");
+        return;
+      }
+      addToast(`Employee "${payload.name}" updated successfully`, "success");
     } else {
       const today = new Date();
       const dd = String(today.getDate()).padStart(2, "0");
       const mm = String(today.getMonth() + 1).padStart(2, "0");
-      const yyyy = today.getFullYear();
-      const newEntry = {
-        id: Date.now(),
-        customer_name: formData.fullName.trim(),
-        customer_id: formData.email.trim(),
-        registered_on: `${dd}/${mm}/${yyyy}`,
-        contact: formData.designation || "ADMINA",
-        phone: formData.contactNumber.trim() || "0500000000",
-        last_login: "-",
-        last_logout: "-",
-      };
-      setMasters((prev) => [newEntry, ...prev]);
-      addToast(`Employee "${formData.fullName}" registered successfully`, "success");
+      const created = await apiService.createStaffUser({ ...payload, registered_on: `${dd}/${mm}/${today.getFullYear()}` });
+      if (!created) {
+        addToast("Could not register - check the CRM server", "error");
+        return;
+      }
+      addToast(`Employee "${payload.name}" registered successfully`, "success");
     }
+    await live.refresh();
     setViewMode("list");
+  };
+
+
+  const handleDeleteMaster = async (row) => {
+    const result = await apiService.deleteStaffUser(row.id);
+    if (!result) {
+      addToast(`Could not delete "${row.customer_name}" - check the CRM server`, "error");
+      return;
+    }
+    addToast(`Deleted "${row.customer_name}"`, "info");
+    await live.refresh();
   };
 
   return (
@@ -238,13 +155,13 @@ export default function MastersPage() {
                 <button
                   type="button"
                   onClick={openAddView}
-                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#5856D6]/10 border border-[#5856D6]/50 text-[#5856D6] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Add New
                 </button>
               }
-              onAction={() => addToast("Exported master records", "success")}
+              tools={<TableIO name="master-data-records" onExport={() => addToast("Exported master records", "success")} />}
             />
 
             {/* Show Entries & Search Bar with iOS Rounded Controls */}
@@ -344,9 +261,16 @@ export default function MastersPage() {
                         <button
                           type="button"
                           onClick={() => openEditView(row)}
-                          className="px-3 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                          className="px-3 py-1 rounded-full bg-white border border-[#34C759]/50 text-[#248A3D] hover:bg-[#34C759]/10 text-[11px] font-semibold transition cursor-pointer"
                         >
                           Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={async () => (await confirmDelete(`"${row.customer_name}"`)) && handleDeleteMaster(row)}
+                          className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition cursor-pointer active:scale-95"
+                        >
+                          Delete
                         </button>
                       </td>
                     </tr>
@@ -377,8 +301,8 @@ export default function MastersPage() {
                     onClick={() => setCurrentPage(page)}
                     className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition cursor-pointer ${
                       currentPage === page
-                        ? "bg-[#007AFF] text-white shadow-xs"
-                        : "text-[#3C3C43] hover:bg-black/5"
+                        ? "bg-white border border-[#007AFF]/60 text-[#007AFF]"
+                        : "bg-white border border-[#007AFF]/20 text-[#3C3C43] hover:bg-[#007AFF]/10"
                     }`}
                   >
                     {page}

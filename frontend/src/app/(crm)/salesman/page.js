@@ -3,6 +3,8 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import confirmDelete from "@/components/confirmDelete";
+import TableIO from "@/components/TableIO";
 import PanelHeader from "@/components/PanelHeader";
 import { apiService } from "@/services/api";
 import useLiveData from "@/hooks/useLiveData";
@@ -116,6 +118,16 @@ export default function SalesmanPage() {
     setViewMode("list");
   };
 
+  const handleDeleteSalesman = async (row) => {
+    const result = await apiService.deleteSalesman(row.id);
+    if (!result) {
+      addToast(`Could not delete "${row.salesman_name}" - they may still have orders`, "error");
+      return;
+    }
+    addToast(`Salesman "${row.salesman_name}" deleted`, "info");
+    await live.refresh();
+  };
+
   return (
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col">
       <Header title="Salesman" subtitle="Manage Salesman" />
@@ -133,13 +145,13 @@ export default function SalesmanPage() {
                 <button
                   type="button"
                   onClick={openAddView}
-                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#5856D6]/10 border border-[#5856D6]/50 text-[#5856D6] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   New Salesman
                 </button>
               }
-              onAction={() => addToast("Exported salesman records", "success")}
+              tools={<TableIO name="salesman-list" onExport={() => addToast("Exported salesman records", "success")} />}
             />
 
             {/* Show Entries & Search Bar */}
@@ -239,9 +251,16 @@ export default function SalesmanPage() {
                         <button
                           type="button"
                           onClick={() => openEditView(row)}
-                          className="px-3.5 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                          className="px-3.5 py-1 rounded-full bg-white border border-[#34C759]/50 text-[#248A3D] hover:bg-[#34C759]/10 text-[11px] font-semibold transition cursor-pointer"
                         >
                           Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={async () => (await confirmDelete(`salesman ${row.salesman_name}`)) && handleDeleteSalesman(row)}
+                          className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition cursor-pointer active:scale-95"
+                        >
+                          Delete
                         </button>
                       </td>
                     </tr>
@@ -271,8 +290,8 @@ export default function SalesmanPage() {
                     onClick={() => setCurrentPage(1)}
                     className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition cursor-pointer ${
                       page === 1
-                        ? "bg-[#007AFF] text-white shadow-xs"
-                        : "text-[#3C3C43] hover:bg-black/5"
+                        ? "bg-white border border-[#007AFF]/60 text-[#007AFF]"
+                        : "bg-white border border-[#007AFF]/20 text-[#3C3C43] hover:bg-[#007AFF]/10"
                     }`}
                   >
                     {page}

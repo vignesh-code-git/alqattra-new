@@ -40,6 +40,7 @@ import {
   Title
 } from "chart.js";
 import { Doughnut, Line } from "react-chartjs-2";
+import IosDateInput from "@/components/IosDateInput";
 
 ChartJS.register(
   ArcElement,
@@ -373,8 +374,7 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-end gap-3">
             <div className="w-full sm:w-[170px]">
               <label className="block text-[10.5px] font-bold uppercase tracking-[0.05em] mb-1">From Date</label>
-              <input
-                type="date"
+              <IosDateInput
                 value={filterFromDate}
                 onChange={(e) => setFilterFromDate(e.target.value)}
                 className="w-full px-3 py-2 text-xs"
@@ -382,8 +382,7 @@ export default function DashboardPage() {
             </div>
             <div className="w-full sm:w-[170px]">
               <label className="block text-[10.5px] font-bold uppercase tracking-[0.05em] mb-1">To Date</label>
-              <input
-                type="date"
+              <IosDateInput
                 value={filterToDate}
                 onChange={(e) => setFilterToDate(e.target.value)}
                 className="w-full px-3 py-2 text-xs"
@@ -506,6 +505,7 @@ export default function DashboardPage() {
                 segments={PAYMENT_SERIES.map((p) => ({ ...p, value: revenueSplit[p.key] ?? 0 }))}
                 value={compactAED(m.total_revenue ?? 5817740.39).replace("AED ", "")}
                 label="AED total revenue"
+                amount={m.total_revenue ?? 5817740.39}
               />
 
               <SplitLegend split={revenueSplit} total={m.total_revenue ?? 5817740.39} />
@@ -535,6 +535,7 @@ export default function DashboardPage() {
                 segments={PAYMENT_SERIES.map((p) => ({ ...p, value: collectionsSplit[p.key] ?? 0 }))}
                 value={compactAED(m.total_collection ?? 18613.24).replace("AED ", "")}
                 label="AED total collected"
+                amount={m.total_collection ?? 18613.24}
               />
 
               <SplitLegend split={collectionsSplit} total={m.total_collection ?? 18613.24} />
@@ -696,25 +697,16 @@ function KpiCard({ title, value, icon: Icon, color }) {
 
   return (
     <div
-      className="group relative overflow-hidden rounded-2xl p-3.5 flex flex-col justify-between gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_6px_16px_-8px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 hover:shadow-[0_2px_4px_rgba(0,0,0,0.05),0_12px_24px_-10px_rgba(0,0,0,0.18)] transition-all duration-200"
-      style={{ background: `linear-gradient(145deg, ${tone.from} 0%, #FFFFFF 78%)` }}
+      className="group relative overflow-hidden rounded-2xl p-3.5 flex flex-col justify-between gap-3"
+      style={{ background: `linear-gradient(145deg, ${tone.from} 0%, #FFFFFF 78%)`, border: "1px solid rgba(255,255,255,0.95)" }}
     >
-      {/* Soft colour bloom in the corner */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-8 -right-8 w-20 h-20 rounded-full opacity-25 blur-2xl transition-opacity duration-200 group-hover:opacity-40"
-        style={{ backgroundColor: tone.solid }}
-      />
       <div className="relative flex items-start justify-between gap-2">
         <span className="text-[10px] font-semibold text-[#6C6C70] tracking-[0.03em] uppercase leading-[1.25] min-h-[2.5em]">
           {title}
         </span>
         <div
           className="stat-icon w-8 h-8 shrink-0 rounded-[10px] flex items-center justify-center text-white"
-          style={{
-            background: `linear-gradient(160deg, ${tone.solid}CC 0%, ${tone.solid} 100%)`,
-            boxShadow: `0 4px 10px -2px ${tone.glow}`,
-          }}
+          style={{ backgroundColor: tone.solid }}
         >
           <Icon className="w-4 h-4" strokeWidth={2.4} />
         </div>

@@ -1,5 +1,7 @@
+from .bin import BinDestroyMixin
+from . import bin as bin_ops
 from rest_framework import viewsets, filters, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.db import transaction
@@ -7,31 +9,32 @@ from django.db.models import Sum, Count, Q, F
 from .models import (
     Product, StoreInventory, Order, OrderItem,
     Invoice, CashierTransaction, Wallet, WalletRecharge,
-    Zone, Route, MasterItem
+    Zone, Route, MasterItem, StaffUser, AccessLevel, BinItem
 )
 from app.customers.models import Customer
 from app.salesman.models import Salesman, Truck
 from .serializers import (
     ProductSerializer, StoreInventorySerializer, OrderSerializer,
     InvoiceSerializer, CashierTransactionSerializer, WalletSerializer,
-    WalletRechargeSerializer, ZoneSerializer, RouteSerializer, MasterItemSerializer
+    WalletRechargeSerializer, ZoneSerializer, RouteSerializer, MasterItemSerializer,
+    StaffUserSerializer, AccessLevelSerializer, BinItemSerializer
 )
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['code', 'name', 'category']
     ordering_fields = ['name', 'stock_quantity', 'selling_price']
 
-class StoreInventoryViewSet(viewsets.ModelViewSet):
+class StoreInventoryViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = StoreInventory.objects.all()
     serializer_class = StoreInventorySerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['product__name', 'batch_no', 'location']
     ordering_fields = ['updated_at', 'balance']
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
@@ -48,28 +51,28 @@ class OrderViewSet(viewsets.ModelViewSet):
             qs = qs.filter(status=status_param)
         return qs
 
-class InvoiceViewSet(viewsets.ModelViewSet):
+class InvoiceViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['invoice_no', 'customer__name']
     ordering_fields = ['invoice_date', 'total_amount']
 
-class CashierTransactionViewSet(viewsets.ModelViewSet):
+class CashierTransactionViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = CashierTransaction.objects.all()
     serializer_class = CashierTransactionSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['transaction_no', 'customer__name', 'payment_method']
     ordering_fields = ['created_at', 'amount']
 
-class WalletViewSet(viewsets.ModelViewSet):
+class WalletViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = Wallet.objects.all()
     serializer_class = WalletSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['customer__name', 'customer__customer_code']
     ordering_fields = ['balance']
 
-class WalletRechargeViewSet(viewsets.ModelViewSet):
+class WalletRechargeViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     """
     Wallet top-ups, shared by the CRM website and the salesman mobile app.
 
@@ -103,7 +106,7 @@ class WalletRechargeViewSet(viewsets.ModelViewSet):
                 reference_note=recharge.transaction_ref or f'Wallet recharge #{recharge.pk}',
             )
 
-class ZoneViewSet(viewsets.ModelViewSet):
+class ZoneViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = Zone.objects.all()
     serializer_class = ZoneSerializer
 
@@ -114,15 +117,68 @@ class ZoneViewSet(viewsets.ModelViewSet):
             qs = qs.filter(city=city)
         return qs
 
-class RouteViewSet(viewsets.ModelViewSet):
+class RouteViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = Route.objects.all()
     serializer_class = RouteSerializer
 
-class MasterItemViewSet(viewsets.ModelViewSet):
+class MasterItemViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = MasterItem.objects.all()
     serializer_class = MasterItemSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['category', 'code', 'name']
+
+
+class StaffUserViewSet(BinDestroyMixin, viewsets.ModelViewSet):
+    queryset = StaffUser.objects.all()
+    serializer_class = StaffUserSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'email', 'role', 'phone']
+
+
+class AccessLevelViewSet(BinDestroyMixin, viewsets.ModelViewSet):
+    queryset = AccessLevel.objects.all()
+    serializer_class = AccessLevelSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['class_name']
+
+
+class BinViewSet(viewsets.ModelViewSet):
+    """
+    The Bin. GET lists deleted items (first deleting for good anything older
+    than 30 days); DELETE /bin/<id>/ deletes one now;
+    POST /bin/<id>/restore/ puts it back; POST /bin/empty/ empties the Bin.
+    """
+    queryset = BinItem.objects.all()
+    serializer_class = BinItemSerializer
+    http_method_names = ['get', 'post', 'delete', 'head', 'options']
+
+    def list(self, request, *args, **kwargs):
+        bin_ops.drop_stale_soft_items()
+        bin_ops.purge_expired()
+        return super().list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        return Response({'detail': 'Items reach the Bin by being deleted.'},
+                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def perform_destroy(self, instance):
+        bin_ops.purge(instance)
+
+    @action(detail=True, methods=['post'])
+    def restore(self, request, pk=None):
+        item = self.get_object()
+        try:
+            bin_ops.restore(item)
+        except bin_ops.RestoreError as exc:
+            return Response({'detail': f'Could not restore: {exc}'}, status=status.HTTP_409_CONFLICT)
+        return Response({'status': 'restored'})
+
+    @action(detail=False, methods=['post'])
+    def empty(self, request):
+        items = list(BinItem.objects.all())
+        for item in items:
+            bin_ops.purge(item)
+        return Response({'purged': len(items)})
 
 
 @api_view(['GET'])

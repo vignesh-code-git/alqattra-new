@@ -3,6 +3,8 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
+import confirmDelete from "@/components/confirmDelete";
+import TableIO from "@/components/TableIO";
 import PanelHeader from "@/components/PanelHeader";
 import { apiService } from "@/services/api";
 import useLiveData from "@/hooks/useLiveData";
@@ -120,17 +122,18 @@ export default function ZonesPage() {
               icon={MapPin}
               title="Delivery Zones"
               subtitle="Route mapping and geographic distribution"
-              onAction={() => addToast("Exported zone records", "success")}
+             
               actions={
                 <button
                   type="button"
                   onClick={openAddView}
-                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#5856D6]/10 border border-[#5856D6]/50 text-[#5856D6] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   New Zone
                 </button>
               }
+              tools={<TableIO name="delivery-zones" onExport={() => addToast("Exported zone records", "success")} />}
             />
 
             {/* Show Entries & Search Bar */}
@@ -214,8 +217,8 @@ export default function ZonesPage() {
                       <td className="py-3.5 px-6">
                         <button
                           type="button"
-                          onClick={() => handleDelete(row)}
-                          className="px-3.5 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                          onClick={async () => (await confirmDelete(`zone "${row.zone}"`)) && handleDelete(row)}
+                          className="px-3.5 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition cursor-pointer"
                         >
                           Delete
                         </button>
@@ -247,8 +250,8 @@ export default function ZonesPage() {
                     onClick={() => setCurrentPage(1)}
                     className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition cursor-pointer ${
                       page === 1
-                        ? "bg-[#007AFF] text-white shadow-xs"
-                        : "text-[#3C3C43] hover:bg-black/5"
+                        ? "bg-white border border-[#007AFF]/60 text-[#007AFF]"
+                        : "bg-white border border-[#007AFF]/20 text-[#3C3C43] hover:bg-[#007AFF]/10"
                     }`}
                   >
                     {page}
@@ -257,7 +260,7 @@ export default function ZonesPage() {
                 <span className="px-1 text-[#8E8E93]">...</span>
                 <button
                   type="button"
-                  className="w-7 h-7 rounded-full text-xs flex items-center justify-center text-[#3C3C43] hover:bg-black/5"
+                  className="w-7 h-7 rounded-full text-xs flex items-center justify-center bg-white border border-[#007AFF]/20 text-[#3C3C43] hover:bg-[#007AFF]/10"
                 >
                   21
                 </button>

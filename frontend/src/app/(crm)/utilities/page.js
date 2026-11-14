@@ -6,6 +6,8 @@ import { useToast } from "@/components/Toast";
 import { apiService } from "@/services/api";
 import useLiveData from "@/hooks/useLiveData";
 import { listOf, storeItemFromApi, productToApi, truckFromApi, productSummaryFromTrucks } from "@/services/crmMappers";
+import confirmDelete from "@/components/confirmDelete";
+import TableIO from "@/components/TableIO";
 import PanelHeader from "@/components/PanelHeader";
 import BackLink from "@/components/BackLink";
 import {
@@ -19,6 +21,7 @@ import {
   Boxes,
   Truck,
 } from "lucide-react";
+import IosDateInput from "@/components/IosDateInput";
 
 export default function UtilitiesPage() {
   const { addToast } = useToast();
@@ -266,6 +269,16 @@ export default function UtilitiesPage() {
     await live.refresh();
   };
 
+  const handleDeleteTruck = async (truck) => {
+    const result = await apiService.deleteTruck(truck.id);
+    if (!result) {
+      addToast(`Could not delete truck ${truck.truck_id} - check the CRM server`, "error");
+      return;
+    }
+    addToast(`Truck ${truck.truck_id} deleted`, "info");
+    await live.refresh();
+  };
+
   return (
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col">
       <Header title="Utilities" subtitle="Manage Inventory" />
@@ -304,54 +317,6 @@ export default function UtilitiesPage() {
             </button>
           </div>
 
-          {activeTab === "store" ? (
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setSubView("update_inventory")}
-                className="px-4 py-1.5 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-[#1C1C1E] text-xs font-semibold transition cursor-pointer"
-              >
-                Update Stock
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setNewItemForm({
-                    product_id: "",
-                    item: "",
-                    price: "",
-                    description: "",
-                    priority: "Primary",
-                    asset: "Yes",
-                  });
-                  setSubView("add_item");
-                }}
-                className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#007AFF]/20"
-              >
-                + Add New Item
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setNewTruckForm({ truck_id: "", city: "", route: "" });
-                  setSubView("add_truck");
-                }}
-                className="px-4 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#007AFF]/20"
-              >
-                + Add New Truck
-              </button>
-              <button
-                type="button"
-                onClick={() => setProductSummaryDrawerOpen(true)}
-                className="px-4 py-1.5 rounded-full bg-[#34C759] hover:bg-[#2FB34F] text-white text-xs font-semibold transition cursor-pointer shadow-sm shadow-[#34C759]/20"
-              >
-                Product Summary
-              </button>
-            </div>
-          )}
         </div>
       )}
 
@@ -367,7 +332,35 @@ export default function UtilitiesPage() {
                 icon={Boxes}
                 title="Warehouse Inventory"
                 subtitle="Stock availability, damages, and replenishment"
-                onAction={() => addToast("Exported inventory records", "success")}
+                actions={
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setSubView("update_inventory")}
+                      className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#30B0C7]/10 border border-[#30B0C7]/60 text-[#1E8FA3] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1.5"
+                    >
+                      Update Stock
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNewItemForm({
+                          product_id: "",
+                          item: "",
+                          price: "",
+                          description: "",
+                          priority: "Primary",
+                          asset: "Yes",
+                        });
+                        setSubView("add_item");
+                      }}
+                      className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#5856D6]/10 border border-[#5856D6]/50 text-[#5856D6] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1.5"
+                    >
+                      + Add New Item
+                    </button>
+                              </>
+                }
+                tools={<TableIO name="warehouse-inventory" onExport={() => addToast("Exported inventory records", "success")} />}
               />
 
             <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
@@ -451,14 +444,14 @@ export default function UtilitiesPage() {
                               setSelectedItem(row);
                               setSubView("view_item");
                             }}
-                            className="px-3.5 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                            className="px-3.5 py-1 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold transition cursor-pointer"
                           >
                             View
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleDeleteStoreItem(row)}
-                            className="px-3.5 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                            onClick={async () => (await confirmDelete(`"${row.item}"`)) && handleDeleteStoreItem(row)}
+                            className="px-3.5 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition cursor-pointer"
                           >
                             Delete
                           </button>
@@ -473,10 +466,10 @@ export default function UtilitiesPage() {
             <div className="px-6 py-3.5 bg-[#F9F9FB] border-t border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
               <div>Showing 1 to 10 of 15 entries</div>
               <div className="flex items-center gap-1.5">
-                <button className="w-7 h-7 rounded-full bg-[#007AFF] text-white text-xs font-semibold flex items-center justify-center">
+                <button className="w-7 h-7 rounded-full bg-white border border-[#007AFF]/60 text-[#007AFF] text-xs font-semibold flex items-center justify-center">
                   1
                 </button>
-                <button className="w-7 h-7 rounded-full text-[#3C3C43] hover:bg-black/5 text-xs flex items-center justify-center">
+                <button className="w-7 h-7 rounded-full bg-white border border-[#007AFF]/20 text-[#3C3C43] hover:bg-[#007AFF]/10 text-xs flex items-center justify-center">
                   2
                 </button>
               </div>
@@ -491,7 +484,28 @@ export default function UtilitiesPage() {
                 icon={Truck}
                 title="Truck Fleet & Vehicle Stock"
                 subtitle="Mobile truck stock tracking and route distribution"
-                onAction={() => addToast("Exported truck stock records", "success")}
+                actions={
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNewTruckForm({ truck_id: "", city: "", route: "" });
+                        setSubView("add_truck");
+                      }}
+                      className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#5856D6]/10 border border-[#5856D6]/50 text-[#5856D6] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1.5"
+                    >
+                      + Add New Truck
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setProductSummaryDrawerOpen(true)}
+                      className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#FF9500]/10 border border-[#FF9500]/60 text-[#C46A00] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1.5"
+                    >
+                      Product Summary
+                    </button>
+                              </>
+                }
+                tools={<TableIO name="truck-fleet-vehicle-stock" onExport={() => addToast("Exported truck stock records", "success")} />}
               />
 
             <div className="px-6 py-3.5 bg-[#F9F9FB] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
@@ -559,7 +573,7 @@ export default function UtilitiesPage() {
                               setSelectedTruck(truck);
                               setTruckModalOpen(true);
                             }}
-                            className="px-3 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                            className="px-3 py-1 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold transition cursor-pointer"
                           >
                             View
                           </button>
@@ -569,7 +583,7 @@ export default function UtilitiesPage() {
                               setSelectedTruck(truck);
                               setSubView("manage_truck");
                             }}
-                            className="px-3 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                            className="px-3 py-1 rounded-full bg-white border border-[#34C759]/50 text-[#248A3D] hover:bg-[#34C759]/10 text-[11px] font-semibold transition cursor-pointer"
                           >
                             Manage
                           </button>
@@ -584,7 +598,7 @@ export default function UtilitiesPage() {
                               setSubView("manage_truck");
                             }}
                             title="Configure Truck"
-                            className="hover:text-[#1C1C1E] cursor-pointer"
+                            className="w-7 h-7 rounded-full bg-white border border-[#007AFF]/40 text-[#007AFF] hover:bg-[#007AFF]/10 inline-flex items-center justify-center cursor-pointer"
                           >
                             <Settings className="w-4 h-4" />
                           </button>
@@ -594,9 +608,16 @@ export default function UtilitiesPage() {
                               addToast(`Stock history synced for ${truck.truck_id}`, "info")
                             }
                             title="Reset / History"
-                            className="hover:text-[#1C1C1E] cursor-pointer"
+                            className="w-7 h-7 rounded-full bg-white border border-[#007AFF]/40 text-[#007AFF] hover:bg-[#007AFF]/10 inline-flex items-center justify-center cursor-pointer"
                           >
                             <RotateCcw className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={async () => (await confirmDelete(`truck ${truck.truck_id}`)) && handleDeleteTruck(truck)}
+                            className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition cursor-pointer active:scale-95"
+                          >
+                            Delete
                           </button>
                         </div>
                       </td>
@@ -613,7 +634,7 @@ export default function UtilitiesPage() {
                   <button
                     key={p}
                     className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center ${
-                      p === 1 ? "bg-[#007AFF] text-white" : "text-[#3C3C43] hover:bg-black/5"
+                      p === 1 ? "bg-white border border-[#007AFF]/60 text-[#007AFF]" : "bg-white border border-[#007AFF]/20 text-[#3C3C43] hover:bg-[#007AFF]/10"
                     }`}
                   >
                     {p}
@@ -638,8 +659,7 @@ export default function UtilitiesPage() {
                     Stock Date
                   </label>
                   <div className="md:col-span-9">
-                    <input
-                      type="date"
+                    <IosDateInput
                       value={updateStockForm.date}
                       onChange={(e) =>
                         setUpdateStockForm({ ...updateStockForm, date: e.target.value })
@@ -780,7 +800,7 @@ export default function UtilitiesPage() {
                             onClick={() =>
                               setInputStocks((prev) => prev.filter((x) => x.id !== st.id))
                             }
-                            className="px-3 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-[11px] font-semibold transition active:scale-95"
+                            className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition active:scale-95"
                           >
                             Remove
                           </button>
@@ -1185,7 +1205,7 @@ export default function UtilitiesPage() {
                 <div className="flex justify-end pt-2">
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold transition cursor-pointer shadow-sm active:scale-95"
+                    className="px-5 py-2 rounded-full bg-white border border-[#34C759]/60 text-[#34C759] hover:bg-[#34C759]/10 text-xs font-semibold transition cursor-pointer shadow-sm active:scale-95"
                   >
                     Add Record
                   </button>
@@ -1235,7 +1255,7 @@ export default function UtilitiesPage() {
                     addToast(`Closed stock session for ${selectedTruck.truck_id}`, "info");
                     setSubView("list");
                   }}
-                  className="px-5 py-2 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-xs font-semibold transition cursor-pointer active:scale-95"
+                  className="px-5 py-2 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-xs font-semibold transition cursor-pointer active:scale-95"
                 >
                   Close Stock
                 </button>

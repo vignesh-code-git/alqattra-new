@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     ProductViewSet, StoreInventoryViewSet, OrderViewSet,
     InvoiceViewSet, CashierTransactionViewSet, WalletViewSet, WalletRechargeViewSet,
-    ZoneViewSet, RouteViewSet, MasterItemViewSet, dashboard_overview
+    ZoneViewSet, RouteViewSet, MasterItemViewSet, StaffUserViewSet, AccessLevelViewSet, BinViewSet,
+    dashboard_overview
 )
 
 router = DefaultRouter()
@@ -17,6 +18,9 @@ router.register(r'wallet-recharges', WalletRechargeViewSet, basename='wallet-rec
 router.register(r'zones', ZoneViewSet, basename='zone')
 router.register(r'routes', RouteViewSet, basename='route')
 router.register(r'masters', MasterItemViewSet, basename='master')
+router.register(r'staff-users', StaffUserViewSet, basename='staff-user')
+router.register(r'bin', BinViewSet, basename='bin')
+router.register(r'access-levels', AccessLevelViewSet, basename='access-level')
 
 urlpatterns = [
     path('dashboard-overview/', dashboard_overview, name='dashboard-overview'),

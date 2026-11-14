@@ -68,8 +68,10 @@ export const apiService = {
   getSalesmen: (city = 'ALL') => fetchFromAPI(`/salesman/salesmen/?city=${city}`),
   createSalesman: (data) => fetchFromAPI(`/salesman/salesmen/`, { method: "POST", body: JSON.stringify(data) }),
   updateSalesman: (id, data) => fetchFromAPI(`/salesman/salesmen/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteSalesman: (id) => fetchFromAPI(`/salesman/salesmen/${id}/`, { method: "DELETE" }),
   getTrucks: () => fetchFromAPI(`/salesman/trucks/`),
   createTruck: (data) => fetchFromAPI(`/salesman/trucks/`, { method: "POST", body: JSON.stringify(data) }),
+  deleteTruck: (id) => fetchFromAPI(`/salesman/trucks/${id}/`, { method: "DELETE" }),
   createStockTransaction: (data) => fetchFromAPI(`/salesman/stock-transactions/`, { method: "POST", body: JSON.stringify(data) }),
 
   // Cashier CRUD
@@ -96,4 +98,23 @@ export const apiService = {
 
   // Masters
   getMasters: () => fetchFromAPI(`/crm/masters/`),
+
+  // Staff users (Masters page) and access levels (Privileges page)
+  getStaffUsers: () => fetchFromAPI(`/crm/staff-users/`),
+  createStaffUser: (data) => fetchFromAPI(`/crm/staff-users/`, { method: "POST", body: JSON.stringify(data) }),
+  updateStaffUser: (id, data) => fetchFromAPI(`/crm/staff-users/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteStaffUser: (id) => fetchFromAPI(`/crm/staff-users/${id}/`, { method: "DELETE" }),
+
+  // Bin: deleted records kept for 30 days
+  getBin: () => fetchFromAPI(`/crm/bin/`),
+  restoreBinItem: (id) => fetchFromAPI(`/crm/bin/${id}/restore/`, { method: "POST" }),
+  purgeBinItem: (id) => fetchFromAPI(`/crm/bin/${id}/`, { method: "DELETE" }),
+  emptyBin: () => fetchFromAPI(`/crm/bin/empty/`, { method: "POST" }),
+  getAccessLevels: () => fetchFromAPI(`/crm/access-levels/`),
+  createAccessLevel: (data) => fetchFromAPI(`/crm/access-levels/`, { method: "POST", body: JSON.stringify(data) }),
+  deleteAccessLevel: (id) => fetchFromAPI(`/crm/access-levels/${id}/`, { method: "DELETE" }),
+
+  // Report records
+  deleteStockTransaction: (id) => fetchFromAPI(`/salesman/stock-transactions/${id}/`, { method: "DELETE" }),
+  deleteCommission: (id) => fetchFromAPI(`/salesman/commissions/${id}/`, { method: "DELETE" }),
 };

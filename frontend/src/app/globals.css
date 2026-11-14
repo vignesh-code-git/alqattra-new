@@ -203,25 +203,25 @@ select {
   appearance: none;
   -webkit-appearance: none;
   background-image:
-    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23007aff' fill-opacity='0.12'/%3E%3Cpath fill='none' stroke='%23007aff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4' d='m8 10.5 4 4 4-4'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%238e8e93' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2' d='m8 10 4 4 4-4'/%3E%3C/svg%3E"),
     linear-gradient(180deg, #ffffff 0%, #f3f7ff 100%);
-  background-position: right 0.55rem center, 0 0;
+  background-position: right 0.7rem center, 0 0;
   background-repeat: no-repeat, no-repeat;
-  background-size: 1.35em 1.35em, 100% 100%;
+  background-size: 1.1em 1.1em, 100% 100%;
   background-color: #ffffff;
   padding-right: 2.5rem !important;
   cursor: pointer;
   border-radius: 12px;
-  border: 1px solid rgba(0, 122, 255, 0.18);
+  border: 1px solid rgba(60, 60, 67, 0.16);
   color: #1c1c1e;
   font-weight: 600;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px -8px rgba(0, 122, 255, 0.45);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 select:hover {
-  border-color: rgba(0, 122, 255, 0.42);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 18px -10px rgba(0, 122, 255, 0.6);
+  border-color: rgba(60, 60, 67, 0.28);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 select:focus {
@@ -256,7 +256,7 @@ select option:checked {
     display: none;
   }
   select::picker(select) {
-    border: 1px solid rgba(60, 60, 67, 0.12);
+    border: none;
     border-radius: 16px;
     padding: 6px;
     margin-top: 6px;
@@ -373,8 +373,20 @@ select option:checked {
 @keyframes tick-ring-in {
   from { opacity: 0; }
 }
+.tick-ring-spoke {
+  transition: opacity 0.2s ease, stroke-width 0.2s ease;
+}
+/* Hover indication: bracket, leader line and callout ease in */
+.tick-ring-indicator,
+.tick-ring-callout {
+  animation: tick-ring-pop 0.22s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+@keyframes tick-ring-pop {
+  from { opacity: 0; }
+}
 @media (prefers-reduced-motion: reduce) {
   .tick-ring-spoke { animation: none; }
+  .tick-ring-indicator, .tick-ring-callout { animation: none; }
 }
 
 /* iOS Soft Form Inputs */
@@ -404,7 +416,8 @@ textarea:focus {
 /* iOS Date Picker: premium field with a Calendar-app style icon.
    The browser's own picker button is stretched invisibly over the field,
    so a click anywhere opens the calendar. */
-input[type="date"] {
+input[type="date"],
+.ios-date-btn {
   border-radius: 12px;
   border: 1px solid rgba(60, 60, 67, 0.16);
   background-color: #ffffff;
@@ -422,12 +435,15 @@ input[type="date"] {
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-input[type="date"]:hover {
+input[type="date"]:hover,
+.ios-date-btn:hover {
   border-color: rgba(60, 60, 67, 0.28);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 6px 14px -10px rgba(0, 0, 0, 0.35);
 }
 
-input[type="date"]:focus {
+input[type="date"]:focus,
+.ios-date-btn:focus-visible,
+.ios-date-btn[aria-expanded="true"] {
   outline: none;
   border-color: #007aff;
   box-shadow: 0 0 0 3.5px rgba(0, 122, 255, 0.16);
@@ -592,7 +608,15 @@ table {
 .ios-surface:has(.ios-table) {
   background: linear-gradient(180deg, rgba(0, 122, 255, 0.09) 0%, #ffffff 160px);
   border: none;
+  border-radius: 24px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 28px -14px rgba(0, 0, 0, 0.18);
+}
+/* The grey toolbar and footer strips let the card's tint show through, the
+   way the dashboard panels are one continuous surface. */
+.ios-surface:has(.ios-table) > [class*="bg-[#F9F9FB]"],
+.ios-surface:has(.ios-table) > [class*="bg-[#F2F2F7]"] {
+  background-color: transparent;
+  border-color: rgba(60, 60, 67, 0.07);
 }
 .ios-surface:has(.ios-table) .ios-surface-head {
   border-bottom-color: rgba(0, 122, 255, 0.1);
@@ -644,10 +668,12 @@ table {
 
 /* Filter panels (add the "ios-filter" class): purple dashboard-panel tint,
    purple title and labels, frosted inputs with a purple focus ring. */
+/* Same look as the dashboard panels: a soft purple tint at the top fading
+   down into white, no outer border, kept flat (no shadow). */
 .ios-surface.ios-filter {
-  background: linear-gradient(180deg, rgba(175, 82, 222, 0.11) 0%, #ffffff 170px);
+  background: linear-gradient(180deg, rgba(175, 82, 222, 0.12) 0%, #ffffff 160px);
   border: none;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 28px -14px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
 }
 .ios-filter h3,
 .ios-filter > div > h3 {
@@ -659,7 +685,8 @@ table {
 /* Filter fields stay plain: white fill, grey hairline edge, no tint. */
 .ios-filter input,
 .ios-filter select,
-.ios-filter textarea {
+.ios-filter textarea,
+.ios-filter .ios-date-btn {
   background-color: #ffffff;
   border-color: rgba(60, 60, 67, 0.16);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);

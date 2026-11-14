@@ -600,3 +600,109 @@ export function productSummaryFromTrucks(trucks = []) {
   );
   return [...byName.values()];
 }
+
+// ------------------------------------------------------------------- reports
+// Each report row keeps the id of the database record behind it, so Delete
+// on a report removes that record.
+
+const aed = (n) => Number(n || 0).toFixed(2);
+
+/** Salesman collection report: one row per salesman (Delete -> the salesman). */
+export function salesmanReportFromApi({ salesmen = [], orders = [], cashier = [] }) {
+  return salesmen.map((s) => {
+    const mine = orders.filter((o) => o.salesman === s.id && o.status !== "Cancelled");
+    const by = (m) => mine.filter((o) => o.payment_method === m).reduce((t, o) => t + Number(o.total_amount || 0), 0);
+    const total = mine.reduce((t, o) => t + Number(o.total_amount || 0), 0);
+    const collected = cashier.filter((t) => t.salesman === s.id).reduce((t, x) => t + Number(x.amount || 0), 0);
+    return {
+      id: s.id,
+      salesman_pk: s.id,
+      salesman: `${s.salesman_code} - ${s.name}`,
+      route: s.assigned_route || "-",
+      orders: mine.length,
+      cash: aed(by("Cash")),
+      card: aed(by("Card")),
+      wallet: aed(by("Wallet")),
+      credit: aed(by("Credit")),
+      total: aed(total),
+      collected: aed(collected),
+      pending: aed(Math.max(0, total - collected)),
+    };
+  });
+}
+
+/** Customer report: one row per active customer (Delete -> moves the customer to Deleted). */
+export function customerReportFromApi({ customers = [], orders = [], wallets = [] }) {
+  return customers
+    .filter((c) => c.status !== "Deleted")
+    .map((c) => {
+      const mine = orders.filter((o) => o.customer === c.id && o.status !== "Cancelled");
+      const last = mine.map((o) => o.delivery_date || o.order_date || o.created_at).filter(Boolean).sort().pop();
+      const wallet = wallets.find((w) => w.customer === c.id);
+      const recharged = (wallet?.recharges || []).reduce((t, r) => t + Number(r.amount || 0), 0);
+      return {
+        id: c.customer_code,
+        customer_pk: c.id,
+        name: c.name,
+        recent_delivery: toDisplayDate(last),
+        total_orders: mine.length,
+        order_revenue: `AED ${aed(mine.reduce((t, o) => t + Number(o.total_amount || 0), 0))}`,
+        security_deposit: `AED ${aed(c.security_deposit)}`,
+        wallet_recharge: `AED ${aed(recharged)}`,
+        pending_payment: `AED ${aed(c.current_balance)}`,
+      };
+    });
+}
+
+/** Truck report: one row per truck per day of stock movements (Delete -> those stock transactions). */
+export function truckReportFromApi(trucks = []) {
+  const rows = [];
+  trucks.forEach((t) => {
+    const byDay = new Map();
+    (t.stock_transactions || []).forEach((x) => {
+      const day = toDisplayDate(x.date);
+      const row = byDay.get(day) || {
+        key: `${t.id}-${day}`,
+        truck_pk: t.id,
+        truck_id: t.plate_no,
+        salesman: t.driver_name || "-",
+        route: t.route || "-",
+        date: day,
+        loaded: 0,
+        delivered: 0,
+        returned: 0,
+        messages: 0,
+        tx_ids: [],
+      };
+      const q = Number(x.quantity || 0);
+      if (x.transaction_type === "Load") row.loaded += q;
+      else if (x.transaction_type === "Unload") row.delivered += q;
+      else if (x.transaction_type === "Return") row.returned += q;
+      row.messages += 1;
+      row.tx_ids.push(x.id);
+      byDay.set(day, row);
+    });
+    rows.push(...byDay.values());
+  });
+  return rows;
+}
+
+/** Commission report: one row per commission record (Delete -> that record). */
+export function commissionReportFromApi(salesmen = []) {
+  const rows = [];
+  salesmen.forEach((s) =>
+    (s.commissions || []).forEach((c) =>
+      rows.push({
+        id: c.id,
+        salesman: s.name,
+        city: s.city || "-",
+        schemes: c.period || "-",
+        total_sales: aed(c.total_sales),
+        fixed_comm: "-",
+        pct_comm: `${Number(s.commission_rate || 0)}%`,
+        total_comm: aed(c.commission_amount),
+      })
+    )
+  );
+  return rows;
+}

@@ -9,6 +9,8 @@ import { apiService } from "@/services/api";
 import useLiveData from "@/hooks/useLiveData";
 import { listOf, salesmanCollectionsFromApi, collectedPaymentFromApi, customerCreditsFromApi, collectionToApi } from "@/services/crmMappers";
 import BackLink from "@/components/BackLink";
+import confirmDelete from "@/components/confirmDelete";
+import TableIO from "@/components/TableIO";
 import PanelHeader from "@/components/PanelHeader";
 import {
   Home,
@@ -23,6 +25,7 @@ import {
   Search,
   Receipt,
 } from "lucide-react";
+import IosDateInput from "@/components/IosDateInput";
 
 export default function CashierPage() {
   const { addToast } = useToast();
@@ -212,6 +215,34 @@ export default function CashierPage() {
     await live.refresh();
   };
 
+  const handleDeleteSalesmanRow = async (row) => {
+    const result = await apiService.deleteSalesman(row.salesman_pk);
+    if (!result) {
+      addToast(`Could not delete ${row.salesman_id} - check the CRM server`, "error");
+      return;
+    }
+    addToast(`Salesman ${row.salesman_id} deleted`, "info");
+    await live.refresh();
+  };
+  const handleDeleteCreditRow = async (c) => {
+    const result = await apiService.softDeleteCustomer(c.customer_pk);
+    if (!result) {
+      addToast(`Could not delete ${c.name} - check the CRM server`, "error");
+      return;
+    }
+    addToast(`${c.name} moved to Deleted Customers`, "info");
+    await live.refresh();
+  };
+  const handleDeleteCashierEntry = async (p) => {
+    const result = await apiService.deleteCashier(p.id);
+    if (!result) {
+      addToast("Could not delete this payment - check the CRM server", "error");
+      return;
+    }
+    addToast(`Payment of ${p.amount} deleted`, "info");
+    await live.refresh();
+  };
+
   return (
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col font-sans pb-12">
       <Header title="Cashier" subtitle="Salesman Collection" />
@@ -263,8 +294,7 @@ export default function CashierPage() {
                   <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     From
                   </label>
-                  <input
-                    type="date"
+                  <IosDateInput
                     value={paymentFilters.fromDate}
                     onChange={(e) =>
                       setPaymentFilters({ ...paymentFilters, fromDate: e.target.value })
@@ -276,8 +306,7 @@ export default function CashierPage() {
                   <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     To
                   </label>
-                  <input
-                    type="date"
+                  <IosDateInput
                     value={paymentFilters.toDate}
                     onChange={(e) =>
                       setPaymentFilters({ ...paymentFilters, toDate: e.target.value })
@@ -404,7 +433,7 @@ export default function CashierPage() {
               <PanelHeader
                 icon={Receipt}
                 title="Payment Collection Details"
-                onAction={() => addToast("Exported collection details", "success")}
+                tools={<TableIO name="payment-collection-details" onExport={() => addToast("Exported collection details", "success")} />}
               />
               <div className="overflow-x-auto">
                 <table className="ios-table w-full text-left border-collapse">
@@ -416,7 +445,7 @@ export default function CashierPage() {
                         "AMOUNT",
                         "PAYMENT METHOD",
                         "COLLECTION FROM",
-                        "NOTE",
+                        "NOTE", "ACTIONS",
                       ].map((c) => (
                         <th key={c} className="py-3 px-6">
                           {c}
@@ -437,6 +466,15 @@ export default function CashierPage() {
                         </td>
                         <td className="py-3.5 px-6 text-[#8E8E93]">{p.from}</td>
                         <td className="py-3.5 px-6 text-[#8E8E93]">{p.note}</td>
+                        <td className="py-3.5 px-4 last:pr-6">
+                          <button
+                            type="button"
+                            onClick={async () => (await confirmDelete(`payment of ${p.amount}`)) && handleDeleteCashierEntry(p)}
+                            className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition cursor-pointer active:scale-95"
+                          >
+                            Delete
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -457,16 +495,17 @@ export default function CashierPage() {
               <PanelHeader
                 icon={CreditCard}
                 title="Pending Payments"
-                onAction={() => addToast("Exported pending payments", "success")}
+               
                 actions={
                   <button
                     type="button"
                     onClick={() => setShowCollectedView(true)}
-                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95"
+                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#30B0C7]/10 border border-[#30B0C7]/60 text-[#1E8FA3] text-[11.5px] font-semibold transition cursor-pointer active:scale-95"
                   >
                     Collected Payments
                   </button>
                 }
+                tools={<TableIO name="pending-payments" onExport={() => addToast("Exported pending payments", "success")} />}
               />
 
               <div className="px-6 py-3.5 bg-[#F2F2F7]/50 border-b border-[#E5E5EA] flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
@@ -546,9 +585,16 @@ export default function CashierPage() {
                               setCollectMethod("Cash");
                               setCollectNote("");
                             }}
-                            className="px-3.5 py-1.5 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                            className="px-3.5 py-1.5 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold transition cursor-pointer"
                           >
                             Collect
+                          </button>
+                          <button
+                            type="button"
+                            onClick={async () => (await confirmDelete(`salesman ${row.salesman_id} (${row.salesman_name})`, "Their commission records go with them; their orders and payments stay, without a salesman. All of it moves to the Bin for 30 days, and restoring links everything back.")) && handleDeleteSalesmanRow(row)}
+                            className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition cursor-pointer active:scale-95"
+                          >
+                            Delete
                           </button>
                         </td>
                       </tr>
@@ -599,7 +645,7 @@ export default function CashierPage() {
               <PanelHeader
                 icon={Users}
                 title="Customer Credits"
-                onAction={() => addToast("Exported customer credits", "success")}
+                tools={<TableIO name="customer-credits" onExport={() => addToast("Exported customer credits", "success")} />}
               />
 
               <div className="px-6 py-3.5 bg-[#F2F2F7]/50 border-b border-[#E5E5EA] flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
@@ -664,9 +710,16 @@ export default function CashierPage() {
                               setCollectMethod("Cash");
                               setCollectNote("");
                             }}
-                            className="px-3.5 py-1.5 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold transition cursor-pointer"
+                            className="px-3.5 py-1.5 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold transition cursor-pointer"
                           >
                             Collect
+                          </button>
+                          <button
+                            type="button"
+                            onClick={async () => (await confirmDelete(`customer ${c.name}`, "They move to Deleted Customers and the Bin. After 30 days they are deleted for good.")) && handleDeleteCreditRow(c)}
+                            className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition cursor-pointer active:scale-95"
+                          >
+                            Delete
                           </button>
                         </td>
                       </tr>
@@ -708,8 +761,7 @@ export default function CashierPage() {
                   <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     From
                   </label>
-                  <input
-                    type="date"
+                  <IosDateInput
                     className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>
@@ -717,8 +769,7 @@ export default function CashierPage() {
                   <label className="block text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider mb-1.5">
                     To
                   </label>
-                  <input
-                    type="date"
+                  <IosDateInput
                     className="w-full border border-[#3C3C43]/15 bg-[#F2F2F7]/50 rounded-xl px-3 py-2 text-xs text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 focus:border-[#007AFF] transition-all"
                   />
                 </div>

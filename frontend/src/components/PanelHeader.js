@@ -5,9 +5,8 @@ import { Download } from "lucide-react";
 /**
  * Header bar for a page's primary record list.
  *
- * Same look as the dashboard panels: a soft blue tint that fades down into
- * the card, a solid blue icon badge with a matching glow, and the title in
- * dark ink. Page-level actions live here via `actions`, which is why pages
+ * Same look as the dashboard panels: it sits on the card's soft blue tint,
+ * with a solid blue icon badge and a matching glow, and the title in dark ink. Page-level actions live here via `actions`, which is why pages
  * no longer carry a separate toolbar.
  */
 export default function PanelHeader({
@@ -17,12 +16,14 @@ export default function PanelHeader({
   actionLabel = "Export",
   onAction,
   actions,
+  tools,
   children,
 }) {
   return (
     <div
-      className="px-[18px] py-3 flex items-center justify-between gap-3 border-b border-[#007AFF]/10"
-      style={{ background: "linear-gradient(180deg, rgba(0,122,255,0.11) 0%, rgba(0,122,255,0.035) 100%)" }}
+      // No fill of its own: the card behind it carries the dashboard-panel
+      // tint, so the colour flows from the title down into the table.
+      className="px-5 pt-4 pb-3 flex items-center justify-between gap-3 border-b border-[#3C3C43]/[0.07]"
     >
       <div className="min-w-0 flex items-center gap-3">
         {Icon && (
@@ -49,6 +50,7 @@ export default function PanelHeader({
       <div className="flex items-center gap-2 shrink-0">
         {actions}
         {children}
+        {tools}
         {onAction && (
           <button
             type="button"

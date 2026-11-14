@@ -1,10 +1,11 @@
+from app.alqattara.bin import BinDestroyMixin
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Salesman, Truck, TruckStockTransaction, CommissionReport
 from .serializers import SalesmanSerializer, TruckSerializer, TruckStockTransactionSerializer, CommissionReportSerializer
 
-class SalesmanViewSet(viewsets.ModelViewSet):
+class SalesmanViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = Salesman.objects.all()
     serializer_class = SalesmanSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
@@ -18,7 +19,7 @@ class SalesmanViewSet(viewsets.ModelViewSet):
             qs = qs.filter(city=city)
         return qs
 
-class TruckViewSet(viewsets.ModelViewSet):
+class TruckViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = Truck.objects.all()
     serializer_class = TruckSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
@@ -31,12 +32,12 @@ class TruckViewSet(viewsets.ModelViewSet):
             qs = qs.filter(status=status_param)
         return qs
 
-class TruckStockTransactionViewSet(viewsets.ModelViewSet):
+class TruckStockTransactionViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = TruckStockTransaction.objects.all()
     serializer_class = TruckStockTransactionSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['date']
 
-class CommissionReportViewSet(viewsets.ModelViewSet):
+class CommissionReportViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = CommissionReport.objects.all()
     serializer_class = CommissionReportSerializer

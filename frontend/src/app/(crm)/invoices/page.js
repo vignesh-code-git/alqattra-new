@@ -9,6 +9,8 @@ import { apiService } from "@/services/api";
 import useLiveData from "@/hooks/useLiveData";
 import { listOf, buildContext, invoiceFromApi, nonBilledFromApi, invoiceForOrder } from "@/services/crmMappers";
 import BackLink from "@/components/BackLink";
+import confirmDelete from "@/components/confirmDelete";
+import TableIO from "@/components/TableIO";
 import PanelHeader from "@/components/PanelHeader";
 import {
   Home,
@@ -26,6 +28,7 @@ import {
   Wallet,
   Receipt,
 } from "lucide-react";
+import IosDateInput from "@/components/IosDateInput";
 
 export default function InvoicesPage() {
   const { addToast } = useToast();
@@ -321,8 +324,7 @@ export default function InvoicesPage() {
                   <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     From Date
                   </label>
-                  <input
-                    type="date"
+                  <IosDateInput
                     value={invoiceFilters.fromDate}
                     onChange={(e) =>
                       setInvoiceFilters({ ...invoiceFilters, fromDate: e.target.value })
@@ -334,8 +336,7 @@ export default function InvoicesPage() {
                   <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">
                     To Date
                   </label>
-                  <input
-                    type="date"
+                  <IosDateInput
                     value={invoiceFilters.toDate}
                     onChange={(e) =>
                       setInvoiceFilters({ ...invoiceFilters, toDate: e.target.value })
@@ -381,17 +382,18 @@ export default function InvoicesPage() {
                 icon={FileSpreadsheet}
                 title="Recent Invoice"
                 subtitle="Issued invoices, VAT and billing records"
-                onAction={() => addToast("Exported invoice records", "success")}
+               
                 actions={
                   <button
                   type="button"
                   onClick={() => setViewMode("generate")}
-                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#FF2D55]/10 border border-[#FF2D55]/50 text-[#D6204A] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Generate Invoice
                 </button>
                 }
+                tools={<TableIO name="recent-invoice" onExport={() => addToast("Exported invoice records", "success")} />}
               />
 
               <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8E8E93]">
@@ -469,14 +471,14 @@ export default function InvoicesPage() {
                             <button
                               type="button"
                               onClick={() => setViewModalInvoice(inv)}
-                              className="px-3 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                              className="px-3 py-1 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
                             <button
                               type="button"
-                              onClick={() => handleDeleteInvoice(inv)}
-                              className="px-3 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                              onClick={async () => (await confirmDelete(`invoice ${inv.invoice_no}`)) && handleDeleteInvoice(inv)}
+                              className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               Delete
                             </button>
@@ -494,7 +496,7 @@ export default function InvoicesPage() {
                   {filteredInvoices.length} entries
                 </div>
                 <div className="flex items-center gap-1">
-                  <button className="w-7 h-7 rounded-full bg-[#007AFF] text-white text-xs font-semibold flex items-center justify-center shadow-xs">
+                  <button className="w-7 h-7 rounded-full bg-white border border-[#007AFF]/60 text-[#007AFF] text-xs font-semibold flex items-center justify-center shadow-xs">
                     1
                   </button>
                 </div>
@@ -544,8 +546,7 @@ export default function InvoicesPage() {
                     <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                       From
                     </label>
-                    <input
-                      type="date"
+                    <IosDateInput
                       value={billingFilter.from}
                       onChange={(e) => setBillingFilter({ ...billingFilter, from: e.target.value })}
                       className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2.5 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
@@ -555,8 +556,7 @@ export default function InvoicesPage() {
                     <label className="block text-[11px] font-semibold text-[#1C1C1E] mb-1">
                       To
                     </label>
-                    <input
-                      type="date"
+                    <IosDateInput
                       value={billingFilter.to}
                       onChange={(e) => setBillingFilter({ ...billingFilter, to: e.target.value })}
                       className="w-full border border-[#3C3C43]/15 rounded-xl px-3.5 py-2.5 text-xs text-[#1C1C1E] bg-[#F2F2F7] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
@@ -568,7 +568,7 @@ export default function InvoicesPage() {
                   <button
                     type="button"
                     onClick={handleGetAllNonBilled}
-                    className="px-5 py-2.5 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-98 transition"
+                    className="px-5 py-2.5 rounded-full bg-white border border-[#34C759]/60 text-[#34C759] hover:bg-[#34C759]/10 text-xs font-semibold cursor-pointer shadow-sm active:scale-98 transition"
                   >
                     GET ALL NON BILLED
                   </button>
@@ -633,7 +633,7 @@ export default function InvoicesPage() {
                                   "info"
                                 )
                               }
-                              className="px-3 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                              className="px-3 py-1 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               View
                             </button>
@@ -642,7 +642,7 @@ export default function InvoicesPage() {
                             <button
                               type="button"
                               onClick={() => handleSelectBill(bill)}
-                              className="px-3.5 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[11px] font-semibold cursor-pointer active:scale-95 transition"
+                              className="px-3.5 py-1 rounded-full bg-white border border-[#34C759]/50 text-[#248A3D] hover:bg-[#34C759]/10 text-[11px] font-semibold cursor-pointer active:scale-95 transition"
                             >
                               Generate
                             </button>

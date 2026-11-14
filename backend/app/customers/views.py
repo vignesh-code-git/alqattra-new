@@ -1,10 +1,11 @@
+from app.alqattara.bin import BinDestroyMixin, soft_bin
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Customer, CustomerStatement
 from .serializers import CustomerSerializer, CustomerStatementSerializer
 
-class CustomerViewSet(viewsets.ModelViewSet):
+class CustomerViewSet(BinDestroyMixin, viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
@@ -31,8 +32,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def soft_delete(self, request, pk=None):
         customer = self.get_object()
+        previous = customer.status
         customer.status = 'Deleted'
         customer.save()
+        if previous != 'Deleted':
+            soft_bin(customer, previous)
         return Response({'status': 'Customer marked as deleted'})
 
 class CustomerStatementViewSet(viewsets.ReadOnlyModelViewSet):

@@ -1,8 +1,12 @@
+import math
+from datetime import timedelta
+
+from django.utils import timezone
 from rest_framework import serializers
 from .models import (
     Product, StoreInventory, Order, OrderItem,
     Invoice, CashierTransaction, Wallet, WalletRecharge,
-    Zone, Route, MasterItem
+    Zone, Route, MasterItem, StaffUser, AccessLevel, BinItem
 )
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -91,3 +95,36 @@ class MasterItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = MasterItem
         fields = '__all__'
+
+
+class StaffUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaffUser
+        fields = '__all__'
+
+
+class AccessLevelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AccessLevel
+        fields = '__all__'
+
+
+class BinItemSerializer(serializers.ModelSerializer):
+    expires_at = serializers.SerializerMethodField()
+    days_left = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BinItem
+        fields = ['id', 'kind', 'model_label', 'object_pk', 'item_type', 'name',
+                  'related_count', 'deleted_at', 'expires_at', 'days_left']
+
+    def _expires(self, obj):
+        from .bin import BIN_DAYS
+        return obj.deleted_at + timedelta(days=BIN_DAYS)
+
+    def get_expires_at(self, obj):
+        return self._expires(obj)
+
+    def get_days_left(self, obj):
+        secs = (self._expires(obj) - timezone.now()).total_seconds()
+        return max(0, math.ceil(secs / 86400))

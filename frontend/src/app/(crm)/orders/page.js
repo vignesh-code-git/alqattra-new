@@ -6,6 +6,8 @@ import Header from "@/components/Header";
 import { useToast } from "@/components/Toast";
 import StatCard, { hexFromTone } from "@/components/StatCard";
 import BackLink from "@/components/BackLink";
+import confirmDelete from "@/components/confirmDelete";
+import TableIO from "@/components/TableIO";
 import PanelHeader from "@/components/PanelHeader";
 import { apiService } from "@/services/api";
 import useLiveData from "@/hooks/useLiveData";
@@ -34,6 +36,7 @@ import {
   Wallet,
   FileSpreadsheet,
 } from "lucide-react";
+import IosDateInput from "@/components/IosDateInput";
 
 export default function OrdersPage() {
   const { addToast } = useToast();
@@ -454,8 +457,7 @@ export default function OrdersPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">From Date</label>
-                  <input
-                    type="date"
+                  <IosDateInput
                     value={filters.from}
                     onChange={(e) => setFilters({ ...filters, from: e.target.value })}
                     className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
@@ -463,8 +465,7 @@ export default function OrdersPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-semibold text-[#8E8E93] uppercase mb-1">To Date</label>
-                  <input
-                    type="date"
+                  <IosDateInput
                     value={filters.to}
                     onChange={(e) => setFilters({ ...filters, to: e.target.value })}
                     className="w-full px-2.5 py-1.5 text-xs text-[#1C1C1E] bg-white rounded-xl border border-[#3C3C43]/15 focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
@@ -566,13 +567,13 @@ export default function OrdersPage() {
                 icon={ShoppingCart}
                 title="Recent Orders"
                 subtitle="Live delivery records, billing and status"
-                onAction={handleExportCSV}
+               
                 actions={
                   <>
                   <button
                     type="button"
                     onClick={() => setSummaryDrawerOpen(true)}
-                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1.5"
+                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#FF9500]/10 border border-[#FF9500]/60 text-[#C46A00] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1.5"
                   >
                     <BarChart3 className="w-3.5 h-3.5" />
                     Order Summary
@@ -580,13 +581,14 @@ export default function OrdersPage() {
                   <button
                     type="button"
                     onClick={openNewOrderView}
-                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#F2F2F7] active:bg-[#E5E5EA] text-[#007AFF] text-[11.5px] shadow-[0_1px_3px_rgba(0,0,0,0.15)] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
+                    className="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#5856D6]/10 border border-[#5856D6]/50 text-[#5856D6] text-[11.5px] font-semibold transition cursor-pointer active:scale-95 inline-flex items-center gap-1"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     New Order
                   </button>
                 </>
                 }
+                tools={<TableIO name="recent-orders" exportFn={handleExportCSV} />}
               />
 
               <div className="px-6 py-3.5 bg-[#F2F2F7] border-b border-[#3C3C43]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#3C3C43]">
@@ -681,21 +683,21 @@ export default function OrdersPage() {
                             <button
                               type="button"
                               onClick={() => setViewModalOrder(row)}
-                              className="px-3 py-1 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-[10.5px] font-semibold transition cursor-pointer"
+                              className="px-3 py-1 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-[10.5px] font-semibold transition cursor-pointer"
                             >
                               View
                             </button>
                             <button
                               type="button"
                               onClick={() => openEditOrderView(row)}
-                              className="px-3 py-1 rounded-full bg-[#34C759]/15 hover:bg-[#34C759] text-[#248A3D] hover:text-white text-[10.5px] font-semibold transition cursor-pointer"
+                              className="px-3 py-1 rounded-full bg-white border border-[#34C759]/50 text-[#248A3D] hover:bg-[#34C759]/10 text-[10.5px] font-semibold transition cursor-pointer"
                             >
                               Edit
                             </button>
                             <button
                               type="button"
-                              onClick={() => handleDeleteOrder(row)}
-                              className="px-3 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-[10.5px] font-semibold transition cursor-pointer"
+                              onClick={async () => (await confirmDelete(`order ${row.delivery_note}`)) && handleDeleteOrder(row)}
+                              className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[10.5px] font-semibold transition cursor-pointer"
                             >
                               Delete
                             </button>
@@ -727,7 +729,7 @@ export default function OrdersPage() {
                       key={p}
                       onClick={() => setPage(p)}
                       className={`w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center ${
-                        p === currentPage ? "bg-[#007AFF] text-white" : "text-[#8E8E93] hover:bg-[#F2F2F7]"
+                        p === currentPage ? "bg-white border border-[#007AFF]/60 text-[#007AFF]" : "bg-white border border-[#007AFF]/20 text-[#3C3C43] hover:bg-[#007AFF]/10"
                       }`}
                     >
                       {p}
@@ -908,7 +910,7 @@ export default function OrdersPage() {
                                   items: newOrderForm.items.filter((x) => x.id !== item.id),
                                 });
                               }}
-                              className="w-7 h-7 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white inline-flex items-center justify-center text-xs font-bold cursor-pointer transition active:scale-95"
+                              className="w-7 h-7 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 inline-flex items-center justify-center text-xs font-bold cursor-pointer transition active:scale-95"
                             >
                               ×
                             </button>
@@ -930,7 +932,7 @@ export default function OrdersPage() {
                       ],
                     })
                   }
-                  className="mt-3 px-4 py-2 rounded-full bg-[#007AFF]/12 hover:bg-[#007AFF] text-[#0062CC] hover:text-white text-xs font-semibold cursor-pointer transition active:scale-95"
+                  className="mt-3 px-4 py-2 rounded-full bg-white border border-[#007AFF]/50 text-[#0062CC] hover:bg-[#007AFF]/10 text-xs font-semibold cursor-pointer transition active:scale-95"
                 >
                   + Add Product
                 </button>
@@ -956,14 +958,14 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => handleCreateOrder(false)}
-                  className="px-5 py-2.5 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
+                  className="px-5 py-2.5 rounded-full bg-white border border-[#34C759]/60 text-[#34C759] hover:bg-[#34C759]/10 text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
                 >
                   Create Order
                 </button>
                 <button
                   type="button"
                   onClick={() => handleCreateOrder(true)}
-                  className="px-5 py-2.5 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
+                  className="px-5 py-2.5 rounded-full bg-white border border-[#007AFF]/60 text-[#007AFF] hover:bg-[#007AFF]/10 text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
                 >
                   Create Order and Send SMS
                 </button>
@@ -1100,7 +1102,7 @@ export default function OrdersPage() {
                       ],
                     })
                   }
-                  className="mb-3 px-4 py-1.5 rounded-full bg-[#007AFF] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
+                  className="mb-3 px-4 py-1.5 rounded-full bg-white border border-[#007AFF]/60 text-[#007AFF] text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
                 >
                   + Add Product
                 </button>
@@ -1149,7 +1151,7 @@ export default function OrdersPage() {
                                   items: editingOrder.items.filter((_, i) => i !== idx),
                                 })
                               }
-                              className="px-3 py-1 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-[11px] font-semibold transition active:scale-95"
+                              className="px-3 py-1 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-[11px] font-semibold transition active:scale-95"
                             >
                               Remove
                             </button>
@@ -1187,15 +1189,15 @@ export default function OrdersPage() {
               <div className="flex items-center justify-end gap-2.5 pt-2">
                 <button
                   type="button"
-                  onClick={() => handleDeleteOrder(editingOrder)}
-                  className="px-4 py-2 rounded-full bg-[#FF3B30]/10 hover:bg-[#FF3B30] text-[#FF3B30] hover:text-white text-xs font-semibold cursor-pointer active:scale-95 transition"
+                  onClick={async () => (await confirmDelete(`order ${editingOrder.delivery_note}`)) && handleDeleteOrder(editingOrder)}
+                  className="px-4 py-2 rounded-full bg-white border border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-xs font-semibold cursor-pointer active:scale-95 transition"
                 >
                   Delete Order
                 </button>
                 <button
                   type="button"
                   onClick={handleUpdateOrder}
-                  className="px-5 py-2 rounded-full bg-[#34C759] hover:bg-[#2fb350] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
+                  className="px-5 py-2 rounded-full bg-white border border-[#34C759]/60 text-[#34C759] hover:bg-[#34C759]/10 text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
                 >
                   Update Order
                 </button>
@@ -1205,7 +1207,7 @@ export default function OrdersPage() {
                     addToast(`Order ${editingOrder.delivery_note} marked as delivered`, "success");
                     setViewMode("list");
                   }}
-                  className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
+                  className="px-4 py-2 rounded-full bg-white border border-[#007AFF]/60 text-[#007AFF] hover:bg-[#007AFF]/10 text-xs font-semibold cursor-pointer shadow-sm active:scale-95 transition"
                 >
                   Mark Delivery
                 </button>
